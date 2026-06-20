@@ -14,7 +14,7 @@ import {
   Users, Activity, Calendar, Mail, MessageSquare, LogOut, Plus, Edit, Trash2, 
   Check, X, Menu, Search, CheckCircle2, AlertCircle, Clock, ShieldAlert, Star, 
   Printer, UserCheck, ChevronRight, LayoutDashboard, Lock, Eye, EyeOff, FileText, Settings, Heart,
-  Ear, HeartPulse, Baby, Bone
+  Ear, HeartPulse, Baby, Bone, Video, Award, Upload
 } from 'lucide-react';
 
 const departmentIconMap: Record<string, React.ComponentType<any>> = {
@@ -76,6 +76,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
   const [docBio, setDocBio] = useState('');
   const [docTimings, setDocTimings] = useState('10:00 AM - 04:00 PM');
   const [docDays, setDocDays] = useState<string[]>(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
+  const [docImage, setDocImage] = useState('');
 
   // Service Form Fields
   const [serviceTitle, setServiceTitle] = useState('');
@@ -188,6 +189,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
       setDocBio(doc.bio);
       setDocTimings(doc.timings);
       setDocDays(doc.days);
+      setDocImage(doc.image || '');
     } else {
       setDocName('');
       setDocSpec('General & Laparoscopic Surgeon');
@@ -196,6 +198,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
       setDocBio('');
       setDocTimings('10:00 AM - 04:00 PM');
       setDocDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
+      setDocImage('');
     }
     setIsDocModalOpen(true);
   };
@@ -208,7 +211,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
       specialization: docSpec,
       qualification: docQual,
       experience: Number(docExp),
-      image: activeDoctor ? activeDoctor.image : 'steth',
+      image: docImage || 'steth',
       bio: docBio,
       timings: docTimings,
       days: docDays,
@@ -1867,6 +1870,848 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
               </div>
             </div>
 
+            {/* Card D: About Us Page Image Management */}
+            <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-5">
+              <div className="border-b pb-3">
+                <h4 className="font-display font-extrabold text-[#0d2a63] text-sm uppercase tracking-wider">Hospital Biography Photo (About Us Page)</h4>
+                <p className="text-[11px] text-slate-400 font-medium">Add or edit the main photo of the hospital showcased in the Heritage & About Us section</p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center gap-6">
+                <div className="shrink-0 flex flex-col items-center gap-2">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono font-bold">Current About Us Photo</span>
+                  <div className="w-48 h-32 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center shadow-inner overflow-hidden">
+                    {siteSettings.aboutPhotoUrl ? (
+                      <img 
+                        src={siteSettings.aboutPhotoUrl} 
+                        alt="Hospital About Us Portrait" 
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="text-center p-4">
+                        <span className="text-[10px] text-slate-400 font-bold block">No Photo Configured</span>
+                        <span className="text-[8px] text-slate-400">Falls back to dynamic theme card</span>
+                      </div>
+                    )}
+                  </div>
+                  {siteSettings.aboutPhotoUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setSiteSettings(prev => ({ ...prev, aboutPhotoUrl: '' }))}
+                      className="text-[10px] font-bold text-red-600 hover:underline"
+                    >
+                      Remove Photo
+                    </button>
+                  )}
+                </div>
+
+                <div 
+                  onDragOver={e => e.preventDefault()}
+                  onDrop={e => {
+                    e.preventDefault();
+                    const file = e.dataTransfer.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = () => {
+                        if (typeof reader.result === 'string') {
+                          setSiteSettings(prev => ({ ...prev, aboutPhotoUrl: reader.result as string }));
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  onClick={() => document.getElementById('about-photo-file-input')?.click()}
+                  className="grow w-full border-2 border-dashed border-slate-200 hover:border-blue-500 rounded-2xl p-6 text-center cursor-pointer hover:bg-blue-50/20 transition-all space-y-2 flex flex-col items-center justify-center min-h-[140px]"
+                >
+                  <Plus size={20} className="text-blue-500" />
+                  <p className="text-xs font-extrabold text-slate-700">Drag & Drop Image or Click to Browse</p>
+                  <p className="text-[10px] text-slate-400 leading-tight">PNG, JPG, SVG up to 2MB</p>
+                  <input 
+                    type="file" 
+                    id="about-photo-file-input"
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          if (typeof reader.result === 'string') {
+                            setSiteSettings(prev => ({ ...prev, aboutPhotoUrl: reader.result as string }));
+                          }
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Card E: Leadership Messages (Chairman & Director Profiles) */}
+            <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-6">
+              <div className="border-b pb-3">
+                <h4 className="font-display font-extrabold text-[#0d2a63] text-sm uppercase tracking-wider">Leadership Messages Panel</h4>
+                <p className="text-[11px] text-slate-400 font-medium">Customize photographs, titles, and welcome statements of the Chairman and Director displayed on the About Us page</p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Chairman Configuration */}
+                <div className="space-y-4 bg-slate-50/50 p-5 rounded-2xl border border-slate-100">
+                  <div className="border-b pb-2 flex justify-between items-center">
+                    <span className="font-bold text-xs text-[#0d2a63] uppercase tracking-wide">Chairman Desk</span>
+                    <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-[#0d2a63] text-white font-mono">CHAIRMAN</span>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase">Chairman Name</label>
+                        <input
+                          type="text"
+                          className="w-full text-xs font-semibold px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500"
+                          value={siteSettings.chairmanName || ''}
+                          onChange={e => setSiteSettings(prev => ({ ...prev, chairmanName: e.target.value }))}
+                          placeholder="e.g. Dr. Prem Prakash Dubey"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase">Qualifications</label>
+                        <input
+                          type="text"
+                          className="w-full text-xs font-semibold px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500"
+                          value={siteSettings.chairmanQualification || ''}
+                          onChange={e => setSiteSettings(prev => ({ ...prev, chairmanQualification: e.target.value }))}
+                          placeholder="e.g. MBBS, MS (Ophthalmology)"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">Chairman Message / Bio</label>
+                      <textarea
+                        rows={5}
+                        className="w-full text-xs font-semibold px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        value={siteSettings.chairmanBio || ''}
+                        onChange={e => setSiteSettings(prev => ({ ...prev, chairmanBio: e.target.value }))}
+                        placeholder="Welcome message from the Chairman..."
+                      />
+                    </div>
+
+                    {/* Chairman Image Attachment zone */}
+                    <div className="flex items-center gap-4 pt-2">
+                      <div className="w-16 h-16 rounded-full border border-slate-200 overflow-hidden flex items-center justify-center shrink-0 bg-white">
+                        {siteSettings.chairmanPhotoUrl ? (
+                          <img 
+                            src={siteSettings.chairmanPhotoUrl} 
+                            alt="Chairman portrait preview" 
+                            className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <span className="text-[9px] text-slate-400 font-bold">No Photo</span>
+                        )}
+                      </div>
+                      <div className="flex-1 space-y-1">
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('chairman-photo-file-input')?.click()}
+                          className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[10px] font-bold inline-block cursor-pointer transition-all active:scale-95 border-none"
+                        >
+                          Attach Photo (JPEG)
+                        </button>
+                        <input 
+                          type="file" 
+                          id="chairman-photo-file-input"
+                          className="hidden" 
+                          accept="image/*"
+                          onChange={e => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = () => {
+                                if (typeof reader.result === 'string') {
+                                  setSiteSettings(prev => ({ ...prev, chairmanPhotoUrl: reader.result as string }));
+                                }
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                        {siteSettings.chairmanPhotoUrl && (
+                          <button
+                            type="button"
+                            onClick={() => setSiteSettings(prev => ({ ...prev, chairmanPhotoUrl: '' }))}
+                            className="ml-2 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-[10px] font-bold inline-block cursor-pointer transition-all active:scale-95 border-none"
+                          >
+                            Remove
+                          </button>
+                        )}
+                        <p className="text-[8px] text-slate-400 leading-tight">Drag & Drop supported or click to browse local files.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Director Configuration */}
+                <div className="space-y-4 bg-slate-50/50 p-5 rounded-2xl border border-slate-100">
+                  <div className="border-b pb-2 flex justify-between items-center">
+                    <span className="font-bold text-xs text-[#0d2a63] uppercase tracking-wide">Director Desk</span>
+                    <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-blue-600 text-white font-mono">DIRECTOR</span>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase">Director Name</label>
+                        <input
+                          type="text"
+                          className="w-full text-xs font-semibold px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500"
+                          value={siteSettings.directorName || ''}
+                          onChange={e => setSiteSettings(prev => ({ ...prev, directorName: e.target.value }))}
+                          placeholder="e.g. Dr. Vidushi Dubey"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase">Qualifications</label>
+                        <input
+                          type="text"
+                          className="w-full text-xs font-semibold px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500"
+                          value={siteSettings.directorQualification || ''}
+                          onChange={e => setSiteSettings(prev => ({ ...prev, directorQualification: e.target.value }))}
+                          placeholder="e.g. MBBS, MS (General Surgery)"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">Director Message / Bio</label>
+                      <textarea
+                        rows={5}
+                        className="w-full text-xs font-semibold px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        value={siteSettings.directorBio || ''}
+                        onChange={e => setSiteSettings(prev => ({ ...prev, directorBio: e.target.value }))}
+                        placeholder="Welcome message from the Director..."
+                      />
+                    </div>
+
+                    {/* Director Image Attachment zone */}
+                    <div className="flex items-center gap-4 pt-2">
+                      <div className="w-16 h-16 rounded-full border border-slate-200 overflow-hidden flex items-center justify-center shrink-0 bg-white">
+                        {siteSettings.directorPhotoUrl ? (
+                          <img 
+                            src={siteSettings.directorPhotoUrl} 
+                            alt="Director portrait preview" 
+                            className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <span className="text-[9px] text-slate-400 font-bold">No Photo</span>
+                        )}
+                      </div>
+                      <div className="flex-1 space-y-1">
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('director-photo-file-input')?.click()}
+                          className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[10px] font-bold inline-block cursor-pointer transition-all active:scale-95 border-none"
+                        >
+                          Attach Photo (JPEG)
+                        </button>
+                        <input 
+                          type="file" 
+                          id="director-photo-file-input"
+                          className="hidden" 
+                          accept="image/*"
+                          onChange={e => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = () => {
+                                if (typeof reader.result === 'string') {
+                                  setSiteSettings(prev => ({ ...prev, directorPhotoUrl: reader.result as string }));
+                                }
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                        {siteSettings.directorPhotoUrl && (
+                          <button
+                            type="button"
+                            onClick={() => setSiteSettings(prev => ({ ...prev, directorPhotoUrl: '' }))}
+                            className="ml-2 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-[10px] font-bold inline-block cursor-pointer transition-all active:scale-95 border-none"
+                          >
+                            Remove
+                          </button>
+                        )}
+                        <p className="text-[8px] text-slate-400 leading-tight">Drag & Drop supported or click to browse local files.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card F: Hospital Credentials Details & Trust Documents */}
+            <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-5">
+              <div className="border-b pb-3 flex justify-between items-center">
+                <div>
+                  <h4 className="font-display font-extrabold text-[#0d2a63] text-sm uppercase tracking-wider">Hospital Accreditation & Documents</h4>
+                  <p className="text-[11px] text-slate-400 font-medium">Verify credentials, medical regulatory permits, approvals, or certification photos displayed on the public footer/pages</p>
+                </div>
+              </div>
+
+              {/* Add New Credential Form */}
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-4">
+                <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">Register New Accreditation / Certificate</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-mono uppercase text-slate-500 font-bold">Document Title / Label *</label>
+                    <input 
+                      type="text" 
+                      id="new-cred-title"
+                      placeholder="e.g. PM-JAY Empanelment Approvals, pollution control board cert" 
+                      className="w-full text-xs p-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-mono uppercase text-slate-500 font-bold">Attach Image/PDF Document *</label>
+                    <div className="flex gap-2">
+                      <input 
+                        type="file" 
+                        id="new-cred-file"
+                        accept="image/*, application/pdf"
+                        className="grow text-xs p-1 bg-white border border-slate-200 rounded-xl"
+                      />
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const titleEl = document.getElementById('new-cred-title') as HTMLInputElement;
+                          const fileEl = document.getElementById('new-cred-file') as HTMLInputElement;
+                          if (!titleEl || !titleEl.value) {
+                            alert('Please state a valid label for this certification document.');
+                            return;
+                          }
+                          const file = fileEl?.files?.[0];
+                          if (!file) {
+                            alert('Please select or drag a valid certificate document image first.');
+                            return;
+                          }
+                          const reader = new FileReader();
+                          reader.onload = () => {
+                            if (typeof reader.result === 'string') {
+                              const newCred = {
+                                id: `cred_${Date.now()}`,
+                                title: titleEl.value,
+                                fileUrl: reader.result,
+                                date: new Date().toLocaleDateString()
+                              };
+                              setSiteSettings(prev => ({
+                                ...prev,
+                                credentials: [...(prev.credentials || []), newCred]
+                              }));
+                              titleEl.value = '';
+                              fileEl.value = '';
+                              alert('Certificate prepared! Please make sure to Hit "Commit Changes" at the bottom to sync safely to the cloud.');
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 rounded-xl text-xs flex items-center gap-1 cursor-pointer transition-all active:scale-95 border-none"
+                      >
+                        <Plus size={12} />
+                        Add Record
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* List existing credentials */}
+              {(!siteSettings.credentials || siteSettings.credentials.length === 0) ? (
+                <div className="p-8 text-center text-slate-400 text-xs font-semibold bg-slate-50/50 rounded-2xl border border-dashed border-slate-150">
+                  No active accreditation documents cataloged. Fallbacks to PM-JAY and general hospital approvals logos.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {siteSettings.credentials.map(cred => (
+                    <div key={cred.id} className="p-3.5 bg-white border border-slate-150 rounded-xl shadow-sm hover:border-blue-200 transition-all flex items-center justify-between gap-2.5">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 flex-shrink-0 flex items-center justify-center">
+                          {cred.fileUrl.startsWith('data:') ? (
+                            <img src={cred.fileUrl} alt={cred.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                          ) : (
+                            <FileText size={18} className="text-slate-400" />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-extrabold text-slate-800 truncate leading-snug">{cred.title}</p>
+                          <p className="text-[9px] text-slate-400 font-bold">{cred.date || 'Active'}</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSiteSettings(prev => ({
+                            ...prev,
+                            credentials: (prev.credentials || []).filter(c => c.id !== cred.id)
+                          }));
+                        }}
+                        className="text-red-500 hover:text-red-700 p-1.5 bg-slate-50 hover:bg-rose-50 rounded-lg transition-colors border border-transparent cursor-pointer"
+                        title="Delete accreditation"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Card G: Photos Gallery & Tour Video Channel Section */}
+            <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-5">
+              <div className="border-b pb-3">
+                <h4 className="font-display font-extrabold text-[#0d2a63] text-sm uppercase tracking-wider">Hospital Photo Gallery & Tour Video Channel</h4>
+                <p className="text-[11px] text-slate-400 font-medium">Add gallery photographs, tour YouTube links, or department visual showcases designed for public interaction</p>
+              </div>
+
+              {/* Add New Gallery Item Section */}
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-4">
+                <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">Publish Photo or Hospital Tour/Video Segment</p>
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5">
+                  <div className="md:col-span-3 space-y-1">
+                    <label className="text-[10px] font-mono uppercase text-slate-500 font-bold">Item Type *</label>
+                    <select 
+                      id="new-gal-type"
+                      className="w-full text-xs p-2.5 bg-white border border-slate-200 rounded-xl"
+                    >
+                      <option value="image">Still Photograph (Photo)</option>
+                      <option value="video">Hospital Tour Video / Presentation</option>
+                    </select>
+                  </div>
+                  <div className="md:col-span-4 space-y-1">
+                    <label className="text-[10px] font-mono uppercase text-slate-500 font-bold">Title / Caption *</label>
+                    <input 
+                      type="text" 
+                      id="new-gal-title"
+                      placeholder="e.g. Laparoscopic Theater block / Hospital Entry view" 
+                      className="w-full text-xs p-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="md:col-span-5 space-y-1">
+                    <label className="text-[10px] font-mono uppercase text-slate-500 font-bold">Media file/URL *</label>
+                    <div className="flex gap-2">
+                      <div className="grow space-y-1.5">
+                        <input 
+                          type="text" 
+                          id="new-gal-url"
+                          placeholder="Paste image/YouTube URL, or browse local file ->" 
+                          className="w-full text-xs p-2 bg-white border border-slate-200 rounded-xl"
+                        />
+                        <input 
+                          type="file" 
+                          id="new-gal-file"
+                          accept="image/*, video/*"
+                          onChange={e => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = () => {
+                                if (typeof reader.result === 'string') {
+                                  const urlInput = document.getElementById('new-gal-url') as HTMLInputElement;
+                                  if (urlInput) urlInput.value = reader.result;
+                                }
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          className="w-full text-[10px] text-slate-400 bg-white border p-1 rounded-lg"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const typeEl = document.getElementById('new-gal-type') as HTMLSelectElement;
+                          const titleEl = document.getElementById('new-gal-title') as HTMLInputElement;
+                          const urlEl = document.getElementById('new-gal-url') as HTMLInputElement;
+                          if (!titleEl || !titleEl.value) {
+                            alert('Please write a descriptive caption for this gallery publication.');
+                            return;
+                          }
+                          if (!urlEl || !urlEl.value) {
+                            alert('Please insert a valid video URL, photo address or select a local photo file.');
+                            return;
+                          }
+                          const newItem = {
+                            id: `gal_${Date.now()}`,
+                            title: titleEl.value,
+                            type: typeEl.value as 'image' | 'video',
+                            url: urlEl.value
+                          };
+                          setSiteSettings(prev => ({
+                            ...prev,
+                            gallery: [...(prev.gallery || []), newItem]
+                          }));
+                          titleEl.value = '';
+                          urlEl.value = '';
+                          const fileEl = document.getElementById('new-gal-file') as HTMLInputElement;
+                          if (fileEl) fileEl.value = '';
+                          alert('Gallery file appended! Make sure to Click "Commit Changes" at page bottom to preserve config forever.');
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 rounded-xl text-xs flex items-center justify-center shrink-0 border-none cursor-pointer transition-all active:scale-95"
+                      >
+                        Add Item
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Gallery List display */}
+              {(!siteSettings.gallery || siteSettings.gallery.length === 0) ? (
+                <div className="p-8 text-center text-slate-400 text-xs font-semibold bg-slate-50/50 rounded-2xl border border-dashed border-slate-150">
+                  No public portfolio items added. Default high-resolution hospital illustrations will load.
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {siteSettings.gallery.map(item => (
+                    <div key={item.id} className="relative group rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-sm aspect-video">
+                      {item.type === 'video' ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-white p-3 text-center">
+                          <Video size={24} className="text-yellow-400 mb-1" />
+                          <span className="text-[10px] font-extrabold block truncate w-full">{item.title}</span>
+                          <span className="text-[8px] text-slate-400 block truncate w-full">{item.url}</span>
+                        </div>
+                      ) : (
+                        <img src={item.url} alt={item.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      )}
+                      
+                      {/* Delete Overlay */}
+                      <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2.5">
+                        <div className="flex justify-end">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSiteSettings(prev => ({
+                                ...prev,
+                                gallery: (prev.gallery || []).filter(g => g.id !== item.id)
+                              }));
+                            }}
+                            className="bg-red-600 hover:bg-red-700 p-1.5 text-white rounded-lg active:scale-95 transition-all text-[9px] font-bold border-none cursor-pointer"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                        <p className="text-[10px] text-white font-bold truncate leading-none mb-0.5">{item.title}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* NEW ADDITION: Public Notice & Important Announcement Pop-up Editor */}
+            <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-6">
+              <div className="border-b pb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-left">
+                <div>
+                  <h4 className="font-display font-extrabold text-[#0d2a63] text-sm uppercase tracking-wider">Public Notice & Announcement Pop-up</h4>
+                  <p className="text-[11px] text-slate-400 font-medium">Configure a prominent alert modal that greets viewers when they first enter the website.</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${siteSettings.announcementPopup?.enabled ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500'}`}>
+                    {siteSettings.announcementPopup?.enabled ? 'Active notice' : 'disabled'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-150 text-left">
+                  <input
+                    type="checkbox"
+                    id="popup-enabled"
+                    checked={siteSettings.announcementPopup?.enabled ?? false}
+                    onChange={e => {
+                      const val = e.target.checked;
+                      setSiteSettings(prev => ({
+                        ...prev,
+                        announcementPopup: {
+                          ...(prev.announcementPopup || { title: '', message: '' }),
+                          enabled: val
+                        }
+                      }));
+                    }}
+                    className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 cursor-pointer"
+                  />
+                  <label htmlFor="popup-enabled" className="text-xs font-black text-[#0d2a63] cursor-pointer select-none">
+                    Enable pop-up notification on public web sections
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1 text-left">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Notice Badge Text</label>
+                    <input
+                      type="text"
+                      value={siteSettings.announcementPopup?.badgeText ?? ''}
+                      onChange={e => {
+                        const val = e.target.value;
+                        setSiteSettings(prev => ({
+                          ...prev,
+                          announcementPopup: {
+                            ...(prev.announcementPopup || { enabled: false, title: '', message: '' }),
+                            badgeText: val
+                          }
+                        }));
+                      }}
+                      placeholder="e.g. IMPORTANT NOTICE, CAMPAIGN, UPDATE"
+                      className="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl"
+                    />
+                  </div>
+
+                  <div className="space-y-1 text-left">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Announcement Notice Title</label>
+                    <input
+                      type="text"
+                      value={siteSettings.announcementPopup?.title ?? ''}
+                      onChange={e => {
+                        const val = e.target.value;
+                        setSiteSettings(prev => ({
+                          ...prev,
+                          announcementPopup: {
+                            ...(prev.announcementPopup || { enabled: false, title: '', message: '' }),
+                            title: val
+                          }
+                        }));
+                      }}
+                      placeholder="e.g. Free Surgical Diagnosis Camp this Sunday"
+                      className="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1 text-left">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Announcement Notice full message text</label>
+                  <textarea
+                    rows={4}
+                    value={siteSettings.announcementPopup?.message ?? ''}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setSiteSettings(prev => ({
+                        ...prev,
+                        announcementPopup: {
+                          ...(prev.announcementPopup || { enabled: false, title: '', message: '' }),
+                          message: val
+                        }
+                      }));
+                    }}
+                    placeholder="Provide full description. Mention dates, timings, venues, requirements, dynamic contact numbers and any prerequisite instructions."
+                    className="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl resize-y"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1 text-left">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Call-To-Action button label (optional)</label>
+                    <input
+                      type="text"
+                      value={siteSettings.announcementPopup?.linkText ?? ''}
+                      onChange={e => {
+                        const val = e.target.value;
+                        setSiteSettings(prev => ({
+                          ...prev,
+                          announcementPopup: {
+                            ...(prev.announcementPopup || { enabled: false, title: '', message: '' }),
+                            linkText: val
+                          }
+                        }));
+                      }}
+                      placeholder="e.g. Check Registration Scheme, Book Slot"
+                      className="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl"
+                    />
+                  </div>
+
+                  <div className="space-y-1 text-left">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">CTA target link or section hash (optional)</label>
+                    <input
+                      type="text"
+                      value={siteSettings.announcementPopup?.linkUrl ?? ''}
+                      onChange={e => {
+                        const val = e.target.value;
+                        setSiteSettings(prev => ({
+                          ...prev,
+                          announcementPopup: {
+                            ...(prev.announcementPopup || { enabled: false, title: '', message: '' }),
+                            linkUrl: val
+                          }
+                        }));
+                      }}
+                      placeholder="e.g. #pmjay, #contact, #about"
+                      className="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* NEW ADDITION: Manage Cashless TPA Facilities */}
+            <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-6">
+              <div className="border-b pb-3 text-left">
+                <h4 className="font-display font-extrabold text-[#0d2a63] text-sm uppercase tracking-wider">TPA & Cashless Insurance Partners</h4>
+                <p className="text-[11px] text-slate-400 font-medium">Add, update or terminate empanelled Third Party Administrators (TPAs) and corporate health insurance schemes.</p>
+              </div>
+
+              {/* Add New TPA Form block */}
+              <div className="p-5 bg-blue-50/20 border border-blue-100 rounded-3xl space-y-4">
+                <span className="text-xs font-black uppercase text-[#1e66f5] tracking-widest block font-mono text-left">Empanel a New Cashless Partner</span>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-1 text-left">
+                    <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider block">Partner Insurance Name</label>
+                    <input
+                      type="text"
+                      id="new-tpa-name"
+                      placeholder="e.g. Star Health & Allied Insurance"
+                      className="w-full text-xs p-2.5 bg-white border border-slate-200 rounded-xl shadow-sm"
+                    />
+                  </div>
+
+                  <div className="space-y-1 text-left">
+                    <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider block">Description / Coverage Scheme</label>
+                    <input
+                      type="text"
+                      id="new-tpa-desc"
+                      placeholder="e.g. Direct cashless settlements within 2-4 hours."
+                      className="w-full text-xs p-2.5 bg-white border border-slate-200 rounded-xl shadow-sm"
+                    />
+                  </div>
+
+                  <div className="space-y-1 text-left">
+                    <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider block">Partner Logo Profile</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        id="new-tpa-logo"
+                        placeholder="Image URL or Browse file →"
+                        className="w-full text-xs p-2.5 bg-white border border-slate-200 rounded-xl shadow-sm"
+                      />
+                      <input
+                        type="file"
+                        id="new-tpa-file"
+                        accept="image/*"
+                        onChange={e => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                              if (typeof reader.result === 'string') {
+                                const logoInput = document.getElementById('new-tpa-logo') as HTMLInputElement;
+                                if (logoInput) logoInput.value = reader.result;
+                              }
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="hidden"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => document.getElementById('new-tpa-file')?.click()}
+                        className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold border border-slate-200 cursor-pointer"
+                      >
+                        Browse
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const nameEl = document.getElementById('new-tpa-name') as HTMLInputElement;
+                      const descEl = document.getElementById('new-tpa-desc') as HTMLInputElement;
+                      const logoEl = document.getElementById('new-tpa-logo') as HTMLInputElement;
+
+                      if (!nameEl || !nameEl.value) {
+                        alert('Please fill the Partner Insurance Company Name.');
+                        return;
+                      }
+
+                      const newTpa = {
+                        id: `tpa_${Date.now()}`,
+                        name: nameEl.value,
+                        description: descEl ? descEl.value : '',
+                        logoUrl: logoEl ? logoEl.value : ''
+                      };
+
+                      setSiteSettings(prev => ({
+                        ...prev,
+                        tpaFacilities: [...(prev.tpaFacilities || []), newTpa]
+                      }));
+
+                      // Reset fields
+                      nameEl.value = '';
+                      if (descEl) descEl.value = '';
+                      if (logoEl) logoEl.value = '';
+                      const fileEl = document.getElementById('new-tpa-file') as HTMLInputElement;
+                      if (fileEl) fileEl.value = '';
+
+                      alert('Cashless insurance partner appended to local checklist! Make sure to Click "Commit Changes" at page bottom to preserve config forever.');
+                    }}
+                    className="bg-[#1e66f5] hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs uppercase tracking-wider border-none cursor-pointer transition-all active:scale-95 shadow-md shadow-blue-100"
+                  >
+                    Append TPA Partner
+                  </button>
+                </div>
+              </div>
+
+              {/* Handled TPA List display */}
+              <div className="space-y-3">
+                <span className="text-xs font-mono font-black uppercase text-slate-400 tracking-widest block text-left">Currently Empanelled Cashless TPA list ({ (siteSettings.tpaFacilities || []).length })</span>
+
+                {(!siteSettings.tpaFacilities || siteSettings.tpaFacilities.length === 0) ? (
+                  <div className="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-xs text-slate-400 font-semibold">
+                    No cashless insurance partners configured. Default to free Ayushman Bharat scheme.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {siteSettings.tpaFacilities.map((tpa, idx) => (
+                      <div key={tpa.id || idx} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-4 text-left">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-12 h-12 rounded-xl bg-white border border-slate-150 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                            {tpa.logoUrl ? (
+                              <img src={tpa.logoUrl} alt={tpa.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                            ) : (
+                              <span className="text-xs font-bold text-slate-400">TPA</span>
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <h5 className="font-display font-extrabold text-[#0d2a63] text-xs truncate uppercase leading-none">{tpa.name}</h5>
+                            <p className="text-[10px] text-slate-500 font-medium truncate mt-1 max-w-[285px]">{tpa.description || 'Pre-authorization and claim desk managed.'}</p>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSiteSettings(prev => ({
+                              ...prev,
+                              tpaFacilities: (prev.tpaFacilities || []).filter(t => t.id !== tpa.id)
+                            }));
+                          }}
+                          className="p-2 border border-red-200 hover:border-red-400 hover:bg-red-50 text-red-605 text-red-600 rounded-xl transition-all cursor-pointer shrink-0"
+                          title="Remove TPA"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Form actions save block */}
             <div className="flex justify-end gap-3.5 bg-slate-100 p-5 rounded-3xl">
               <button
@@ -2130,6 +2975,104 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                     );
                   })}
                 </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-600 uppercase block">Doctor Portrait Image Source</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Paste Unsplash URL, static image address or upload below"
+                    value={docImage}
+                    onChange={e => setDocImage(e.target.value)}
+                    className="grow text-sm p-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none"
+                  />
+                  {docImage && (
+                    <button
+                      type="button"
+                      onClick={() => setDocImage('')}
+                      className="bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all active:scale-95 border-none"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Doctor Local JPEG File Attachment area */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-500 uppercase block">OR ATTACH DOCTOR PORTRAIT (JPEG FILE - OPTIONAL)</label>
+                <div 
+                  onDragOver={e => e.preventDefault()}
+                  onDrop={e => {
+                    e.preventDefault();
+                    const file = e.dataTransfer.files?.[0];
+                    if (file) {
+                      if (file.type === 'image/jpeg' || file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg')) {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          if (typeof reader.result === 'string') {
+                            setDocImage(reader.result);
+                          }
+                        };
+                        reader.readAsDataURL(file);
+                      } else {
+                        alert('Only JPEG/JPG portrait files are accepted.');
+                      }
+                    }
+                  }}
+                  onClick={() => document.getElementById('doctor-file-input')?.click()}
+                  className="border-2 border-dashed border-slate-200 hover:border-blue-500 rounded-2xl p-4 text-center cursor-pointer hover:bg-blue-50/20 transition-all space-y-1 flex flex-col items-center justify-center min-h-[90px]"
+                >
+                  <Plus size={16} className="text-blue-500" />
+                  <p className="text-xs font-extrabold text-slate-700">Drag & Drop Portrait (JPEG) or Click to Browse</p>
+                  <p className="text-[10px] text-slate-400">Accepts .jpg, .jpeg images</p>
+                  <input 
+                    type="file" 
+                    id="doctor-file-input"
+                    className="hidden" 
+                    accept="image/jpeg, image/jpg"
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        if (file.type === 'image/jpeg' || file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg')) {
+                          const reader = new FileReader();
+                          reader.onload = () => {
+                            if (typeof reader.result === 'string') {
+                              setDocImage(reader.result);
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        } else {
+                          alert('Only JPEG/JPG portrait files are accepted.');
+                        }
+                      }
+                    }}
+                  />
+                </div>
+
+                {/* Portrait micro-preview */}
+                {docImage && (docImage.startsWith('data:image/') || docImage.startsWith('http')) && (
+                  <div className="flex items-center gap-3 bg-blue-50/60 p-2.5 rounded-xl border border-blue-100/60 mt-2">
+                    <img 
+                      src={docImage} 
+                      alt="Doctor portrait preview" 
+                      className="w-12 h-12 object-cover rounded-full border border-blue-200 shadow-sm"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[11px] font-bold text-blue-900 truncate">Portrait Loaded Successfully</p>
+                      <p className="text-[9px] text-blue-600/80">Self-hosted base64 representation stored and synced</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setDocImage('')}
+                      className="text-red-500 hover:text-red-700 p-1.5 bg-white hover:bg-red-50 rounded-lg shadow-sm border border-red-100 cursor-pointer text-[10px] font-bold transition-all active:scale-95"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-1">

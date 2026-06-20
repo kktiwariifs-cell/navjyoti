@@ -61,6 +61,20 @@ export interface SiteSettings {
   heroSubtitle?: string;
   heroImageUrl?: string;
   sliders?: string[];
+  // New customizable fields (all managed in Admin, persisted as JSONB)
+  aboutPhotoUrl?: string;
+  directorPhotoUrl?: string;
+  directorName?: string;
+  directorQualification?: string;
+  directorBio?: string;
+  chairmanPhotoUrl?: string;
+  chairmanName?: string;
+  chairmanQualification?: string;
+  chairmanBio?: string;
+  credentials?: { id: string; title: string; fileUrl: string; date?: string }[];
+  gallery?: { id: string; url: string; type: 'image' | 'video'; title: string }[];
+  tpaFacilities?: { id: string; name: string; logoUrl?: string; description?: string }[];
+  announcementPopup?: { enabled: boolean; title: string; message: string; badgeText?: string; linkText?: string; linkUrl?: string };
 }
 
 export interface NewsEvent {

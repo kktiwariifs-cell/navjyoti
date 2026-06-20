@@ -122,13 +122,27 @@ export default function DoctorsSection({ onOpenBooking }: DoctorsSectionProps) {
                 id={`doctor-card-${doc.id}`}
               >
                 <div>
-                  {/* Doctor Profile placeholder or vector with stethoscope */}
-                  <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-tr from-blue-50 to-blue-100 flex items-center justify-center text-blue-600 mb-5 relative group-hover:scale-105 transition-transform duration-300">
-                    <User size={38} className="text-blue-755 text-blue-700 stroke-[1.5]" />
-                    <div className="absolute bottom-1 right-1 bg-white p-1.5 rounded-full shadow-md border border-slate-50 text-blue-600 animate-pulse">
-                      <Stethoscope size={12} />
+                  {/* Doctor Profile placeholder or uploaded image */}
+                  {doc.image && (doc.image.startsWith('data:image/') || doc.image.startsWith('http://') || doc.image.startsWith('https://')) ? (
+                    <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border-2 border-blue-100 shadow-md mb-5 group-hover:scale-105 transition-transform duration-300 relative bg-slate-50 shrink-0">
+                      <img 
+                        src={doc.image} 
+                        alt={doc.name} 
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute bottom-1 right-1 bg-white p-1 rounded-full shadow border border-slate-50 text-blue-600">
+                        <Stethoscope size={10} />
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-tr from-blue-50 to-blue-100 flex items-center justify-center text-blue-600 mb-5 relative group-hover:scale-105 transition-transform duration-300">
+                      <User size={38} className="text-blue-755 text-blue-700 stroke-[1.5]" />
+                      <div className="absolute bottom-1 right-1 bg-white p-1.5 rounded-full shadow-md border border-slate-50 text-blue-600 animate-pulse">
+                        <Stethoscope size={12} />
+                      </div>
+                    </div>
+                  )}
 
                   {/* Doctor details */}
                   <div className="space-y-1.5">
@@ -231,9 +245,18 @@ export default function DoctorsSection({ onOpenBooking }: DoctorsSectionProps) {
                 
                 {/* Doctor credentials header */}
                 <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
-                    <User size={30} />
-                  </div>
+                  {activeProfileDoctor.image && (activeProfileDoctor.image.startsWith('data:image/') || activeProfileDoctor.image.startsWith('http')) ? (
+                    <img 
+                      src={activeProfileDoctor.image} 
+                      alt={activeProfileDoctor.name} 
+                      className="w-16 h-16 rounded-full object-cover border-2 border-blue-150 shrink-0 shadow-sm"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100 shadow-sm">
+                      <User size={30} />
+                    </div>
+                  )}
                   <div>
                     <span className="text-xs uppercase font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">{activeProfileDoctor.specialization}</span>
                     <h3 className="font-display font-extrabold text-slate-900 text-xl sm:text-2xl mt-1.5">{activeProfileDoctor.name}</h3>

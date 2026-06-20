@@ -210,6 +210,9 @@ export default function Footer({ onNavigate, onOpenBooking }: FooterProps) {
               <button onClick={() => handleQuickLink('news')} className="text-left text-slate-800 hover:text-blue-900 py-1 transition-colors cursor-pointer">
                 • News & Events
               </button>
+              <button onClick={() => handleQuickLink('gallery')} className="text-left text-slate-800 hover:text-blue-900 py-1 transition-colors cursor-pointer">
+                • Hospital Gallery
+              </button>
               <button onClick={() => onNavigate('admin')} className="text-left text-slate-800 hover:text-blue-900 py-1 transition-colors cursor-pointer" id="footer-admin-btn">
                 • Staff Admin Panel
               </button>

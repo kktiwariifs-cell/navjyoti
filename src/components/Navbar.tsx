@@ -30,6 +30,7 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
     { label: 'Departments', target: 'services' },
     { label: 'Facilities', target: 'facilities' },
     { label: 'Our Doctors', target: 'specialists' },
+    { label: 'Gallery', target: 'gallery' },
     { label: 'PM-JAY (Ayushman)', target: 'pmjay' },
     { label: 'News and events', target: 'news' },
     { label: 'Contact', target: 'contact' },

@@ -15,6 +15,9 @@ import DoctorsSection from './components/DoctorsSection';
 import NewsSection from './components/NewsSection';
 import FeedbackSection from './components/FeedbackSection';
 import ContactSection from './components/ContactSection';
+import GallerySection from './components/GallerySection';
+import TpaSection from './components/TpaSection';
+import AnnouncementPopup from './components/AnnouncementPopup';
 import Footer from './components/Footer';
 import AppointmentModal from './components/AppointmentModal';
 import AdminPanel from './components/AdminPanel';
@@ -165,6 +168,7 @@ export default function App() {
             
             {/* State-of-the-art diagnostic, clinical, and ward setups */}
             <FacilitiesSection />
+            <TpaSection />
           </div>
         ) : activeSection === 'contact' ? (
           <div className="bg-slate-50 min-h-[60vh] pb-8">
@@ -197,6 +201,22 @@ export default function App() {
             
             {/* Prime Ayushman diagnostic and eligibility check wizard */}
             <AyushmanAssistance />
+          </div>
+        ) : activeSection === 'gallery' ? (
+          <div className="bg-slate-50 min-h-[60vh] pb-8">
+            {/* Breadcrumbs navigation */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
+              <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6 bg-white px-4 py-2.5 rounded-2xl border border-slate-100 w-fit">
+                <button onClick={() => handleNavigate('home')} className="hover:text-blue-600 transition-colors cursor-pointer">
+                  Home
+                </button>
+                <span>/</span>
+                <span className="text-blue-600 font-bold text-sm">Media Gallery & Video Walkthroughs</span>
+              </nav>
+            </div>
+            
+            {/* Gallery Section */}
+            <GallerySection />
           </div>
         ) : (
           <>
@@ -237,6 +257,9 @@ export default function App() {
         preselectedDoctor={selectedDoctorForBooking}
         preselectedDepartment={selectedDepartmentForBooking}
       />
+
+      {/* Announcement notice popup */}
+      <AnnouncementPopup />
     </div>
   );
 }

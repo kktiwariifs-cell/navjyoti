@@ -291,16 +291,74 @@ const mapSettingsToDb = (set: SiteSettings) => ({
   hero_title: set.heroTitle || 'Caring Hearts. Expert Hands.',
   hero_subtitle: set.heroSubtitle || '',
   hero_image_url: set.heroImageUrl || null,
-  sliders: set.sliders || [],
+  sliders: {
+    slides: set.sliders || [],
+    aboutPhotoUrl: set.aboutPhotoUrl || '',
+    directorPhotoUrl: set.directorPhotoUrl || '',
+    directorName: set.directorName || '',
+    directorQualification: set.directorQualification || '',
+    directorBio: set.directorBio || '',
+    chairmanPhotoUrl: set.chairmanPhotoUrl || '',
+    chairmanName: set.chairmanName || '',
+    chairmanQualification: set.chairmanQualification || '',
+    chairmanBio: set.chairmanBio || '',
+    credentials: set.credentials || [],
+    gallery: set.gallery || [],
+    tpaFacilities: set.tpaFacilities || [],
+    announcementPopup: set.announcementPopup || { enabled: false, title: '', message: '' }
+  }
 });
 
-const mapSettingsFromDb = (dbSet: any): SiteSettings => ({
-  logoUrl: dbSet.logo_url || dbSet.logoUrl || '',
-  heroTitle: dbSet.hero_title || dbSet.heroTitle || 'Caring Hearts. Expert Hands.',
-  heroSubtitle: dbSet.hero_subtitle || dbSet.heroSubtitle || '',
-  heroImageUrl: dbSet.hero_image_url || dbSet.heroImageUrl || '',
-  sliders: dbSet.sliders || [],
-});
+const mapSettingsFromDb = (dbSet: any): SiteSettings => {
+  const dbSliders = dbSet.sliders;
+  const logoUrl = dbSet.logo_url || dbSet.logoUrl || '';
+  const heroTitle = dbSet.hero_title || dbSet.heroTitle || 'Caring Hearts. Expert Hands.';
+  const heroSubtitle = dbSet.hero_subtitle || dbSet.heroSubtitle || '';
+  const heroImageUrl = dbSet.hero_image_url || dbSet.heroImageUrl || '';
+
+  if (dbSliders && !Array.isArray(dbSliders) && typeof dbSliders === 'object') {
+    return {
+      logoUrl,
+      heroTitle,
+      heroSubtitle,
+      heroImageUrl,
+      sliders: dbSliders.slides || [],
+      aboutPhotoUrl: dbSliders.aboutPhotoUrl || '',
+      directorName: dbSliders.directorName || '',
+      directorPhotoUrl: dbSliders.directorPhotoUrl || '',
+      directorQualification: dbSliders.directorQualification || '',
+      directorBio: dbSliders.directorBio || '',
+      chairmanName: dbSliders.chairmanName || '',
+      chairmanPhotoUrl: dbSliders.chairmanPhotoUrl || '',
+      chairmanQualification: dbSliders.chairmanQualification || '',
+      chairmanBio: dbSliders.chairmanBio || '',
+      credentials: dbSliders.credentials || [],
+      gallery: dbSliders.gallery || [],
+      tpaFacilities: dbSliders.tpaFacilities || [],
+      announcementPopup: dbSliders.announcementPopup || { enabled: false, title: '', message: '' }
+    };
+  }
+
+  // Fallback for simple string lists
+  return {
+    logoUrl,
+    heroTitle,
+    heroSubtitle,
+    heroImageUrl,
+    sliders: Array.isArray(dbSliders) ? dbSliders : [],
+    aboutPhotoUrl: '',
+    directorName: '',
+    directorPhotoUrl: '',
+    directorQualification: '',
+    directorBio: '',
+    chairmanName: '',
+    chairmanPhotoUrl: '',
+    chairmanQualification: '',
+    chairmanBio: '',
+    credentials: [],
+    gallery: []
+  };
+};
 
 const mapNewsToDb = (item: NewsEvent) => ({
   id: item.id,
@@ -507,13 +565,7 @@ export const syncWithCloudBackend = async () => {
       if (dbSet.length === 0) {
         const currentLocal = getSiteSettings();
         console.log('Seeding cloud with default site settings configurations...', currentLocal);
-        await supabase.from('site_settings').insert({
-          logo_url: currentLocal.logoUrl || null,
-          hero_title: currentLocal.heroTitle,
-          hero_subtitle: currentLocal.heroSubtitle,
-          hero_image_url: currentLocal.heroImageUrl || null,
-          sliders: currentLocal.sliders
-        });
+        await supabase.from('site_settings').insert(mapSettingsToDb(currentLocal));
       } else {
         const settings = mapSettingsFromDb(dbSet[0]);
         safeSetItem(keyOf('site_settings'), JSON.stringify(settings));
@@ -856,7 +908,41 @@ export const getSiteSettings = (): SiteSettings => {
     heroTitle: 'Caring Hearts. Expert Hands.',
     heroSubtitle: 'Navjyoti Multispeciality Hospital, located in Basti, Uttar Pradesh, is committed to delivering modern, affordable, and deeply compassionate healthcare. Bring your Ayushman Bharat Card to enjoy free cashless hospital treatments today.',
     heroImageUrl: '',
-    sliders: []
+    sliders: [],
+    tpaFacilities: [
+      {
+        id: 'tpa_1',
+        name: 'Star Health & Allied Insurance Co. Ltd.',
+        logoUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=200',
+        description: 'Cashless pre-authorization & approvals for surgical treatments, medical admission and premium suite wards.'
+      },
+      {
+        id: 'tpa_2',
+        name: 'Care Health Insurance',
+        logoUrl: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&q=80&w=200',
+        description: 'Hassle-free approvals for laparoscopic and ophthalmological surgeries.'
+      },
+      {
+        id: 'tpa_3',
+        name: 'Niva Bupa Health Insurance',
+        logoUrl: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=200',
+        description: 'Instant verification of coverage limits on critical daycare medical therapies.'
+      },
+      {
+        id: 'tpa_4',
+        name: 'HDFC ERGO General Insurance',
+        logoUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=80&w=200',
+        description: 'Global medical standards with rapid cashless claim settlements within 2 hours.'
+      }
+    ],
+    announcementPopup: {
+      enabled: true,
+      title: 'Free Mega Surgical Camp & PM-JAY Card Registration',
+      message: 'Navjyoti Multispeciality Hospital is hosting a Free Health Checkup & Surgery Camp this upcoming Sunday. Our veteran surgeons will provide free OPD consultations. Families can also register Aadhaar documents to obtain Ayushman Bharat cashless dynamic cards instantly! Call 05542-243001 for details.',
+      badgeText: 'IMPORTANT NOTICE',
+      linkText: 'Register Now',
+      linkUrl: '#pmjay'
+    }
   };
   
   if (!settingsStr) return defaultSettings;
