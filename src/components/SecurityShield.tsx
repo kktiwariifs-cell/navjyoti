@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 export default function SecurityShield() {
-  const [isScreenProtected, setIsScreenProtected] = useState(false);
-
   useEffect(() => {
     // 1. Prevent Right-Clicks (Context Menu) silently
     const handleContextMenu = (e: MouseEvent) => {
@@ -17,12 +15,10 @@ export default function SecurityShield() {
         return false;
       }
 
-      // Disable PrintScreen (deterrent)
+      // Disable PrintScreen (deterrent) silently
       if (e.key === 'PrintScreen' || e.key === 'PrtScn') {
         e.preventDefault();
-        setIsScreenProtected(true);
-        setTimeout(() => setIsScreenProtected(false), 2000);
-        navigator.clipboard.writeText(''); // Clear clipboard
+        navigator.clipboard.writeText(''); // Clear clipboard immediately to block content capture
         return false;
       }
 
@@ -61,26 +57,6 @@ export default function SecurityShield() {
     };
   }, []);
 
-  if (isScreenProtected) {
-    return (
-      <div 
-        className="fixed inset-0 bg-slate-950 flex flex-col items-center justify-center z-[999999] select-none pointer-events-auto transition-opacity"
-        id="security-protection-overlay"
-      >
-        <div className="text-center p-6 max-w-sm">
-          <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-          </div>
-          <h2 className="text-xl font-bold text-white mb-2">Security Protection Active</h2>
-          <p className="text-sm text-slate-400">
-            For security reasons, content is hidden when focusing outside of this tab or attempting to capture the screen.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return null;
 }
+

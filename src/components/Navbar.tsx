@@ -43,23 +43,23 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
   return (
     <header className="w-full z-50">
       {/* Top emergency bar */}
-      <div className="bg-blue-900 text-white text-xs py-2 px-3 sm:px-6 shadow-inner">
-        <div className="max-w-7xl mx-auto flex justify-between items-center gap-2">
+      <div className="bg-blue-900 text-white text-[10px] sm:text-xs py-1.5 sm:py-2 px-3 sm:px-6 shadow-inner">
+        <div className="max-w-7xl mx-auto flex flex-row justify-between items-center gap-1.5 sm:gap-2">
           {/* Emergency support */}
-          <div className="flex items-center gap-1.5 font-bold">
-            <span className="flex h-2 w-2 relative">
+          <div className="flex items-center gap-1 sm:gap-1.5 font-bold min-w-0">
+            <span className="flex h-2 w-2 relative shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
             </span>
-            <Phone size={12} className="text-red-300 animate-pulse" />
-            <span className="text-gray-100 font-semibold text-[10px] sm:text-xs">Emergency 24/7:</span>
-            <a href="tel:+917004710751" className="text-white hover:underline hover:text-blue-200 font-bold tracking-wider text-[11px] sm:text-xs">
+            <Phone size={12} className="text-red-300 animate-pulse shrink-0" />
+            <span className="text-gray-100 font-semibold text-[9px] sm:text-xs truncate">Emergency 24/7:</span>
+            <a href="tel:+917004710751" className="text-white hover:underline hover:text-blue-200 font-extrabold tracking-tight sm:tracking-wider text-[10px] sm:text-xs shrink-0">
               +91 70047 10751
             </a>
           </div>
 
           {/* Email / Cashless support */}
-          <div className="flex items-center gap-3 text-[11px] font-semibold">
+          <div className="flex items-center gap-2 sm:gap-3 font-semibold shrink-0">
             <div className="hidden md:flex items-center gap-1.5 text-blue-100">
               <Mail size={12} />
               <span className="font-medium text-gray-200">Email:</span>
@@ -73,9 +73,9 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
             </div>
             <button
               onClick={() => handleLinkClick('pmjay')}
-              className="bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold px-3 py-1 rounded-full text-[9px] sm:text-[10px] uppercase flex items-center gap-1 tracking-wider shadow-sm animate-pulse cursor-pointer border-none transition-all"
+              className="bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold px-2.5 sm:px-3 py-1 rounded-full text-[9px] sm:text-[10px] uppercase flex items-center gap-1 tracking-wider shadow-sm animate-pulse cursor-pointer border-none transition-all"
             >
-              <ShieldAlert size={10} className="stroke-[3]" /> PM-JAY Cashless
+              <ShieldAlert size={10} className="stroke-[3]" /> <span className="hidden xs:inline">PM-JAY</span> Cashless
             </button>
           </div>
         </div>
@@ -86,22 +86,22 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20">
             {/* Logo area */}
-            <div className="flex-shrink-0 flex items-center gap-2 sm:gap-3 max-w-[75%] sm:max-w-none">
+            <div className="flex-shrink-0 flex items-center gap-2.5 sm:gap-3 max-w-[80%] sm:max-w-none">
               <img
                 src={settings.logoUrl || logoImg}
                 alt="Navjyoti Multi Speciality Hospital Basti Logo"
-                className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-xl shadow-md border border-slate-100 bg-white"
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-xl shadow-md border border-slate-150 bg-white shrink-0"
                 referrerPolicy="no-referrer"
               />
-              <div className="flex flex-col min-w-0">
-                <span className="font-display font-black text-sm sm:text-lg text-blue-900 leading-none tracking-tight uppercase truncate">
+              <div className="flex flex-col min-w-0 justify-center">
+                <span className="font-display font-black text-[13px] xs:text-sm sm:text-lg text-blue-900 leading-none tracking-tight uppercase">
                   NAVJYOTI
                 </span>
-                <span className="text-[9px] sm:text-[10px] text-slate-500 font-bold tracking-wider uppercase mt-0.5 leading-none truncate">
+                <span className="text-[9px] sm:text-[10px] text-slate-500 font-bold tracking-wide uppercase mt-1 leading-none truncate">
                   Multispeciality Hospital
                 </span>
-                <span className="text-[8px] sm:text-[9px] text-gray-400 font-semibold tracking-tight mt-0.5 leading-none truncate block">
-                  Basti, UP (Ayushman Approved)
+                <span className="text-[8px] sm:text-[9px] text-gray-400 font-semibold tracking-tight mt-1 leading-none truncate">
+                  Basti, UP • Ayushman Approved
                 </span>
               </div>
             </div>
@@ -146,10 +146,10 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
             <div className="flex items-center lg:hidden">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-xl text-blue-900 hover:bg-blue-50 focus:outline-none transition-colors"
+                className="inline-flex items-center justify-center p-2.5 rounded-xl text-blue-900 bg-slate-50 border border-slate-200/60 hover:bg-blue-50 focus:outline-none transition-all duration-200 hover:scale-[1.05] active:scale-95 cursor-pointer"
                 id="mobile-menu-toggle"
               >
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                {isMenuOpen ? <X size={20} className="text-blue-600" /> : <Menu size={20} />}
               </button>
             </div>
           </div>
@@ -157,27 +157,27 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
 
         {/* Mobile menu drawer */}
         {isMenuOpen && (
-          <div className="lg:hidden bg-white border-b border-slate-200 shadow-xl py-3 px-4 space-y-2 animate-fadeIn">
+          <div className="lg:hidden bg-white/98 backdrop-blur-md border-b border-slate-200 shadow-2xl py-4 px-4 space-y-2 animate-fadeIn relative z-50 rounded-b-3xl">
             {navItems.map((item) => (
               <button
                 key={item.target}
                 onClick={() => handleLinkClick(item.target)}
-                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold block transition-all ${
+                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold block transition-all cursor-pointer ${
                   activeSection === item.target
-                    ? 'bg-blue-600 text-white'
-                    : 'text-slate-800 hover:bg-blue-50'
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-100'
+                    : 'text-slate-800 hover:bg-blue-50 active:bg-slate-100'
                 }`}
               >
                 {item.label}
               </button>
             ))}
-            <div className="pt-3 border-t border-gray-100 flex flex-col gap-3">
+            <div className="pt-4 border-t border-slate-100 flex flex-col gap-2.5">
               <button
                 onClick={() => {
                   onOpenBooking();
                   setIsMenuOpen(false);
                 }}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl text-center shadow-md text-sm transition-all cursor-pointer"
+                className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-extrabold py-3.5 px-4 rounded-xl text-center shadow-lg shadow-blue-200 text-sm transition-all cursor-pointer"
               >
                 Book Appointment
               </button>
@@ -186,14 +186,17 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
                   handleLinkClick('admin');
                   setIsMenuOpen(false);
                 }}
-                className="w-full bg-slate-100 hover:bg-slate-200 text-[#0d2a63] font-bold py-2.5 px-4 rounded-xl text-center text-xs transition-all border border-slate-200 cursor-pointer"
+                className="w-full bg-slate-100 hover:bg-slate-200 active:scale-[0.98] text-[#0d2a63] font-bold py-3 px-4 rounded-xl text-center text-xs transition-all border border-slate-200 cursor-pointer"
               >
                 Staff Administrative Lock
               </button>
-              <div className="flex justify-center items-center gap-1.5 py-2 text-xs text-gray-500 font-semibold bg-gray-50 rounded-xl">
-                <Phone size={13} className="text-red-500" />
-                <span>Call Emergency:</span>
-                <a href="tel:+9170047-10751" className="text-blue-700 hover:underline">
+              <div className="flex justify-center items-center gap-1.5 py-2.5 text-xs text-gray-600 font-bold bg-slate-50 border border-slate-100 rounded-xl">
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+                <span>Call Emergency 24/7:</span>
+                <a href="tel:+917004710751" className="text-blue-700 hover:underline hover:text-blue-800 font-extrabold">
                   +91 70047 10751
                 </a>
               </div>
