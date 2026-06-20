@@ -1898,7 +1898,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
               <div className="flex flex-col sm:flex-row items-center gap-6">
                 <div className="shrink-0 flex flex-col items-center gap-2">
                   <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono font-bold">Current About Us Photo</span>
-                  <div className="w-48 h-32 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center shadow-inner overflow-hidden">
+                  <div className="w-56 h-72 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center shadow-inner overflow-hidden">
                     {siteSettings.aboutPhotoUrl ? (
                       <img 
                         src={siteSettings.aboutPhotoUrl} 

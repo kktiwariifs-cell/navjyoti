@@ -94,7 +94,7 @@ export default function AboutSection() {
                 {/* Graphic/Stats */}
                 <div className="lg:col-span-5 space-y-6">
                   {hospitalPhoto ? (
-                    <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-video sm:aspect-auto sm:h-[320px] border border-slate-200 group">
+                    <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[4/5] sm:aspect-auto sm:h-[480px] border border-slate-200 group">
                       <img 
                         src={hospitalPhoto} 
                         alt="Navjyoti Multispeciality Hospital Campus" 
