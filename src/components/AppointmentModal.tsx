@@ -146,12 +146,12 @@ export default function AppointmentModal({ isOpen, onClose, preselectedDoctor, p
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
+    <div className="fixed inset-0 bg-slate-900/65 backdrop-blur-sm flex items-start sm:items-center justify-center p-4 z-50 overflow-y-auto">
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: -20, opacity: 0 }}
-        className="bg-white rounded-3xl w-full max-w-2xl text-left shadow-2xl relative border border-slate-200 overflow-hidden my-8 font-sans"
+        className="bg-white rounded-3xl w-full max-w-2xl text-left shadow-2xl relative border border-slate-200 overflow-hidden my-4 sm:my-8 font-sans"
         id="appointment-form-wrapper"
       >
         {/* Modal Close */}

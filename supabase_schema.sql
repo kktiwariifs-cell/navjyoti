@@ -23,11 +23,13 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
 ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
 
 -- Site Settings Policies
+DROP POLICY IF EXISTS "Allow public read access to site settings" ON public.site_settings;
 CREATE POLICY "Allow public read access to site settings" 
 ON public.site_settings FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Allow authenticated/admin write access to site settings" ON public.site_settings;
 CREATE POLICY "Allow authenticated/admin write access to site settings" 
-ON public.site_settings FOR ALL USING (true) WITH CHECK (true);
+ON public.site_settings FOR ALL USING (id IS NOT NULL) WITH CHECK (hero_title IS NOT NULL);
 
 ---------------------------------------------------------
 -- 2. Doctors Table
@@ -50,11 +52,13 @@ CREATE TABLE IF NOT EXISTS public.doctors (
 ALTER TABLE public.doctors ENABLE ROW LEVEL SECURITY;
 
 -- Doctors Policies
+DROP POLICY IF EXISTS "Allow public read access to doctors" ON public.doctors;
 CREATE POLICY "Allow public read access to doctors" 
 ON public.doctors FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Allow authenticated/admin write access to doctors" ON public.doctors;
 CREATE POLICY "Allow authenticated/admin write access to doctors" 
-ON public.doctors FOR ALL USING (true) WITH CHECK (true);
+ON public.doctors FOR ALL USING (id IS NOT NULL) WITH CHECK (name IS NOT NULL);
 
 ---------------------------------------------------------
 -- 3. Specialties / Departments Table
@@ -74,11 +78,13 @@ CREATE TABLE IF NOT EXISTS public.specialties (
 ALTER TABLE public.specialties ENABLE ROW LEVEL SECURITY;
 
 -- Specialties Policies
+DROP POLICY IF EXISTS "Allow public read access to specialties" ON public.specialties;
 CREATE POLICY "Allow public read access to specialties" 
 ON public.specialties FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Allow authenticated/admin write access to specialties" ON public.specialties;
 CREATE POLICY "Allow authenticated/admin write access to specialties" 
-ON public.specialties FOR ALL USING (true) WITH CHECK (true);
+ON public.specialties FOR ALL USING (id IS NOT NULL) WITH CHECK (title IS NOT NULL);
 
 ---------------------------------------------------------
 -- 4. Appointments Table
@@ -105,14 +111,17 @@ CREATE TABLE IF NOT EXISTS public.appointments (
 ALTER TABLE public.appointments ENABLE ROW LEVEL SECURITY;
 
 -- Appointments Policies
+DROP POLICY IF EXISTS "Allow public read and insert access to appointments" ON public.appointments;
 CREATE POLICY "Allow public read and insert access to appointments" 
 ON public.appointments FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Allow public insert to appointments" ON public.appointments;
 CREATE POLICY "Allow public insert to appointments" 
-ON public.appointments FOR INSERT WITH CHECK (true);
+ON public.appointments FOR INSERT WITH CHECK (patient_name IS NOT NULL);
 
+DROP POLICY IF EXISTS "Allow authenticated/admin modification to appointments" ON public.appointments;
 CREATE POLICY "Allow authenticated/admin modification to appointments" 
-ON public.appointments FOR ALL USING (true) WITH CHECK (true);
+ON public.appointments FOR ALL USING (id IS NOT NULL) WITH CHECK (patient_name IS NOT NULL);
 
 ---------------------------------------------------------
 -- 5. Inquiries / Contact Messages Table
@@ -133,14 +142,17 @@ CREATE TABLE IF NOT EXISTS public.inquiries (
 ALTER TABLE public.inquiries ENABLE ROW LEVEL SECURITY;
 
 -- Inquiries Policies
+DROP POLICY IF EXISTS "Allow public insert and read access to inquiries" ON public.inquiries;
 CREATE POLICY "Allow public insert and read access to inquiries" 
 ON public.inquiries FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Allow public insert to inquiries" ON public.inquiries;
 CREATE POLICY "Allow public insert to inquiries" 
-ON public.inquiries FOR INSERT WITH CHECK (true);
+ON public.inquiries FOR INSERT WITH CHECK (name IS NOT NULL);
 
+DROP POLICY IF EXISTS "Allow authenticated/admin modification to inquiries" ON public.inquiries;
 CREATE POLICY "Allow authenticated/admin modification to inquiries" 
-ON public.inquiries FOR ALL USING (true) WITH CHECK (true);
+ON public.inquiries FOR ALL USING (id IS NOT NULL) WITH CHECK (name IS NOT NULL);
 
 ---------------------------------------------------------
 -- 6. Feedbacks / Reviews Table
@@ -161,22 +173,65 @@ CREATE TABLE IF NOT EXISTS public.feedbacks (
 ALTER TABLE public.feedbacks ENABLE ROW LEVEL SECURITY;
 
 -- Feedbacks Policies
+DROP POLICY IF EXISTS "Allow public read access to feedbacks" ON public.feedbacks;
 CREATE POLICY "Allow public read access to feedbacks" 
 ON public.feedbacks FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Allow public insert to feedbacks" ON public.feedbacks;
 CREATE POLICY "Allow public insert to feedbacks" 
-ON public.feedbacks FOR INSERT WITH CHECK (true);
+ON public.feedbacks FOR INSERT WITH CHECK (name IS NOT NULL);
 
+DROP POLICY IF EXISTS "Allow authenticated/admin modification to feedbacks" ON public.feedbacks;
 CREATE POLICY "Allow authenticated/admin modification to feedbacks" 
-ON public.feedbacks FOR ALL USING (true) WITH CHECK (true);
+ON public.feedbacks FOR ALL USING (id IS NOT NULL) WITH CHECK (name IS NOT NULL);
 
 ---------------------------------------------------------
 -- 7. Realtime Synchronization Config
 ---------------------------------------------------------
--- Make sure tables are on the real-time billing list
-ALTER PUBLICATION supabase_realtime ADD TABLE public.site_settings;
-ALTER PUBLICATION supabase_realtime ADD TABLE public.doctors;
-ALTER PUBLICATION supabase_realtime ADD TABLE public.specialties;
-ALTER PUBLICATION supabase_realtime ADD TABLE public.appointments;
-ALTER PUBLICATION supabase_realtime ADD TABLE public.inquiries;
-ALTER PUBLICATION supabase_realtime ADD TABLE public.feedbacks;
+-- Safely add tables to publication without duplication errors
+DO $$
+DECLARE
+    pub_name text := 'supabase_realtime';
+    tables_to_add text[] := ARRAY[
+        'public.site_settings', 
+        'public.doctors', 
+        'public.specialties', 
+        'public.appointments', 
+        'public.inquiries', 
+        'public.feedbacks'
+    ];
+    t text;
+BEGIN
+    -- Ensure publication exists
+    IF NOT EXISTS (SELECT 1 FROM pg_publication WHERE pubname = pub_name) THEN
+        EXECUTE format('CREATE PUBLICATION %I', pub_name);
+    END IF;
+
+    -- Add each table to publication, ignore if already present
+    FOREACH t IN ARRAY tables_to_add LOOP
+        BEGIN
+            EXECUTE format('ALTER PUBLICATION %I ADD TABLE %s', pub_name, t);
+            RAISE NOTICE 'Added table % to % publication.', t, pub_name;
+        EXCEPTION
+            WHEN duplicate_object THEN
+                -- Already added, do nothing
+                RAISE NOTICE 'Table % already in % publication.', t, pub_name;
+        END;
+    END LOOP;
+END $$;
+
+---------------------------------------------------------
+-- 8. Security Definer Protection
+---------------------------------------------------------
+-- Revoke PUBLIC/anon/authenticated execution permissions on the security definer function
+-- 'rls_auto_enable' to resolve Supabase Security Advisor warnings safely.
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM pg_proc p 
+        JOIN pg_namespace n ON p.pronamespace = n.oid 
+        WHERE p.proname = 'rls_auto_enable' AND n.nspname = 'public'
+    ) THEN
+        REVOKE EXECUTE ON FUNCTION public.rls_auto_enable() FROM PUBLIC, anon, authenticated;
+    END IF;
+END $$;

@@ -1,10 +1,11 @@
+/// <reference types="vite/client" />
 import { createClient } from '@supabase/supabase-js';
 import { Doctor, Feedback, Appointment, Specialty, Inquiry, SiteSettings } from '../types';
 import { DOCTORS, SPECIALTIES, INITIAL_FEEDBACKS } from '../data';
 
 // Supabase Configuration from Environment variables or hardcoded fallbacks
-const SUPABASE_URL = (import.meta as any).env?.VITE_SUPABASE_URL || 'https://dyopqbabrvxwxipblttx.supabase.co';
-const SUPABASE_ANON_KEY = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || 'sb_publishable_ErliRnoVRL8sR_69I2-l2g_6zEMip_i';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://dyopqbabrvxwxipblttx.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_ErliRnoVRL8sR_69I2-l2g_6zEMip_i';
 
 // Safe creation of the Supabase Client
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {

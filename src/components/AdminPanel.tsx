@@ -11,7 +11,7 @@ import {
 import { Doctor, Specialty, Appointment, Feedback, Inquiry, SiteSettings } from '../types';
 import { 
   Users, Activity, Calendar, Mail, MessageSquare, LogOut, Plus, Edit, Trash2, 
-  Check, X, Search, CheckCircle2, AlertCircle, Clock, ShieldAlert, Star, 
+  Check, X, Menu, Search, CheckCircle2, AlertCircle, Clock, ShieldAlert, Star, 
   Printer, UserCheck, ChevronRight, LayoutDashboard, Lock, Eye, EyeOff, FileText, Settings, Heart
 } from 'lucide-react';
 
@@ -32,6 +32,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
 
   // Tab State
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   // Database States
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -529,10 +530,28 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col md:flex-row antialiased font-sans">
       
-      {/* 1. Left Sidebar Navigation Container */}
-      <aside className="w-full md:w-64 bg-[#0d2a63] text-white flex flex-col shrink-0" id="admin-sidebar">
-        {/* Sidebar Header Title Area */}
-        <div className="p-5 border-b border-white/10 text-center flex items-center justify-center gap-2">
+      {/* 1. Mobile Header Navigation Bar */}
+      <div className="w-full bg-[#0d2a63] text-white p-4 flex md:hidden justify-between items-center shrink-0 border-b border-white/10 shadow-md">
+        <div className="flex items-center gap-2">
+          <div className="bg-blue-600 p-1.5 rounded-lg flex items-center justify-center shrink-0">
+            <LayoutDashboard size={16} />
+          </div>
+          <span className="font-display font-extrabold text-white text-sm tracking-widest uppercase">
+            Admin Console
+          </span>
+        </div>
+        <button
+          onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+          className="bg-white/10 hover:bg-[#1e66f5] p-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center"
+        >
+          {isMobileNavOpen ? <X size={18} /> : <Menu size={18} />}
+        </button>
+      </div>
+
+      {/* Left Sidebar Navigation Container */}
+      <aside className={`w-full md:w-64 bg-[#0d2a63] text-white flex-col shrink-0 ${isMobileNavOpen ? 'flex' : 'hidden md:flex'}`} id="admin-sidebar">
+        {/* Sidebar Header Title Area (Hidden on mobile top since mobile header handles it) */}
+        <div className="hidden md:flex p-5 border-b border-white/10 text-center items-center justify-center gap-2">
           <div className="bg-blue-600 p-1.5 rounded-lg flex items-center justify-center shrink-0">
             <LayoutDashboard size={18} />
           </div>
@@ -545,7 +564,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
         <nav className="grow py-4 px-3 space-y-1 flex-1">
           {/* Dashboard Nav button */}
           <button
-            onClick={() => { setActiveTab('dashboard'); setSearchTerm(''); }}
+            onClick={() => { setActiveTab('dashboard'); setSearchTerm(''); setIsMobileNavOpen(false); }}
             className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-colors ${
               activeTab === 'dashboard' ? 'bg-[#1e66f5] text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/5'
             }`}
@@ -556,7 +575,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
 
           {/* Doctors Nav button */}
           <button
-            onClick={() => { setActiveTab('doctors'); setSearchTerm(''); }}
+            onClick={() => { setActiveTab('doctors'); setSearchTerm(''); setIsMobileNavOpen(false); }}
             className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-colors ${
               activeTab === 'doctors' ? 'bg-[#1e66f5] text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/5'
             }`}
@@ -568,7 +587,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
 
           {/* Services Nav button */}
           <button
-            onClick={() => { setActiveTab('services'); setSearchTerm(''); }}
+            onClick={() => { setActiveTab('services'); setSearchTerm(''); setIsMobileNavOpen(false); }}
             className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-colors ${
               activeTab === 'services' ? 'bg-[#1e66f5] text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/5'
             }`}
@@ -579,7 +598,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
 
           {/* Appointments Nav button */}
           <button
-            onClick={() => { setActiveTab('appointments'); setSearchTerm(''); }}
+            onClick={() => { setActiveTab('appointments'); setSearchTerm(''); setIsMobileNavOpen(false); }}
             className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-colors ${
               activeTab === 'appointments' ? 'bg-[#1e66f5] text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/5'
             }`}
@@ -593,7 +612,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
 
           {/* Inquiry Data Nav button */}
           <button
-            onClick={() => { setActiveTab('inquiries'); setSearchTerm(''); }}
+            onClick={() => { setActiveTab('inquiries'); setSearchTerm(''); setIsMobileNavOpen(false); }}
             className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-colors ${
               activeTab === 'inquiries' ? 'bg-[#1e66f5] text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/5'
             }`}
@@ -607,7 +626,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
 
           {/* Feedback Data Nav button */}
           <button
-            onClick={() => { setActiveTab('feedbacks'); setSearchTerm(''); }}
+            onClick={() => { setActiveTab('feedbacks'); setSearchTerm(''); setIsMobileNavOpen(false); }}
             className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-colors ${
               activeTab === 'feedbacks' ? 'bg-[#1e66f5] text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/5'
             }`}
@@ -621,7 +640,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
 
           {/* Website Settings Nav button */}
           <button
-            onClick={() => { setActiveTab('settings'); setSearchTerm(''); }}
+            onClick={() => { setActiveTab('settings'); setSearchTerm(''); setIsMobileNavOpen(false); }}
             className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-colors ${
               activeTab === 'settings' ? 'bg-[#1e66f5] text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/5'
             }`}
@@ -639,7 +658,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
           </div>
 
           <button
-            onClick={handleAdminLogout}
+            onClick={() => { handleAdminLogout(); setIsMobileNavOpen(false); }}
             className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-red-400 hover:text-white hover:bg-red-650 transition-colors flex items-center gap-3 cursor-pointer"
           >
             <LogOut size={16} />
