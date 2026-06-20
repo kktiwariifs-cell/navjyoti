@@ -1041,24 +1041,24 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
             </div>
 
             {/* Doctors Roll Table */}
-            <div className="overflow-x-auto rounded-xl border border-slate-100">
-              <table className="w-full text-left text-xs sm:text-sm">
-                <thead className="bg-slate-50 text-[#0d2a63] font-bold uppercase tracking-wider border-b border-slate-200">
+            <div className="overflow-x-auto rounded-3xl border border-slate-200 shadow-sm bg-white">
+              <table className="w-full text-left border-collapse min-w-[750px]">
+                <thead className="bg-[#f8fafc] border-b border-slate-200 text-[#0d2a63] text-[10px] font-mono uppercase tracking-wider font-extrabold">
                   <tr>
-                    <th className="p-4">Doctor Details</th>
+                    <th className="p-4 rounded-tl-3xl">Doctor Details</th>
                     <th className="p-4">Qualification</th>
                     <th className="p-4">Experience</th>
                     <th className="p-4">Schedules & Timing Slot</th>
-                    <th className="p-4 text-right">Actions</th>
+                    <th className="p-4 text-right rounded-tr-3xl">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-150 bg-white">
                   {doctors.filter(d => d.name.toLowerCase().includes(searchTerm.toLowerCase()) || d.specialization.toLowerCase().includes(searchTerm.toLowerCase())).map(doc => (
-                    <tr key={doc.id} className="hover:bg-slate-50/50 transition-colors">
+                    <tr key={doc.id} className="hover:bg-slate-50/40 transition-colors">
                       <td className="p-4">
-                        <div className="flex items-center gap-3.5">
+                        <div className="flex items-center gap-3.5 text-left">
                           {doc.image && (doc.image.startsWith('data:image/') || doc.image.startsWith('http://') || doc.image.startsWith('https://')) ? (
-                            <div className="w-12 h-15 sm:w-14 sm:h-17 rounded-xl overflow-hidden border border-slate-200 shadow-sm shrink-0 bg-slate-50">
+                            <div className="w-12 h-14 rounded-xl overflow-hidden border border-slate-200 shadow-sm shrink-0 bg-slate-50">
                               <img 
                                 src={doc.image} 
                                 alt={doc.name} 
@@ -1067,39 +1067,39 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                               />
                             </div>
                           ) : (
-                            <div className="w-12 h-15 sm:w-14 sm:h-17 rounded-xl bg-gradient-to-tr from-blue-50 to-blue-100 flex items-center justify-center text-blue-600 shrink-0 border border-slate-200">
-                              <User size={22} className="text-blue-700 stroke-[1.5]" />
+                            <div className="w-12 h-14 rounded-xl bg-gradient-to-tr from-blue-50 to-blue-100 flex items-center justify-center text-blue-600 shrink-0 border border-slate-200 shadow-sm">
+                              <User size={20} className="text-blue-700 stroke-[1.5]" />
                             </div>
                           )}
                           <div className="space-y-0.5">
                             <div className="font-extrabold text-slate-900 text-sm sm:text-base leading-snug">{doc.name}</div>
-                            <div className="text-xs text-blue-700 font-extrabold">{doc.specialization}</div>
+                            <div className="text-xs text-blue-700 font-extrabold uppercase tracking-wide">{doc.specialization}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="p-4 text-slate-700 font-medium">{doc.qualification}</td>
-                      <td className="p-4 text-slate-800 font-bold">{doc.experience} Years</td>
-                      <td className="p-4 space-y-1 leading-tight">
-                        <div className="text-xs text-slate-700 font-extrabold flex items-center gap-1">
-                          <Clock size={12} className="text-slate-405 text-slate-550" />
+                      <td className="p-4 text-slate-700 font-semibold text-xs sm:text-sm text-left">{doc.qualification}</td>
+                      <td className="p-4 text-slate-800 font-extrabold text-xs sm:text-sm text-left">{doc.experience} Years</td>
+                      <td className="p-4 space-y-1 leading-tight text-left">
+                        <div className="text-xs text-slate-700 font-extrabold flex items-center gap-1.5">
+                          <Clock size={13} className="text-blue-600 stroke-[2]" />
                           <span>{doc.timings}</span>
                         </div>
-                        <div className="text-[10px] text-slate-400 font-medium truncate max-w-[200px]" title={doc.days.join(', ')}>
+                        <div className="text-[10px] text-slate-400 font-bold block mt-0.5 max-w-[240px] truncate" title={doc.days.join(', ')}>
                           Days: {doc.days.join(', ')}
                         </div>
                       </td>
                       <td className="p-4 text-right">
-                        <div className="flex gap-1 justify-end">
+                        <div className="flex gap-2 justify-end">
                           <button
                             onClick={() => handleOpenDocModal(doc)}
-                            className="bg-slate-100 hover:bg-slate-200 text-slate-650 p-2 rounded-lg border border-slate-200 cursor-pointer"
+                            className="bg-slate-50 hover:bg-slate-100 text-slate-600 p-2 rounded-xl border border-slate-200 transition-all cursor-pointer shadow-xs active:scale-95 duration-100"
                             title="Edit Profile"
                           >
                             <Edit size={14} />
                           </button>
                           <button
                             onClick={() => handleDeleteDoctor(doc.id)}
-                            className="bg-red-50 hover:bg-red-100 text-red-700 p-2 rounded-lg border border-red-200 cursor-pointer"
+                            className="bg-red-50 hover:bg-rose-100 text-red-650 text-red-600 p-2 rounded-xl border border-red-200 transition-all cursor-pointer shadow-xs active:scale-95 duration-100"
                             title="Remove Doctor"
                           >
                             <Trash2 size={14} />
@@ -1108,6 +1108,13 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                       </td>
                     </tr>
                   ))}
+                  {doctors.filter(d => d.name.toLowerCase().includes(searchTerm.toLowerCase()) || d.specialization.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="p-8 text-center text-slate-400 font-bold text-xs bg-slate-50/30">
+                        No doctors found matching "{searchTerm}"
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1139,18 +1146,18 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
             </div>
 
             {/* List of departments in table as requested */}
-            <div className="overflow-x-auto rounded-2xl border border-slate-250 shadow-sm bg-white">
-              <table className="w-full text-left text-xs sm:text-sm min-w-[700px]">
-                <thead className="bg-[#0c2a63] text-white font-bold uppercase tracking-wider border-b border-slate-200">
+            <div className="overflow-x-auto rounded-3xl border border-slate-200 shadow-sm bg-white">
+              <table className="w-full text-left border-collapse min-w-[750px]">
+                <thead className="bg-[#0c2a63] text-white font-extrabold uppercase tracking-wider border-b border-slate-200 text-[10px] font-mono">
                   <tr>
-                    <th className="p-4 rounded-tl-2xl">Department Title</th>
+                    <th className="p-4 rounded-tl-3xl">Department Title</th>
                     <th className="p-4">Showcase Image</th>
                     <th className="p-4">Description</th>
                     <th className="p-4">Surgeries & Features</th>
-                    <th className="p-4 text-right rounded-tr-2xl">Actions</th>
+                    <th className="p-4 text-right rounded-tr-3xl">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 bg-white">
+                <tbody className="divide-y divide-slate-150 bg-white">
                   {services.filter(s => s.title.toLowerCase().includes(searchTerm.toLowerCase())).map(serv => {
                     const IconComp = departmentIconMap[serv.iconName] || Activity;
                     const isAttachedJpeg = serv.imageUrl?.startsWith('data:image/');
@@ -1158,8 +1165,8 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                     return (
                       <tr key={serv.id} className="hover:bg-blue-50/20 transition-colors">
                         <td className="p-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-blue-105 bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                          <div className="flex items-center gap-3 text-left">
+                            <div className="w-9 h-9 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
                               <IconComp size={16} />
                             </div>
                             <div>
@@ -1171,7 +1178,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
 
                         <td className="p-4">
                           {serv.imageUrl ? (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 text-left">
                               <img 
                                 src={serv.imageUrl} 
                                 alt={serv.title} 
@@ -1201,13 +1208,13 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                         </td>
 
                         <td className="p-4 max-w-[200px]">
-                          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed" title={serv.description}>
+                          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed text-left" title={serv.description}>
                             {serv.description}
                           </p>
                         </td>
 
                         <td className="p-4 max-w-[220px]">
-                          <div className="flex flex-wrap gap-1">
+                          <div className="flex flex-wrap gap-1 text-left">
                             {serv.features && serv.features.map((f, idx) => (
                               <span key={idx} className="text-[10px] bg-[#f0f4fc] text-blue-900 font-extrabold px-2 py-0.5 rounded-full border border-blue-105">
                                 {f}
@@ -1223,14 +1230,14 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                           <div className="flex gap-1.5 justify-end">
                             <button
                               onClick={() => handleOpenServiceModal(serv)}
-                              className="bg-slate-50 hover:bg-slate-100 text-slate-600 p-2 rounded-lg border border-slate-200 cursor-pointer shadow-xs transition-all active:scale-95"
+                              className="bg-slate-50 hover:bg-slate-100 text-slate-600 p-2 rounded-lg border border-slate-200 cursor-pointer shadow-xs transition-all active:scale-95 duration-100"
                               title="Edit Department"
                             >
                               <Edit size={14} />
                             </button>
                             <button
                               onClick={() => handleDeleteService(serv.id)}
-                              className="bg-red-50 hover:bg-red-100 text-red-700 p-2 rounded-lg border border-red-200 cursor-pointer shadow-xs transition-all active:scale-95"
+                              className="bg-red-50 hover:bg-red-100 text-red-700 p-2 rounded-lg border border-red-200 cursor-pointer shadow-xs transition-all active:scale-95 duration-100"
                               title="Delete Department"
                             >
                               <Trash2 size={14} />
@@ -2252,37 +2259,56 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                   No active accreditation documents cataloged. Fallbacks to PM-JAY and general hospital approvals logos.
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {siteSettings.credentials.map(cred => (
-                    <div key={cred.id} className="p-3.5 bg-white border border-slate-150 rounded-xl shadow-sm hover:border-blue-200 transition-all flex items-center justify-between gap-2.5">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-10 h-10 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 flex-shrink-0 flex items-center justify-center">
-                          {cred.fileUrl.startsWith('data:') ? (
-                            <img src={cred.fileUrl} alt={cred.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                          ) : (
-                            <FileText size={18} className="text-slate-400" />
-                          )}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-xs font-extrabold text-slate-800 truncate leading-snug">{cred.title}</p>
-                          <p className="text-[9px] text-slate-400 font-bold">{cred.date || 'Active'}</p>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSiteSettings(prev => ({
-                            ...prev,
-                            credentials: (prev.credentials || []).filter(c => c.id !== cred.id)
-                          }));
-                        }}
-                        className="text-red-500 hover:text-red-700 p-1.5 bg-slate-50 hover:bg-rose-50 rounded-lg transition-colors border border-transparent cursor-pointer"
-                        title="Delete accreditation"
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-                  ))}
+                <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-sm bg-white">
+                  <table className="w-full text-left border-collapse min-w-[500px]">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200 text-[#0d2a63] text-[10px] font-mono uppercase tracking-wider font-extrabold">
+                        <th className="p-4">Credential / Document Title</th>
+                        <th className="p-4">Upload Date</th>
+                        <th className="p-4">Regulatory Status</th>
+                        <th className="p-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-150">
+                      {siteSettings.credentials.map(cred => (
+                        <tr key={cred.id} className="hover:bg-slate-50/30 transition-colors text-xs">
+                          <td className="p-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 flex-shrink-0 flex items-center justify-center shadow-sm">
+                                {cred.fileUrl.startsWith('data:') ? (
+                                  <img src={cred.fileUrl} alt={cred.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                ) : (
+                                  <FileText size={18} className="text-blue-500" />
+                                )}
+                              </div>
+                              <span className="font-extrabold text-slate-800 leading-snug">{cred.title}</span>
+                            </div>
+                          </td>
+                          <td className="p-4 text-slate-500 font-bold">{cred.date || 'Active'}</td>
+                          <td className="p-4">
+                            <span className="px-2.5 py-1 text-[10px] bg-emerald-100 text-emerald-800 font-extrabold rounded-full inline-flex items-center gap-1 uppercase tracking-wider">
+                              <CheckCircle2 size={10} /> Verified
+                            </span>
+                          </td>
+                          <td className="p-4 text-right">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSiteSettings(prev => ({
+                                  ...prev,
+                                  credentials: (prev.credentials || []).filter(c => c.id !== cred.id)
+                                }));
+                              }}
+                              className="text-red-500 hover:text-red-700 p-2 bg-slate-50 hover:bg-rose-50 rounded-xl transition-all border border-slate-200 cursor-pointer inline-block shadow-sm"
+                              title="Delete accreditation"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>
@@ -2392,39 +2418,64 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                   No public portfolio items added. Default high-resolution hospital illustrations will load.
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {siteSettings.gallery.map(item => (
-                    <div key={item.id} className="relative group rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-sm aspect-video">
-                      {item.type === 'video' ? (
-                        <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-white p-3 text-center">
-                          <Video size={24} className="text-yellow-400 mb-1" />
-                          <span className="text-[10px] font-extrabold block truncate w-full">{item.title}</span>
-                          <span className="text-[8px] text-slate-400 block truncate w-full">{item.url}</span>
-                        </div>
-                      ) : (
-                        <img src={item.url} alt={item.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                      )}
-                      
-                      {/* Delete Overlay */}
-                      <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2.5">
-                        <div className="flex justify-end">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSiteSettings(prev => ({
-                                ...prev,
-                                gallery: (prev.gallery || []).filter(g => g.id !== item.id)
-                              }));
-                            }}
-                            className="bg-red-600 hover:bg-red-700 p-1.5 text-white rounded-lg active:scale-95 transition-all text-[9px] font-bold border-none cursor-pointer"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                        <p className="text-[10px] text-white font-bold truncate leading-none mb-0.5">{item.title}</p>
-                      </div>
-                    </div>
-                  ))}
+                <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-sm bg-white">
+                  <table className="w-full text-left border-collapse min-w-[500px]">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200 text-[#0d2a63] text-[10px] font-mono uppercase tracking-wider font-extrabold">
+                        <th className="p-4">Media Preview & Caption</th>
+                        <th className="p-4">Media Type</th>
+                        <th className="p-4">Source Address / URL Spec</th>
+                        <th className="p-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-150">
+                      {siteSettings.gallery.map(item => (
+                        <tr key={item.id} className="hover:bg-slate-50/30 transition-colors text-xs">
+                          <td className="p-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-16 h-10 rounded-lg overflow-hidden border border-slate-200 bg-slate-900 flex-shrink-0 flex items-center justify-center shadow-sm">
+                                {item.type === 'video' ? (
+                                  <Video size={16} className="text-yellow-400" />
+                                ) : (
+                                  <img src={item.url} alt={item.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                )}
+                              </div>
+                              <span className="font-extrabold text-slate-800 leading-snug truncate max-w-[200px]">{item.title}</span>
+                            </div>
+                          </td>
+                          <td className="p-4">
+                            {item.type === 'video' ? (
+                              <span className="px-2 py-0.5 text-[9px] bg-amber-50 text-amber-700 border border-amber-200 font-extrabold rounded-full inline-flex items-center gap-1 uppercase tracking-wider">
+                                Video Tour
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 text-[9px] bg-blue-50 text-blue-700 border border-blue-200 font-extrabold rounded-full inline-flex items-center gap-1 uppercase tracking-wider">
+                                Still Photo
+                              </span>
+                            )}
+                          </td>
+                          <td className="p-4 font-mono text-[10px] text-slate-400 truncate max-w-[200px]" title={item.url}>
+                            {item.url.startsWith('data:image/') ? 'Self-Hosted Image (Base64)' : item.url}
+                          </td>
+                          <td className="p-4 text-right">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSiteSettings(prev => ({
+                                  ...prev,
+                                  gallery: (prev.gallery || []).filter(g => g.id !== item.id)
+                                }));
+                              }}
+                              className="text-red-500 hover:text-red-700 p-2 bg-slate-50 hover:bg-rose-50 rounded-xl transition-all border border-slate-200 cursor-pointer inline-block shadow-sm"
+                              title="Delete gallery item"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>
@@ -2682,9 +2733,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                     Append TPA Partner
                   </button>
                 </div>
-              </div>
-
-              {/* Handled TPA List display */}
+                        {/* Handled TPA List display */}
               <div className="space-y-3">
                 <span className="text-xs font-mono font-black uppercase text-slate-400 tracking-widest block text-left">Currently Empanelled Cashless TPA list ({ (siteSettings.tpaFacilities || []).length })</span>
 
@@ -2693,41 +2742,65 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                     No cashless insurance partners configured. Default to free Ayushman Bharat scheme.
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {siteSettings.tpaFacilities.map((tpa, idx) => (
-                      <div key={tpa.id || idx} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-4 text-left">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-12 h-12 rounded-xl bg-white border border-slate-150 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
-                            {tpa.logoUrl ? (
-                              <img src={tpa.logoUrl} alt={tpa.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                            ) : (
-                              <span className="text-xs font-bold text-slate-400">TPA</span>
-                            )}
-                          </div>
-                          <div className="min-w-0">
-                            <h5 className="font-display font-extrabold text-[#0d2a63] text-xs truncate uppercase leading-none">{tpa.name}</h5>
-                            <p className="text-[10px] text-slate-500 font-medium truncate mt-1 max-w-[285px]">{tpa.description || 'Pre-authorization and claim desk managed.'}</p>
-                          </div>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSiteSettings(prev => ({
-                              ...prev,
-                              tpaFacilities: (prev.tpaFacilities || []).filter(t => t.id !== tpa.id)
-                            }));
-                          }}
-                          className="p-2 border border-red-200 hover:border-red-400 hover:bg-red-50 text-red-605 text-red-600 rounded-xl transition-all cursor-pointer shrink-0"
-                          title="Remove TPA"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    ))}
+                  <div className="overflow-x-auto border border-slate-200 rounded-3xl shadow-sm bg-white">
+                    <table className="w-full text-left border-collapse min-w-[550px]">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-[#0d2a63] text-[10px] font-mono uppercase tracking-wider font-extrabold">
+                          <th className="p-4">Partner Details / Logo</th>
+                          <th className="p-4">Coverage Description</th>
+                          <th className="p-4">Partnership Status</th>
+                          <th className="p-4 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-150">
+                        {siteSettings.tpaFacilities.map((tpa, idx) => (
+                          <tr key={tpa.id || idx} className="hover:bg-slate-50/30 transition-colors text-xs">
+                            <td className="p-4">
+                              <div className="flex items-center gap-3.5 text-left">
+                                <div className="w-12 h-12 rounded-xl bg-white border border-slate-150 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                                  {tpa.logoUrl ? (
+                                    <img src={tpa.logoUrl} alt={tpa.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                  ) : (
+                                    <span className="text-xs font-bold text-slate-400">TPA</span>
+                                  )}
+                                </div>
+                                <div className="space-y-0.5">
+                                  <h5 className="font-display font-extrabold text-[#0d2a63] text-sm leading-snug uppercase">{tpa.name}</h5>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="p-4 text-slate-600 font-semibold text-left">
+                              <p className="max-w-[300px] truncate leading-normal" title={tpa.description || 'Pre-authorization and claim desk managed.'}>
+                                {tpa.description || 'Pre-authorization and claim desk managed.'}
+                              </p>
+                            </td>
+                            <td className="p-4 text-left">
+                              <span className="px-2.5 py-1 text-[9px] bg-blue-100 text-blue-800 border border-blue-200 font-extrabold rounded-full inline-flex items-center gap-1 uppercase tracking-wider">
+                                Empanelled Active
+                              </span>
+                            </td>
+                            <td className="p-4 text-right">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSiteSettings(prev => ({
+                                    ...prev,
+                                    tpaFacilities: (prev.tpaFacilities || []).filter(t => t.id !== tpa.id)
+                                  }));
+                                }}
+                                className="text-red-500 hover:text-red-700 p-2 bg-slate-50 hover:bg-rose-50 rounded-xl transition-all border border-slate-200 cursor-pointer inline-block shadow-sm"
+                                title="Remove TPA"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 )}
-              </div>
+              </div>      </div>
             </div>
 
             {/* Form actions save block */}
