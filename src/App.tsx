@@ -12,13 +12,14 @@ import FacilitiesSection from './components/FacilitiesSection';
 import WhyChooseUs from './components/WhyChooseUs';
 import AyushmanAssistance from './components/AyushmanAssistance';
 import DoctorsSection from './components/DoctorsSection';
-import GallerySection from './components/GallerySection';
 import NewsSection from './components/NewsSection';
+import GallerySection from './components/GallerySection';
 import FeedbackSection from './components/FeedbackSection';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import AppointmentModal from './components/AppointmentModal';
 import AdminPanel from './components/AdminPanel';
+import SecurityShield from './components/SecurityShield';
 
 export default function App() {
   // Navigation active control
@@ -98,11 +99,17 @@ export default function App() {
   };
 
   if (activeSection === 'admin') {
-    return <AdminPanel onLogout={() => handleNavigate('home')} />;
+    return (
+      <>
+        <SecurityShield />
+        <AdminPanel onLogout={() => handleNavigate('home')} />
+      </>
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-between antialiased">
+      <SecurityShield />
       {/* Sticky header navigation */}
       <Navbar
         onNavigate={handleNavigate}

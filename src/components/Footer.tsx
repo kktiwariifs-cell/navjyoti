@@ -204,11 +204,11 @@ export default function Footer({ onNavigate, onOpenBooking }: FooterProps) {
               <button onClick={onOpenBooking} className="text-left text-slate-800 hover:text-blue-900 py-1 transition-colors cursor-pointer">
                 • Appointments
               </button>
-              <button onClick={() => handleQuickLink('gallery')} className="text-left text-slate-800 hover:text-blue-900 py-1 transition-colors cursor-pointer">
-                • Our Gallery
-              </button>
               <button onClick={() => handleQuickLink('pmjay')} className="text-left text-slate-800 hover:text-blue-900 py-1 transition-colors cursor-pointer">
                 • Help Center
+              </button>
+              <button onClick={() => handleQuickLink('gallery')} className="text-left text-slate-800 hover:text-blue-900 py-1 transition-colors cursor-pointer">
+                • Our Gallery
               </button>
               <button onClick={() => handleQuickLink('news')} className="text-left text-slate-800 hover:text-blue-900 py-1 transition-colors cursor-pointer">
                 • News & Events

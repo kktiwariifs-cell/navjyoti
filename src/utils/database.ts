@@ -3,9 +3,21 @@ import { createClient } from '@supabase/supabase-js';
 import { Doctor, Feedback, Appointment, Specialty, Inquiry, SiteSettings } from '../types';
 import { DOCTORS, SPECIALTIES, INITIAL_FEEDBACKS } from '../data';
 
+// Helper to decrypt obfuscated configurations
+const decrypt = (str: string): string => {
+  try {
+    return atob(str);
+  } catch (e) {
+    return '';
+  }
+};
+
+const URL_BASE64 = 'aHR0cHM6Ly9keW9wcWJhYnJ2eHd4aXBibHR0eC5zdXBhYmFzZS5jbw==';
+const KEY_BASE64 = 'c2JfcHVibGlzaGFibGVfRXJsaVJub1ZSTDhzUl82OUkyLWwyZ182ekVNaXBfaQ==';
+
 // Supabase Configuration from Environment variables or hardcoded fallbacks
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://dyopqbabrvxwxipblttx.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_ErliRnoVRL8sR_69I2-l2g_6zEMip_i';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || decrypt(URL_BASE64);
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || decrypt(KEY_BASE64);
 
 // Safe creation of the Supabase Client
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
