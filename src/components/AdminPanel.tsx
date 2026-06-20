@@ -2126,14 +2126,102 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-600 uppercase">Department Showcase Image URL</label>
-                <input
-                  type="url"
-                  placeholder="Paste Unsplash or static image asset address"
-                  value={serviceImg}
-                  onChange={e => setServiceImg(e.target.value)}
-                  className="w-full text-sm p-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none"
-                />
+                <label className="text-xs font-bold text-slate-600 uppercase block">Department Showcase Image Source</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Paste Unsplash URL, static image address or upload below"
+                    value={serviceImg}
+                    onChange={e => setServiceImg(e.target.value)}
+                    className="grow text-sm p-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none"
+                  />
+                  {serviceImg && (
+                    <button
+                      type="button"
+                      onClick={() => setServiceImg('')}
+                      className="bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all active:scale-95"
+                      title="Clear image"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Optional JPEG File Attachment area */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-500 uppercase block">OR ATTACH JPEG FILE (OPTIONAL)</label>
+                <div 
+                  onDragOver={e => e.preventDefault()}
+                  onDrop={e => {
+                    e.preventDefault();
+                    const file = e.dataTransfer.files?.[0];
+                    if (file) {
+                      if (file.type === 'image/jpeg' || file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg')) {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          if (typeof reader.result === 'string') {
+                            setServiceImg(reader.result);
+                          }
+                        };
+                        reader.readAsDataURL(file);
+                      } else {
+                        alert('Only JPEG/JPG files are accepted.');
+                      }
+                    }
+                  }}
+                  onClick={() => document.getElementById('dept-file-input')?.click()}
+                  className="border-2 border-dashed border-slate-200 hover:border-blue-500 rounded-2xl p-4 text-center cursor-pointer hover:bg-blue-50/20 transition-all space-y-1 flex flex-col items-center justify-center min-h-[90px]"
+                >
+                  <Plus size={16} className="text-blue-500" />
+                  <p className="text-xs font-extrabold text-slate-700">Drag & Drop JPEG or Click to Browse</p>
+                  <p className="text-[10px] text-slate-400">Accepts .jpg, .jpeg images</p>
+                  <input 
+                    type="file" 
+                    id="dept-file-input"
+                    className="hidden" 
+                    accept="image/jpeg, image/jpg"
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        if (file.type === 'image/jpeg' || file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg')) {
+                          const reader = new FileReader();
+                          reader.onload = () => {
+                            if (typeof reader.result === 'string') {
+                              setServiceImg(reader.result);
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        } else {
+                          alert('Only JPEG/JPG files are accepted.');
+                        }
+                      }
+                    }}
+                  />
+                </div>
+
+                {/* Micro-preview of the attached / selected JPEG */}
+                {serviceImg && serviceImg.startsWith('data:image/') && (
+                  <div className="flex items-center gap-3 bg-blue-50/60 p-2.5 rounded-xl border border-blue-100/60 mt-2">
+                    <img 
+                      src={serviceImg} 
+                      alt="JPEG Showcase Preview" 
+                      className="w-12 h-12 object-cover rounded-lg border border-blue-200 shadow-sm"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[11px] font-bold text-blue-900 truncate">JPEG Attached Successfully</p>
+                      <p className="text-[9px] text-blue-600/80">Base64 content stored securely and applied</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setServiceImg('')}
+                      className="text-red-500 hover:text-red-700 p-1.5 bg-white hover:bg-red-50 rounded-lg shadow-sm border border-red-100 cursor-pointer text-[10px] font-bold transition-all active:scale-95"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-1">
