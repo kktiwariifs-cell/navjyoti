@@ -87,7 +87,7 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20">
             {/* Logo area */}
-            <div className="flex-shrink-0 flex items-center gap-2.5 sm:gap-3 max-w-[80%] sm:max-w-none">
+            <div className="flex-shrink-0 flex items-center gap-2 sm:gap-3 max-w-[85%] sm:max-w-none">
               <img
                 src={settings.logoUrl || logoImg}
                 alt="Navjyoti Multi Speciality Hospital Basti Logo"
@@ -104,6 +104,55 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
                 <span className="text-[8px] sm:text-[9px] text-gray-400 font-semibold tracking-tight mt-1 leading-none truncate">
                   Basti, UP • Ayushman Approved
                 </span>
+              </div>
+
+              {/* NABH Certification Badge - Compact & Ultra-trustworthy */}
+              <div className="flex items-center pl-2 sm:pl-3 ml-1 sm:ml-2 border-l border-slate-200 shrink-0">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center shrink-0" title="NABH Certified (Entry Level)">
+                    <svg viewBox="0 0 100 100" className="w-full h-full select-none" aria-label="NABH Entry Level Certified">
+                      <defs>
+                        <path id="left-side" d="M 12,71 L 50,16" />
+                        <path id="right-side" d="M 50,16 L 88,71" />
+                      </defs>
+                      <polygon points="50,2 98,82 2,82" fill="#1b5e20" />
+                      <polygon points="50,17 86,70 14,70" fill="#ffffff" />
+                      <text fontFamily="system-ui, -apple-system, sans-serif" fontSize="4.2" fontWeight="900" fill="#ffffff" letterSpacing="0.1">
+                        <textPath href="#left-side" startOffset="50%" textAnchor="middle">
+                          PATIENT SAFETY &amp;
+                        </textPath>
+                      </text>
+                      <text fontFamily="system-ui, -apple-system, sans-serif" fontSize="4.2" fontWeight="900" fill="#ffffff" letterSpacing="0.1">
+                        <textPath href="#right-side" startOffset="50%" textAnchor="middle">
+                          QUALITY OF CARE
+                        </textPath>
+                      </text>
+                      <text x="50" y="79" fontFamily="system-ui, -apple-system, sans-serif" fontSize="6.5" fontWeight="900" fill="#ffffff" textAnchor="middle" letterSpacing="0.8">
+                        CERTIFIED
+                      </text>
+                      <circle cx="50" cy="42" r="12" fill="#0288d1" />
+                      <circle cx="50" cy="42" r="9" fill="#ffffff" />
+                      <polygon points="50,33 58,48 42,48" fill="#d32f2f" />
+                      <line x1="50" y1="30" x2="50" y2="44" stroke="#0288d1" strokeWidth="1.2" strokeLinecap="round" />
+                      <path d="M 46,36 C 48,34 52,34 54,36" stroke="#0288d1" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+                      <path d="M 46,40 C 48,38 52,38 54,40" stroke="#0288d1" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+                      <text x="50" y="60" fontFamily="system-ui, -apple-system, sans-serif" fontSize="8.5" fontWeight="950" fill="#0d2a63" textAnchor="middle" letterSpacing="0.4">
+                        NABH
+                      </text>
+                      <text x="50" y="66" fontFamily="system-ui, -apple-system, sans-serif" fontSize="3.5" fontWeight="900" fill="#000000" textAnchor="middle" letterSpacing="0.1">
+                        (ENTRY LEVEL)
+                      </text>
+                    </svg>
+                  </div>
+                  <div className="hidden xs:flex flex-col text-left leading-none">
+                    <span className="text-[7.5px] sm:text-[9.5px] font-black tracking-wider text-emerald-800 uppercase">
+                      NABH
+                    </span>
+                    <span className="text-[6px] sm:text-[7.5px] text-slate-500 font-extrabold uppercase mt-0.5 whitespace-nowrap">
+                      CERTIFIED
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 

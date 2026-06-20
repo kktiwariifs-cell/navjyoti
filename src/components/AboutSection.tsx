@@ -5,7 +5,7 @@ import { getSiteSettings } from '../utils/database';
 
 export default function AboutSection() {
   const [settings, setSettings] = useState(() => getSiteSettings());
-  const [activeTab, setActiveTab] = useState<'about' | 'chairman' | 'director'>('about');
+  const [activeTab, setActiveTab] = useState<'about' | 'founders'>('about');
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -66,26 +66,15 @@ export default function AboutSection() {
               About Hospital
             </button>
             <button
-              onClick={() => setActiveTab('chairman')}
+              onClick={() => setActiveTab('founders')}
               className={`flex items-center gap-2 px-5 py-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                activeTab === 'chairman'
+                activeTab === 'founders'
                   ? 'bg-blue-600 text-white shadow-lg shadow-blue-200/50'
                   : 'text-slate-600 hover:text-blue-700'
               }`}
             >
               <User size={16} />
-              Chairman's Message
-            </button>
-            <button
-              onClick={() => setActiveTab('director')}
-              className={`flex items-center gap-2 px-5 py-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                activeTab === 'director'
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-200/50'
-                  : 'text-slate-600 hover:text-blue-700'
-              }`}
-            >
-              <User size={16} />
-              Director's Message
+              Founders' Message
             </button>
           </div>
         </div>
@@ -208,114 +197,112 @@ export default function AboutSection() {
               </motion.div>
             )}
 
-            {/* Chairman Desk Tab */}
-            {activeTab === 'chairman' && (
+            {/* Founders' Message Tab */}
+            {activeTab === 'founders' && (
               <motion.div
-                key="chairman"
+                key="founders"
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -15 }}
                 transition={{ duration: 0.35 }}
-                className="max-w-4xl mx-auto bg-slate-50/50 rounded-3xl border border-slate-205 border-slate-200 p-6 md:p-10 text-left shadow-sm"
+                className="max-w-4xl mx-auto bg-slate-50/55 rounded-3xl border border-slate-200 p-6 md:p-10 text-left shadow-sm space-y-8"
               >
-                <div className="flex flex-col md:flex-row gap-8 items-start">
+                {/* Intro and combined message */}
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-mono font-black uppercase text-[#1e66f5] tracking-widest bg-blue-100/60 px-3 py-1.5 rounded-full inline-block">
+                      ADMINISTRATIVE LEADERSHIP STATEMENT
+                    </span>
+                  </div>
                   
-                  {/* Portrait or Quote Placeholder */}
-                  {chairman.photo ? (
-                    <div className="w-40 h-52 sm:w-48 sm:h-64 rounded-3xl overflow-hidden border-4 border-white shadow-lg shrink-0 mx-auto md:mx-0">
-                      <img 
-                        src={chairman.photo} 
-                        alt={chairman.name} 
-                        className="w-full h-full object-cover"
-                        referrerPolicy="no-referrer"
-                      />
+                  {/* The actual letter content */}
+                  <div className="relative pl-6 border-l-2 border-blue-500 text-slate-700 text-sm sm:text-base leading-relaxed space-y-4 font-medium">
+                    <div className="absolute top-0 left-0 -mt-3 -ml-4 p-1 text-blue-500/15">
+                      <Quote size={50} className="fill-current" />
                     </div>
-                  ) : (
-                    <div className="bg-gradient-to-tr from-blue-600 to-blue-900 text-white w-20 h-20 rounded-3xl flex items-center justify-center shrink-0 shadow-md mx-auto md:mx-0">
-                      <Quote size={32} className="opacity-80" />
-                    </div>
-                  )}
-
-                  <div className="space-y-6 flex-1 text-center md:text-left">
-                    <div>
-                      <span className="text-[10px] font-mono font-black uppercase text-[#1e66f5] tracking-widest bg-blue-100/60 px-2.5 py-1 rounded-full mb-2.5 inline-block">
-                        CHAIRMAN DESK
-                      </span>
-                      <h3 className="font-display font-extrabold text-2xl text-[#0d2a63]">
-                        {chairman.name}
-                      </h3>
-                      <p className="text-xs text-blue-600 font-extrabold uppercase tracking-wider mt-0.5">
-                        {chairman.qualification}
-                      </p>
-                      <p className="text-[11px] text-slate-400 font-bold block">Navjyoti Multispeciality Hospital, Basti</p>
-                    </div>
-
-                    <div className="text-slate-700 text-sm sm:text-base leading-relaxed space-y-4 font-medium md:text-left text-center">
-                      {chairman.bio.split('\n').map((para, i) => (
-                        <p key={i}>{para}</p>
-                      ))}
-                    </div>
-
-                    <div className="pt-4 border-t border-slate-150 inline-flex items-center gap-2 text-xs font-bold text-slate-400">
-                      <ShieldCheck size={16} className="text-blue-500" />
-                      <span>Validated Hospital Founder Board Approval</span>
-                    </div>
+                    {/* Render chairman bio and director bio as paragraphs of a unified message */}
+                    {chairman.bio.split('\n').map((para, i) => (
+                      <p key={`c-${i}`}>{para}</p>
+                    ))}
+                    {director.bio.split('\n').map((para, i) => (
+                      <p key={`d-${i}`}>{para}</p>
+                    ))}
                   </div>
                 </div>
-              </motion.div>
-            )}
 
-            {/* Director Desk Tab */}
-            {activeTab === 'director' && (
-              <motion.div
-                key="director"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.35 }}
-                className="max-w-4xl mx-auto bg-slate-50/50 rounded-3xl border border-slate-205 border-slate-200 p-6 md:p-10 text-left shadow-sm"
-              >
-                <div className="flex flex-col md:flex-row gap-8 items-start">
-                  
-                  {/* Portrait or Quote Placeholder */}
-                  {director.photo ? (
-                    <div className="w-40 h-52 sm:w-48 sm:h-64 rounded-3xl overflow-hidden border-4 border-white shadow-lg shrink-0 mx-auto md:mx-0">
-                      <img 
-                        src={director.photo} 
-                        alt={director.name} 
-                        className="w-full h-full object-cover"
-                        referrerPolicy="no-referrer"
-                      />
-                    </div>
-                  ) : (
-                    <div className="bg-gradient-to-tr from-blue-600 to-blue-900 text-white w-20 h-20 rounded-3xl flex items-center justify-center shrink-0 shadow-md mx-auto md:mx-0">
-                      <Quote size={32} className="opacity-80" />
-                    </div>
-                  )}
-
-                  <div className="space-y-6 flex-1 text-center md:text-left">
-                    <div>
-                      <span className="text-[10px] font-mono font-black uppercase text-[#1e66f5] tracking-widest bg-blue-100/60 px-2.5 py-1 rounded-full mb-2.5 inline-block">
-                        DIRECTOR DESK
-                      </span>
-                      <h3 className="font-display font-extrabold text-2xl text-[#0d2a63]">
-                        {director.name}
-                      </h3>
-                      <p className="text-xs text-blue-600 font-extrabold uppercase tracking-wider mt-0.5">
-                        {director.qualification}
-                      </p>
-                      <p className="text-[11px] text-slate-400 font-bold block">Navjyoti Multispeciality Hospital, Basti</p>
+                {/* Bottom section displaying portraits of both doctors */}
+                <div className="pt-8 border-t border-slate-200 space-y-6">
+                  <span className="text-xs font-bold uppercase tracking-widest text-[#0d2a63] block text-center mb-4">
+                    Our Leadership Board
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 justify-items-center">
+                    
+                    {/* Dr. Prem Prakash Dubey */}
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 p-4.5 bg-white rounded-2xl border border-slate-150 shadow-sm w-full max-w-sm">
+                      {chairman.photo ? (
+                        <div className="w-24 h-32 rounded-xl overflow-hidden border-2 border-white shadow-md shrink-0">
+                          <img 
+                            src={chairman.photo} 
+                            alt={chairman.name} 
+                            className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-24 h-32 bg-gradient-to-tr from-blue-600 to-blue-900 text-white rounded-xl flex items-center justify-center shrink-0 shadow-md">
+                          <User size={36} className="opacity-80" />
+                        </div>
+                      )}
+                      <div className="space-y-1">
+                        <span className="text-[9px] font-mono font-black uppercase text-[#1e66f5] tracking-widest bg-blue-50 px-2 py-0.5 rounded-full inline-block mb-1">
+                          CHAIRMAN
+                        </span>
+                        <h4 className="font-display font-black text-sm text-[#0d2a63]">
+                          {chairman.name}
+                        </h4>
+                        <p className="text-[11px] text-blue-650 font-extrabold tracking-tight">
+                          {chairman.qualification}
+                        </p>
+                        <p className="text-[10px] text-slate-400 font-bold leading-none">Founder Chairman</p>
+                      </div>
                     </div>
 
-                    <div className="text-slate-700 text-sm sm:text-base leading-relaxed space-y-4 font-medium md:text-left text-center">
-                      {director.bio.split('\n').map((para, i) => (
-                        <p key={i}>{para}</p>
-                      ))}
+                    {/* Dr. Vidushi Dubey */}
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 p-4.5 bg-white rounded-2xl border border-slate-150 shadow-sm w-full max-w-sm">
+                      {director.photo ? (
+                        <div className="w-24 h-32 rounded-xl overflow-hidden border-2 border-white shadow-md shrink-0">
+                          <img 
+                            src={director.photo} 
+                            alt={director.name} 
+                            className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-24 h-32 bg-gradient-to-tr from-blue-600 to-blue-900 text-white rounded-xl flex items-center justify-center shrink-0 shadow-md">
+                          <User size={36} className="opacity-80" />
+                        </div>
+                      )}
+                      <div className="space-y-1">
+                        <span className="text-[9px] font-mono font-black uppercase text-[#1e66f5] tracking-widest bg-blue-50 px-2 py-0.5 rounded-full inline-block mb-1">
+                          DIRECTOR
+                        </span>
+                        <h4 className="font-display font-black text-sm text-[#0d2a63]">
+                          {director.name}
+                        </h4>
+                        <p className="text-[11px] text-blue-650 font-extrabold tracking-tight">
+                          {director.qualification}
+                        </p>
+                        <p className="text-[10px] text-slate-400 font-bold leading-none">Managing Director</p>
+                      </div>
                     </div>
 
-                    <div className="pt-4 border-t border-slate-150 inline-flex items-center gap-2 text-xs font-bold text-slate-400">
-                      <ShieldCheck size={16} className="text-blue-500" />
-                      <span>Validated Hospital Founder Board Approval</span>
+                  </div>
+
+                  <div className="pt-4 text-center">
+                    <div className="inline-flex items-center gap-2 text-[11px] font-bold text-slate-400">
+                      <ShieldCheck size={15} className="text-blue-500" />
+                      <span>Joint Founder Board Approval & Core Ethos</span>
                     </div>
                   </div>
                 </div>
