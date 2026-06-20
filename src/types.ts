@@ -63,3 +63,14 @@ export interface SiteSettings {
   sliders?: string[];
 }
 
+export interface NewsEvent {
+  id: string;
+  title: string;
+  post: string;
+  dateTime: string;
+  location: string;
+  photoUrl?: string;
+  createdAt?: string;
+}
+
+

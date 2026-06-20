@@ -186,6 +186,32 @@ CREATE POLICY "Allow authenticated/admin modification to feedbacks"
 ON public.feedbacks FOR ALL USING (id IS NOT NULL) WITH CHECK (name IS NOT NULL);
 
 ---------------------------------------------------------
+-- 6.5. News and Events Table
+---------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.news_events (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    post TEXT NOT NULL,
+    date_time TEXT NOT NULL,
+    location TEXT NOT NULL,
+    photo_url TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Row Level Security (RLS)
+ALTER TABLE public.news_events ENABLE ROW LEVEL SECURITY;
+
+-- News Events Policies
+DROP POLICY IF EXISTS "Allow public read access to news_events" ON public.news_events;
+CREATE POLICY "Allow public read access to news_events" 
+ON public.news_events FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow authenticated/admin write access to news_events" ON public.news_events;
+CREATE POLICY "Allow authenticated/admin write access to news_events" 
+ON public.news_events FOR ALL USING (id IS NOT NULL) WITH CHECK (title IS NOT NULL);
+
+---------------------------------------------------------
 -- 7. Realtime Synchronization Config
 ---------------------------------------------------------
 -- Safely add tables to publication without duplication errors
@@ -198,7 +224,8 @@ DECLARE
         'public.specialties', 
         'public.appointments', 
         'public.inquiries', 
-        'public.feedbacks'
+        'public.feedbacks',
+        'public.news_events'
     ];
     t text;
 BEGIN

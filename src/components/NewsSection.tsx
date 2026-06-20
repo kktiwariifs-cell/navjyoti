@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Calendar, User, ArrowRight, X, Clock, MessageSquare, Share2, Sparkles, BookOpen } from 'lucide-react';
+import { Calendar, User, ArrowRight, X, Clock, MessageSquare, Share2 } from 'lucide-react';
+import { getNewsEvents } from '../utils/database';
 
 interface NewsItem {
   id: string;
@@ -16,55 +17,52 @@ interface NewsItem {
 
 export default function NewsSection() {
   const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);
+  const [liveNews, setLiveNews] = useState<NewsItem[]>([]);
 
-  const newsItems: NewsItem[] = [
-    {
-      id: 'news1',
-      title: 'Free Mega Health Checkup & Consultation Camp Coming This Sunday',
-      category: 'Health Camp',
-      date: 'June 20, 2026',
-      author: 'Admin Office',
-      readTime: '3 min read',
-      summary: 'Navjyoti Hospital is organizing a free mega health camp for all citizens of Basti. Free medicine distributions and pathology consults will be provided.',
-      fullContent: 'Following our monthly devotion towards society welfare, Navjyoti Multispeciality Hospital is hosting a Free Health Camp on Sunday, June 22nd. The camp will host specialist pediatricians, general physicians, and orthopedic experts to conduct free primary diagnostics. Standard blood glucose measures, blood pressure counts, and vision tests will be performed free of cost. Families are requested to carry their previous medical worksheets if any, for speedy analysis.',
-      imageUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=600'
-    },
-    {
-      id: 'news2',
-      title: 'Ayushman Bharat Card Service Upgrade for instant 10-Minute Clearances',
-      category: 'Ayushman Update',
-      date: 'June 18, 2026',
-      author: 'PM-JAY Coordinator',
-      readTime: '2 min read',
-      summary: 'We have optimized our on-site verification portal. Eligible patients can now verify their golden PM-JAY cards within 10 minutes at the counter.',
-      fullContent: 'To reduce the waiting time for elderly and emergency patients under the Pradhan Mantri Jan Arogya Yojana, Navjyoti Hospital has upgraded its specialized digital helpdesk. We have added dedicated verification terminals and trained on-site arogya mitras. Eligible beneficiaries carrying their Ration Card and Aadhaar Card can obtain automatic check-ins within 10 minutes instead of the traditional hours. Our aim is to ensure 100% cashmere diagnostics and zero delay in life-saving surgeries.',
-      imageUrl: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=600'
-    },
-    {
-      id: 'news3',
-      title: 'Medical Milestone: Back-to-Back Advanced Laparoscopic Surgeries Succeeded',
-      category: 'Surgical Feat',
-      date: 'June 12, 2026',
-      author: 'Director of Surgery',
-      readTime: '4 min read',
-      summary: 'Our surgical team led by Dr. Vidushi successfully executed advanced minimally invasive laparoscopic gallbladder removals this week.',
-      fullContent: 'This week, the surgical division at Navjyoti Hospital completed five successful laparoscopic surgeries. Minimally invasive procedures (such as laparoscopic cholecystectomy) assist patients in getting discharged within 24 to 48 hours instead of a week, alongside reduced pain and minimal scarring. Dr. Vidushi and our expert surgical anesthetists operated with state-of-the-art laparoscopy columns. All patients have completely recovered and returned to their families, expressing deep gratitude.',
-      imageUrl: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&q=80&w=600'
-    },
-    {
-      id: 'news4',
-      title: 'Monsoon Preventive Health Awareness: Protect Your Family from Vector Diseases',
-      category: 'Announcement',
-      date: 'June 05, 2026',
-      author: 'Pediatric Division',
-      readTime: '3 min read',
-      summary: 'With the arrival of early rains, our pediatrics wing releases essential clinical tips to safeguard infants and school children from malaria and dengue.',
-      fullContent: 'Navjyoti Hospital clinical advisory team has issued monsoon infection guidelines for Basti residents. Rains can prompt stagnant water, leading to vector-borne transmissions like dengue, chikungunya, and malaria. Parents are advised to clean domestic water coolers, use mosquito nets, and strictly avoid drinking raw or untreated water. In case of sudden high grade fever, immediate OPD consulting is recommended. Our round-the-clock pediatric casualty lab is ready for emergency platelet checks.',
-      imageUrl: 'https://images.unsplash.com/photo-1579684389782-64d84b5e901a?auto=format&fit=crop&q=80&w=600'
-    }
-  ];
+  useEffect(() => {
+    const loadLiveNews = () => {
+      const dbEvents = getNewsEvents();
+      const mapped: NewsItem[] = dbEvents.map(event => {
+        let category: 'Announcement' | 'Health Camp' | 'Surgical Feat' | 'Ayushman Update' = 'Announcement';
+        const lowerTitle = event.title.toLowerCase();
+        const lowerPost = event.post.toLowerCase();
+        if (lowerTitle.includes('camp') || lowerPost.includes('camp') || lowerTitle.includes('checkup')) {
+          category = 'Health Camp';
+        } else if (lowerTitle.includes('ayushman') || lowerPost.includes('ayushman') || lowerTitle.includes('pm-jay')) {
+          category = 'Ayushman Update';
+        } else if (lowerTitle.includes('surgery') || lowerPost.includes('surgery') || lowerTitle.includes('surgical') || lowerTitle.includes('laparoscopic')) {
+          category = 'Surgical Feat';
+        }
 
-  const openedArticle = newsItems.find((n) => n.id === selectedNewsId);
+        const dateObj = new Date(event.dateTime);
+        const formattedDate = isNaN(dateObj.getTime()) 
+          ? event.dateTime 
+          : dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+        const wordCount = event.post.split(/\s+/).length;
+        const readTimeMinutes = Math.max(1, Math.ceil(wordCount / 180));
+
+        return {
+          id: event.id,
+          title: event.title,
+          category,
+          date: formattedDate,
+          author: 'Hospital Admin',
+          readTime: `${readTimeMinutes} min read`,
+          summary: event.post.length > 125 ? event.post.substring(0, 122) + '...' : event.post,
+          fullContent: `${event.post}\n\n📍 Event location and venue detail: ${event.location}`,
+          imageUrl: event.photoUrl || 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=600'
+        };
+      });
+      setLiveNews(mapped);
+    };
+
+    loadLiveNews();
+    window.addEventListener('db_update', loadLiveNews);
+    return () => window.removeEventListener('db_update', loadLiveNews);
+  }, []);
+
+  const openedArticle = liveNews.find((n) => n.id === selectedNewsId);
 
   return (
     <section id="news" className="py-16 md:py-24 bg-slate-50 border-b border-slate-200 font-sans text-left">
@@ -85,7 +83,7 @@ export default function NewsSection() {
 
         {/* News Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-          {newsItems.map((item) => (
+          {liveNews.map((item) => (
             <div
               key={item.id}
               className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-xl hover:border-blue-200 transition-all duration-300 flex flex-col justify-between group"

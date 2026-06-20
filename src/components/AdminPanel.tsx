@@ -6,9 +6,10 @@ import {
   getInquiries, updateInquiry, deleteInquiry,
   getFeedbacks, updateFeedback, addFeedback, deleteFeedback,
   safeGetItem, safeSetItem, safeRemoveItem,
-  getSiteSettings, saveSiteSettings
+  getSiteSettings, saveSiteSettings,
+  getNewsEvents, addNewsEvent, updateNewsEvent, deleteNewsEvent
 } from '../utils/database';
-import { Doctor, Specialty, Appointment, Feedback, Inquiry, SiteSettings } from '../types';
+import { Doctor, Specialty, Appointment, Feedback, Inquiry, SiteSettings, NewsEvent } from '../types';
 import { 
   Users, Activity, Calendar, Mail, MessageSquare, LogOut, Plus, Edit, Trash2, 
   Check, X, Menu, Search, CheckCircle2, AlertCircle, Clock, ShieldAlert, Star, 
@@ -19,7 +20,7 @@ interface AdminPanelProps {
   onLogout: () => void;
 }
 
-type TabType = 'dashboard' | 'doctors' | 'services' | 'appointments' | 'inquiries' | 'feedbacks' | 'settings';
+type TabType = 'dashboard' | 'doctors' | 'services' | 'appointments' | 'inquiries' | 'feedbacks' | 'settings' | 'news';
 
 export default function AdminPanel({ onLogout }: AdminPanelProps) {
   // Login State
@@ -42,6 +43,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const [newsEvents, setNewsEvents] = useState<NewsEvent[]>([]);
 
   // Search & Filter state
   const [searchTerm, setSearchTerm] = useState('');
@@ -75,6 +77,16 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
   const [fbEmail, setFbEmail] = useState('');
   const [fbContent, setFbContent] = useState('');
   const [fbRating, setFbRating] = useState(5);
+
+  // News & Events Editor Fields
+  const [isNewsModalOpen, setIsNewsModalOpen] = useState(false);
+  const [activeNews, setActiveNews] = useState<NewsEvent | null>(null);
+  const [newsTitle, setNewsTitle] = useState('');
+  const [newsPost, setNewsPost] = useState('');
+  const [newsDateTime, setNewsDateTime] = useState('');
+  const [newsLocation, setNewsLocation] = useState('');
+  const [newsPhotoUrl, setNewsPhotoUrl] = useState('');
+  const [photoError, setPhotoError] = useState('');
 
   // Ticket Printing state
   const [printTicket, setPrintTicket] = useState<Appointment | null>(null);
@@ -112,6 +124,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
     setInquiries(getInquiries());
     setFeedbacks(getFeedbacks());
     setSiteSettings(getSiteSettings());
+    setNewsEvents(getNewsEvents());
   };
 
   useEffect(() => {
@@ -328,6 +341,101 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
         loadData();
       }
     );
+  };
+
+  // ---------------------------------------------------------
+  // News and Events Handlers
+  // ---------------------------------------------------------
+  const handlePhotoUploadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const maxSizeBytes = 100 * 1024 * 1024; // 100MB
+      if (file.size > maxSizeBytes) {
+        setPhotoError('Error: Photo size exceeds 100MB limit!');
+        setNewsPhotoUrl('');
+        return;
+      }
+      setPhotoError('');
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          setNewsPhotoUrl(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSaveNews = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsTitle.trim() || !newsPost.trim() || !newsDateTime || !newsLocation.trim()) {
+      return;
+    }
+
+    if (activeNews) {
+      const updatedNews: NewsEvent = {
+        ...activeNews,
+        title: newsTitle.trim(),
+        post: newsPost.trim(),
+        dateTime: newsDateTime,
+        location: newsLocation.trim(),
+        photoUrl: newsPhotoUrl || undefined
+      };
+      await updateNewsEvent(updatedNews);
+    } else {
+      const newNews: NewsEvent = {
+        id: `news_${Date.now()}`,
+        title: newsTitle.trim(),
+        post: newsPost.trim(),
+        dateTime: newsDateTime,
+        location: newsLocation.trim(),
+        photoUrl: newsPhotoUrl || undefined
+      };
+      await addNewsEvent(newNews);
+    }
+
+    setIsNewsModalOpen(false);
+    setActiveNews(null);
+    setNewsTitle('');
+    setNewsPost('');
+    setNewsDateTime('');
+    setNewsLocation('');
+    setNewsPhotoUrl('');
+    setPhotoError('');
+    loadData();
+  };
+
+  const handleDeleteNews = (id: string) => {
+    triggerConfirm(
+      'Delete News / Event',
+      'Are you sure you want to delete this news event?',
+      async () => {
+        await deleteNewsEvent(id);
+        loadData();
+      }
+    );
+  };
+
+  const handleEditNewsOpen = (news: NewsEvent) => {
+    setActiveNews(news);
+    setNewsTitle(news.title);
+    setNewsPost(news.post);
+    setNewsDateTime(news.dateTime);
+    setNewsLocation(news.location);
+    setNewsPhotoUrl(news.photoUrl || '');
+    setPhotoError('');
+    setIsNewsModalOpen(true);
+  };
+
+  const handleAddNewsOpen = () => {
+    setActiveNews(null);
+    setNewsTitle('');
+    setNewsPost('');
+    setNewsDateTime('');
+    setNewsLocation('');
+    setNewsPhotoUrl('');
+    setPhotoError('');
+    setIsNewsModalOpen(true);
   };
 
   const toggleDay = (day: string) => {
@@ -648,6 +756,20 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
             <Settings size={18} />
             <span>Website Settings</span>
           </button>
+
+          {/* News & Events Nav button */}
+          <button
+            onClick={() => { setActiveTab('news'); setSearchTerm(''); setIsMobileNavOpen(false); }}
+            className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-colors ${
+              activeTab === 'news' ? 'bg-[#1e66f5] text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <FileText size={18} />
+            <span className="grow">News & Events</span>
+            {newsEvents.length > 0 && (
+              <span className="text-[10px] bg-sky-500 text-white font-extrabold px-2 py-0.5 rounded-full">{newsEvents.length}</span>
+            )}
+          </button>
         </nav>
 
         {/* Sidebar Footer Log Out action */}
@@ -681,6 +803,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
               {activeTab === 'inquiries' && 'User Inquiries Dashboard'}
               {activeTab === 'feedbacks' && 'Testimonial Moderation Hub'}
               {activeTab === 'settings' && 'Website Settings & Slideshow'}
+              {activeTab === 'news' && 'News & Campus Events Blog Manager'}
             </h2>
             <p className="text-xs text-slate-400 font-medium tracking-tight mt-1">
               Navjyoti Multispeciality Hospital • Real-time Administration Panel
@@ -1690,6 +1813,136 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
           </div>
         )}
 
+        {/* Tab 8: NEWS & EVENTS BLOG VIEW */}
+        {activeTab === 'news' && (
+          <div className="space-y-6 animate-fadeIn pb-12">
+            
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl border border-slate-200">
+              <div>
+                <h3 className="font-display font-black text-slate-900 text-lg uppercase tracking-wide">News & Campus Events</h3>
+                <p className="text-xs text-slate-500 font-medium tracking-tight">Post notices, medical camp alerts, surgical updates, or Ayushman updates on the public website pages.</p>
+              </div>
+              <button
+                type="button"
+                onClick={handleAddNewsOpen}
+                className="w-full sm:w-auto bg-[#1e66f5] hover:bg-[#154fc4] text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg shadow-blue-200 cursor-pointer flex items-center justify-center gap-2"
+              >
+                <Plus size={16} />
+                <span>Add News / Event</span>
+              </button>
+            </div>
+
+            {/* List of News Events */}
+            <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden">
+              <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between gap-4 items-center">
+                <div className="relative w-full sm:max-w-xs">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                  <input
+                    type="text"
+                    className="w-full text-xs font-semibold pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white"
+                    placeholder="Search news or posts..."
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <div className="w-full sm:w-auto flex items-center justify-end gap-2 text-xs font-bold text-slate-400">
+                  <span>Showing {newsEvents.length} Items</span>
+                </div>
+              </div>
+
+              {newsEvents.length === 0 ? (
+                <div className="p-16 text-center space-y-3">
+                  <FileText size={48} className="text-slate-300 mx-auto" />
+                  <div>
+                    <p className="font-bold text-slate-700">No News Items Recorded</p>
+                    <p className="text-xs text-slate-400">Press "Add News / Event" above to create your first campus alert.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-slate-55/65 border-b border-slate-100 text-slate-800 uppercase tracking-wider text-[10px] font-mono">
+                        <th className="py-4 px-6 font-bold">Photo</th>
+                        <th className="py-4 px-6 font-bold">News Event Banner</th>
+                        <th className="py-4 px-6 font-bold">Date & Time</th>
+                        <th className="py-4 px-6 font-bold">Location</th>
+                        <th className="py-4 px-6 font-bold text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-xs font-semibold text-slate-700">
+                      {newsEvents
+                        .filter(item => {
+                          if (!searchTerm.trim()) return true;
+                          return (
+                            item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            item.post.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            item.location.toLowerCase().includes(searchTerm.toLowerCase())
+                          );
+                        })
+                        .map(item => (
+                          <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                            <td className="py-4 px-6">
+                              <div className="w-14 h-14 rounded-xl bg-slate-50 border border-slate-200 overflow-hidden flex items-center justify-center">
+                                {item.photoUrl ? (
+                                  <img 
+                                    src={item.photoUrl} 
+                                    alt="News Thumbnail0" 
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <FileText className="text-slate-350" size={18} />
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-4 px-6 max-w-sm">
+                              <div>
+                                <h4 className="font-bold text-[#0d2a63] text-sm leading-snug line-clamp-1">{item.title}</h4>
+                                <p className="text-slate-400 text-xs font-semibold truncate mt-1 leading-relaxed max-w-sm">{item.post}</p>
+                              </div>
+                            </td>
+                            <td className="py-4 px-6 whitespace-nowrap">
+                              <div className="flex items-center gap-1.5 text-slate-600">
+                                <Clock size={14} className="text-slate-400" />
+                                <span>{new Date(item.dateTime).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</span>
+                              </div>
+                            </td>
+                            <td className="py-4 px-6">
+                              <span className="bg-slate-100 text-slate-700 border border-slate-200 px-2.5 py-1 rounded-lg text-[11px] block truncate max-w-[150px]">
+                                {item.location}
+                              </span>
+                            </td>
+                            <td className="py-4 px-6 text-right whitespace-nowrap">
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => handleEditNewsOpen(item)}
+                                  className="text-blue-600 bg-blue-50 hover:bg-blue-100 p-2 rounded-xl transition-all cursor-pointer flex items-center gap-1 font-bold text-[11px]"
+                                >
+                                  <Edit size={14} />
+                                  <span>Edit</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteNews(item.id)}
+                                  className="text-red-600 bg-red-50 hover:bg-red-100 p-2 rounded-xl transition-all cursor-pointer flex items-center gap-1 font-bold text-[11px]"
+                                >
+                                  <Trash2 size={14} />
+                                  <span>Delete</span>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+          </div>
+        )}
+
       </main>
 
       {/* --- FORM MODAL POPUPS --- */}
@@ -2002,6 +2255,123 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                    className="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs sm:text-sm cursor-pointer shadow-md shadow-green-500/10"
                 >
                   Onboard Review
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 4. News Event Manager Modal */}
+      {isNewsModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-55 overflow-y-auto">
+          <div className="bg-white rounded-3xl w-full max-w-xl text-left shadow-2xl relative border border-slate-200 max-h-[90vh] overflow-y-auto my-8">
+            <div className="bg-gradient-to-br from-[#0d2a63] to-blue-900 text-white p-6 rounded-t-3xl">
+              <h3 className="font-display font-extrabold text-lg uppercase tracking-wide">
+                {activeNews ? 'Edit News / Event' : 'Publish News / Event'}
+              </h3>
+              <p className="text-xs text-blue-200">Post announcements or upcoming events with optional banners (Max 100MB)</p>
+            </div>
+
+            <form onSubmit={handleSaveNews} className="p-6 space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-600 uppercase">News / Event Title *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Mega Free Eye & Health Camp Coming to Basti"
+                  value={newsTitle}
+                  onChange={e => setNewsTitle(e.target.value)}
+                  className="w-full text-sm p-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-600 uppercase">Post Content / News Body *</label>
+                <textarea
+                  rows={5}
+                  required
+                  placeholder="Enter detailed notice post descriptions here..."
+                  value={newsPost}
+                  onChange={e => setNewsPost(e.target.value)}
+                  className="w-full text-sm p-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none leading-relaxed"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-600 uppercase">Date and Time *</label>
+                  <input
+                    type="datetime-local"
+                    required
+                    value={newsDateTime}
+                    onChange={e => setNewsDateTime(e.target.value)}
+                    className="w-full text-sm p-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-600 uppercase">Event Location *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Main Lobby, Block B"
+                    value={newsLocation}
+                    onChange={e => setNewsLocation(e.target.value)}
+                    className="w-full text-sm p-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Photo size constraint 100MB only */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-600 uppercase block">Banner Image (Optional - Up to 100MB Only)</label>
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  {newsPhotoUrl && (
+                    <div className="w-20 h-20 rounded-xl border border-slate-200 overflow-hidden shrink-0">
+                      <img src={newsPhotoUrl} alt="Preview Banner" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    </div>
+                  )}
+                  <div className="grow w-full">
+                    <input
+                      type="file"
+                      id="news-photo-upload"
+                      accept="image/*"
+                      onChange={handlePhotoUploadChange}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => document.getElementById('news-photo-upload')?.click()}
+                      className="w-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 py-3 px-4 rounded-xl text-xs font-bold uppercase transition-all tracking-wider"
+                    >
+                      Choose Banner File (Current Max: 100MB)
+                    </button>
+                    {photoError ? (
+                      <p className="text-[11px] font-semibold text-red-600 mt-1">{photoError}</p>
+                    ) : (
+                      <p className="text-[10px] text-slate-400 mt-1 uppercase font-mono">Banners show up directly on the Public News and Events section</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 justify-end pt-3 border-t">
+                <button
+                  type="button"
+                  onClick={() => setIsNewsModalOpen(false)}
+                  className="bg-slate-100 hover:bg-slate-200 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-600 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={!!photoError}
+                  className={`bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs sm:text-sm cursor-pointer shadow-md ${
+                    photoError ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  Publish News
                 </button>
               </div>
             </form>

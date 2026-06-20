@@ -4,10 +4,9 @@ export default function SecurityShield() {
   const [isScreenProtected, setIsScreenProtected] = useState(false);
 
   useEffect(() => {
-    // 1. Prevent Right-Clicks (Context Menu)
+    // 1. Prevent Right-Clicks (Context Menu) silently
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
-      alert('Security Protocol: Content is copy-protected.');
     };
 
     // 2. Prevent Keyboard Inspect Shortcuts & PrintScreen & Save Key
@@ -46,15 +45,6 @@ export default function SecurityShield() {
       }
     };
 
-    // 3. Screen protection overlay when window loses focus (Anti-Screenshot/Anti-Inspector)
-    const handleWindowBlur = () => {
-      setIsScreenProtected(true);
-    };
-
-    const handleWindowFocus = () => {
-      setIsScreenProtected(false);
-    };
-
     // 4. Repeated console cleaning to defeat developer logs
     const consoleInterval = setInterval(() => {
       console.clear();
@@ -63,14 +53,10 @@ export default function SecurityShield() {
     // Apply listeners
     document.addEventListener('contextmenu', handleContextMenu);
     window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('blur', handleWindowBlur);
-    window.addEventListener('focus', handleWindowFocus);
 
     return () => {
       document.removeEventListener('contextmenu', handleContextMenu);
       window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('blur', handleWindowBlur);
-      window.removeEventListener('focus', handleWindowFocus);
       clearInterval(consoleInterval);
     };
   }, []);

@@ -31,7 +31,6 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
     { label: 'Facilities', target: 'facilities' },
     { label: 'Our Doctors', target: 'specialists' },
     { label: 'PM-JAY (Ayushman)', target: 'pmjay' },
-    { label: 'Gallery', target: 'gallery' },
     { label: 'News and events', target: 'news' },
     { label: 'Contact', target: 'contact' },
   ];
@@ -44,39 +43,39 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
   return (
     <header className="w-full z-50">
       {/* Top emergency bar */}
-      <div className="bg-blue-900 text-white text-xs sm:text-sm py-2 px-4 shadow-inner">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+      <div className="bg-blue-900 text-white text-xs py-2 px-3 sm:px-6 shadow-inner">
+        <div className="max-w-7xl mx-auto flex justify-between items-center gap-2">
           {/* Emergency support */}
-          <div className="flex items-center gap-2 font-medium">
-            <span className="flex h-2.5 w-2.5 relative">
+          <div className="flex items-center gap-1.5 font-bold">
+            <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
             </span>
-            <Phone size={14} className="text-red-300 animate-pulse" />
-            <span className="text-gray-100 font-semibold text-xs sm:text-sm">Support: 24/7 Emergency Call</span>
-            <a href="tel:+917004710751" className="text-white hover:underline hover:text-blue-200 font-bold tracking-wider text-xs sm:text-sm">
+            <Phone size={12} className="text-red-300 animate-pulse" />
+            <span className="text-gray-100 font-semibold text-[10px] sm:text-xs">Emergency 24/7:</span>
+            <a href="tel:+917004710751" className="text-white hover:underline hover:text-blue-200 font-bold tracking-wider text-[11px] sm:text-xs">
               +91 70047 10751
             </a>
           </div>
 
-          {/* Email / Location info */}
-          <div className="flex items-center gap-4 text-xs">
-            <div className="flex items-center gap-1.5 text-blue-100">
+          {/* Email / Cashless support */}
+          <div className="flex items-center gap-3 text-[11px] font-semibold">
+            <div className="hidden md:flex items-center gap-1.5 text-blue-100">
               <Mail size={12} />
               <span className="font-medium text-gray-200">Email:</span>
               <a href="mailto:healthca@gmail.com" className="hover:underline hover:text-white font-bold">
                 healthca@gmail.com
               </a>
             </div>
-            <div className="hidden md:flex items-center gap-1 text-blue-100">
+            <div className="hidden lg:flex items-center gap-1 text-blue-100">
               <Clock size={12} />
               <span>OPD: 09:00 AM - 07:00 PM</span>
             </div>
             <button
               onClick={() => handleLinkClick('pmjay')}
-              className="bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold px-2.5 py-0.5 rounded-full text-[10px] uppercase flex items-center gap-1 tracking-tight shadow-sm animate-pulse cursor-pointer border-none transition-all"
+              className="bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold px-3 py-1 rounded-full text-[9px] sm:text-[10px] uppercase flex items-center gap-1 tracking-wider shadow-sm animate-pulse cursor-pointer border-none transition-all"
             >
-              <ShieldAlert size={10} className="stroke-[3]" /> PM-JAY Cashless Care
+              <ShieldAlert size={10} className="stroke-[3]" /> PM-JAY Cashless
             </button>
           </div>
         </div>
@@ -87,22 +86,22 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20">
             {/* Logo area */}
-            <div className="flex-shrink-0 flex items-center gap-3">
+            <div className="flex-shrink-0 flex items-center gap-2 sm:gap-3 max-w-[75%] sm:max-w-none">
               <img
                 src={settings.logoUrl || logoImg}
                 alt="Navjyoti Multi Speciality Hospital Basti Logo"
-                className="w-12 h-12 object-contain rounded-xl shadow-md border border-slate-100 bg-white"
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-xl shadow-md border border-slate-100 bg-white"
                 referrerPolicy="no-referrer"
               />
-              <div className="flex flex-col">
-                <span className="font-display font-extrabold text-lg sm:text-xl text-blue-900 leading-tight tracking-tight uppercase">
+              <div className="flex flex-col min-w-0">
+                <span className="font-display font-black text-sm sm:text-lg text-blue-900 leading-none tracking-tight uppercase truncate">
                   NAVJYOTI
                 </span>
-                <span className="text-[10px] sm:text-xs text-slate-500 font-semibold tracking-widest uppercase -mt-0.5">
+                <span className="text-[9px] sm:text-[10px] text-slate-500 font-bold tracking-wider uppercase mt-0.5 leading-none truncate">
                   Multispeciality Hospital
                 </span>
-                <span className="text-[9px] text-gray-400 font-medium tracking-tight">
-                  Basti, Uttar Pradesh (PM-JAY Enpanelled)
+                <span className="text-[8px] sm:text-[9px] text-gray-400 font-semibold tracking-tight mt-0.5 leading-none truncate block">
+                  Basti, UP (Ayushman Approved)
                 </span>
               </div>
             </div>

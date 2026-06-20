@@ -1,7 +1,26 @@
 /// <reference types="vite/client" />
 import { createClient } from '@supabase/supabase-js';
-import { Doctor, Feedback, Appointment, Specialty, Inquiry, SiteSettings } from '../types';
+import { Doctor, Feedback, Appointment, Specialty, Inquiry, SiteSettings, NewsEvent } from '../types';
 import { DOCTORS, SPECIALTIES, INITIAL_FEEDBACKS } from '../data';
+
+export const DEFAULT_NEWS_EVENTS: NewsEvent[] = [
+  {
+    id: 'news_1',
+    title: 'Free Mega Health Checkup & Consultation Camp Coming This Sunday',
+    post: 'Navjyoti Hospital is organizing a free mega health camp for all citizens of Basti. Free medicine distributions and pathology consults will be provided. Please carry your previous reports for detailed medical advisory.',
+    dateTime: '2026-06-21T10:00',
+    location: 'Hospital Campus, Bansi Road, Basti',
+    photoUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=600'
+  },
+  {
+    id: 'news_2',
+    title: 'Ayushman Bharat Card Service Upgrade for instant 10-Minute Clearances',
+    post: 'We have optimized our on-site verification portal. Eligible patients can now verify their golden PM-JAY cards within 10 minutes at our counter and receive completely free diagnostics.',
+    dateTime: '2026-06-18T09:00',
+    location: 'PM-JAY Registration Counter, Block A',
+    photoUrl: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=600'
+  }
+];
 
 // Helper to decrypt obfuscated configurations
 const decrypt = (str: string): string => {
@@ -145,6 +164,9 @@ export const initDB = () => {
     ];
     safeSetItem(keyOf('inquiries'), JSON.stringify(list));
   }
+  if (!safeGetItem(keyOf('news_events'))) {
+    safeSetItem(keyOf('news_events'), JSON.stringify(DEFAULT_NEWS_EVENTS));
+  }
 };
 
 // ---------------------------------------------------------
@@ -280,6 +302,25 @@ const mapSettingsFromDb = (dbSet: any): SiteSettings => ({
   sliders: dbSet.sliders || [],
 });
 
+const mapNewsToDb = (item: NewsEvent) => ({
+  id: item.id,
+  title: item.title,
+  post: item.post,
+  date_time: item.dateTime,
+  location: item.location,
+  photo_url: item.photoUrl || null,
+});
+
+const mapNewsFromDb = (dbNews: any): NewsEvent => ({
+  id: dbNews.id,
+  title: dbNews.title,
+  post: dbNews.post,
+  dateTime: dbNews.date_time || dbNews.dateTime,
+  location: dbNews.location,
+  photoUrl: dbNews.photo_url || dbNews.photoUrl || undefined,
+  createdAt: dbNews.created_at || dbNews.createdAt,
+});
+
 // ---------------------------------------------------------
 // Real-Time Listener Setup
 // ---------------------------------------------------------
@@ -319,13 +360,17 @@ export const initRealtimeSync = () => {
       console.log('Realtime change: site_settings', payload);
       syncTableFromRemote('site_settings');
     })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'news_events' }, (payload) => {
+      console.log('Realtime change: news_events', payload);
+      syncTableFromRemote('news_events');
+    })
     .subscribe();
 
   currentChannels.push(channel);
 };
 
 // Internal table sync routine that pulls the tables on notifications
-async function syncTableFromRemote(key: 'doctors' | 'services' | 'feedbacks' | 'appointments' | 'inquiries' | 'site_settings') {
+async function syncTableFromRemote(key: 'doctors' | 'services' | 'feedbacks' | 'appointments' | 'inquiries' | 'site_settings' | 'news_events') {
   try {
     if (key === 'doctors') {
       const { data } = await supabase.from('doctors').select('*');
@@ -362,6 +407,13 @@ async function syncTableFromRemote(key: 'doctors' | 'services' | 'feedbacks' | '
       if (data && data.length > 0) {
         const settings = mapSettingsFromDb(data[0]);
         safeSetItem(keyOf('site_settings'), JSON.stringify(settings));
+      }
+    } else if (key === 'news_events') {
+      const { data } = await supabase.from('news_events').select('*');
+      if (data) {
+        const list = data.map(mapNewsFromDb);
+        safeSetItem(keyOf('news_events'), JSON.stringify(list));
+        await enforceNewsLimit();
       }
     }
     // Inform all listening hooks and routes to redraw with newest cache
@@ -465,6 +517,20 @@ export const syncWithCloudBackend = async () => {
       } else {
         const settings = mapSettingsFromDb(dbSet[0]);
         safeSetItem(keyOf('site_settings'), JSON.stringify(settings));
+      }
+    }
+
+    // 6.5. Sync News Events
+    const { data: dbNews, error: newsErr } = await supabase.from('news_events').select('*');
+    if (!newsErr && dbNews) {
+      if (dbNews.length === 0) {
+        const currentLocal = getNewsEvents();
+        console.log('Seeding cloud with default news events...', currentLocal);
+        await supabase.from('news_events').insert(currentLocal.map(mapNewsToDb));
+      } else {
+        const newList = dbNews.map(mapNewsFromDb);
+        safeSetItem(keyOf('news_events'), JSON.stringify(newList));
+        await enforceNewsLimit();
       }
     }
 
@@ -816,5 +882,95 @@ export const saveSiteSettings = async (settings: SiteSettings) => {
     }
   } catch (err) {
     console.error('Failed to sync saveSiteSettings to Supabase:', err);
+  }
+};
+
+// ---------------------------------------------------------
+// News and Events CRUD Operations
+// ---------------------------------------------------------
+export const getNewsEvents = (): NewsEvent[] => {
+  initDB();
+  const cached = safeGetItem(keyOf('news_events'));
+  if (!cached) return DEFAULT_NEWS_EVENTS;
+  try {
+    return JSON.parse(cached);
+  } catch (e) {
+    return DEFAULT_NEWS_EVENTS;
+  }
+};
+
+export const saveNewsEvents = (list: NewsEvent[]) => {
+  safeSetItem(keyOf('news_events'), JSON.stringify(list));
+  window.dispatchEvent(new Event('db_update'));
+};
+
+export const enforceNewsLimit = async () => {
+  const list = getNewsEvents();
+  if (list.length <= 5) return;
+
+  // Sort descending by dateTime (newest first)
+  const sorted = [...list].sort((a, b) => {
+    const timeA = new Date(a.dateTime).getTime();
+    const timeB = new Date(b.dateTime).getTime();
+    if (!isNaN(timeA) && !isNaN(timeB)) {
+      if (timeA !== timeB) return timeB - timeA;
+    }
+    return b.id.localeCompare(a.id);
+  });
+
+  const kept = sorted.slice(0, 5);
+  const removed = sorted.slice(5);
+
+  saveNewsEvents(kept);
+
+  for (const item of removed) {
+    try {
+      await supabase.from('news_events').delete().eq('id', item.id);
+    } catch (err) {
+      console.error('Failed to prune oldest news event:', err);
+    }
+  }
+};
+
+export const addNewsEvent = async (item: NewsEvent) => {
+  const list = getNewsEvents();
+  list.unshift(item);
+  saveNewsEvents(list);
+
+  try {
+    await supabase.from('news_events').insert([mapNewsToDb(item)]);
+  } catch (err) {
+    console.error('Failed to sync addNewsEvent to Supabase:', err);
+  }
+
+  await enforceNewsLimit();
+};
+
+export const updateNewsEvent = async (item: NewsEvent) => {
+  const list = getNewsEvents();
+  const index = list.findIndex(i => i.id === item.id);
+  if (index !== -1) {
+    list[index] = item;
+    saveNewsEvents(list);
+  }
+
+  try {
+    await supabase.from('news_events').update(mapNewsToDb(item)).eq('id', item.id);
+  } catch (err) {
+    console.error('Failed to sync updateNewsEvent to Supabase:', err);
+  }
+
+  await enforceNewsLimit();
+};
+
+export const deleteNewsEvent = async (id: string) => {
+  const list = getNewsEvents();
+  const filtered = list.filter(i => i.id !== id);
+  saveNewsEvents(filtered);
+
+  try {
+    await supabase.from('news_events').delete().eq('id', id);
+  } catch (err) {
+    console.error('Failed to sync deleteNewsEvent from Supabase:', err);
   }
 };

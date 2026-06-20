@@ -13,7 +13,6 @@ import WhyChooseUs from './components/WhyChooseUs';
 import AyushmanAssistance from './components/AyushmanAssistance';
 import DoctorsSection from './components/DoctorsSection';
 import NewsSection from './components/NewsSection';
-import GallerySection from './components/GallerySection';
 import FeedbackSection from './components/FeedbackSection';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
@@ -35,7 +34,7 @@ export default function App() {
   const handleNavigate = (sectionId: string) => {
     setActiveSection(sectionId);
     
-    if (['gallery', 'news', 'services', 'facilities', 'contact', 'pmjay'].includes(sectionId)) {
+    if (['news', 'services', 'facilities', 'contact', 'pmjay'].includes(sectionId)) {
       window.scrollTo(0, 0);
     } else {
       // Allow DOM to render standard home section elements before calculating their scroll position.
@@ -66,7 +65,7 @@ export default function App() {
   // Setup dynamic scroll listener to update navbar state
   useEffect(() => {
     const handleScroll = () => {
-      if (['gallery', 'news', 'services', 'facilities', 'contact', 'pmjay'].includes(activeSection)) return;
+      if (['news', 'services', 'facilities', 'contact', 'pmjay'].includes(activeSection)) return;
       const sections = ['home', 'about', 'specialists', 'feedback'];
       const scrollPos = window.scrollY + 120; // offset
 
@@ -119,23 +118,7 @@ export default function App() {
 
       {/* Main layout contents */}
       <main className="grow">
-        {activeSection === 'gallery' ? (
-          <div className="bg-white min-h-[60vh] pb-8">
-            {/* Breadcrumbs navigation */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-              <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6 bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-100 w-fit">
-                <button onClick={() => handleNavigate('home')} className="hover:text-blue-600 transition-colors cursor-pointer">
-                  Home
-                </button>
-                <span>/</span>
-                <span className="text-blue-600 font-bold">Hospital Gallery</span>
-              </nav>
-            </div>
-            
-            {/* Gallery component */}
-            <GallerySection />
-          </div>
-        ) : activeSection === 'news' ? (
+        {activeSection === 'news' ? (
           <div className="bg-slate-50 min-h-[60vh] pb-8">
             {/* Breadcrumbs navigation */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
