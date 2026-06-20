@@ -92,105 +92,116 @@ export default function AboutSection() {
                 className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
               >
                 {/* Graphic/Stats */}
-                <div className="lg:col-span-5 space-y-6">
-                  {hospitalPhoto ? (
-                    <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[4/5] sm:aspect-auto sm:h-[480px] border border-slate-200 group">
-                      <img 
-                        src={hospitalPhoto} 
-                        alt="Navjyoti Multispeciality Hospital Campus" 
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        referrerPolicy="no-referrer"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent p-6 flex flex-col justify-end">
-                        <h4 className="font-display font-black text-white text-lg">Navjyoti Hospital Basti</h4>
-                        <p className="text-white/80 text-xs">Modern critical facilities & experienced surgical wings</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="relative p-8 rounded-3xl bg-gradient-to-br from-blue-600 to-blue-900 text-white overflow-hidden shadow-xl shadow-blue-200/30 text-left">
-                      <div className="absolute top-0 right-0 p-4 opacity-5">
-                        <Landmark size={200} />
-                      </div>
-                      <h3 className="font-display font-bold text-2xl mb-4">Navjyoti Campus Basti</h3>
-                      <p className="text-blue-100 text-sm leading-relaxed mb-6 font-medium">
-                        A fully-equipped campus designed to address clinical emergencies, intensive dialysis care, and sutureless laparoscopic and ophthalmological surgeries.
-                      </p>
-                      <div className="space-y-3.5 text-sm font-semibold">
-                        <div className="flex items-center gap-2.5">
-                          <CheckCircle2 size={16} className="text-yellow-300" />
-                          <span>Empanelled with PM-JAY Cashless Scheme</span>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                          <CheckCircle2 size={16} className="text-yellow-300" />
-                          <span>24 / 7 Dedicated Ambulance & Trauma Room</span>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                          <CheckCircle2 size={16} className="text-yellow-300" />
-                          <span>In-house Diagnostic Laboratory</span>
+                <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                  <div className="lg:col-span-5 space-y-6">
+                    {hospitalPhoto ? (
+                      <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[4/5] sm:aspect-auto sm:h-[480px] border border-slate-200 group">
+                        <img 
+                          src={hospitalPhoto} 
+                          alt="Navjyoti Multispeciality Hospital Campus" 
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent p-6 flex flex-col justify-end">
+                          <h4 className="font-display font-black text-white text-lg">Navjyoti Hospital Basti</h4>
+                          <p className="text-white/80 text-xs">Modern critical facilities & experienced surgical wings</p>
                         </div>
                       </div>
-                    </div>
-                  )}
-                  
-                  {/* P_MJAY info snippet */}
-                  <div className="p-6 rounded-2xl bg-blue-50/50 border border-blue-105 border-blue-100 text-left">
-                    <span className="font-extrabold text-blue-900 text-sm block mb-1">Our Universal Pledge</span>
-                    <p className="text-xs text-slate-600 font-semibold leading-relaxed">
-                      To make medical diagnostic procedures and premium specialist attention comfortable, transparently billed, and accessible to families in Basti and nearby areas.
+                    ) : (
+                      <div className="relative p-8 rounded-3xl bg-gradient-to-br from-blue-600 to-blue-900 text-white overflow-hidden shadow-xl shadow-blue-200/30 text-left">
+                        <div className="absolute top-0 right-0 p-4 opacity-5">
+                          <Landmark size={200} />
+                        </div>
+                        <h3 className="font-display font-bold text-2xl mb-4">Navjyoti Campus Basti</h3>
+                        <p className="text-blue-100 text-sm leading-relaxed mb-6 font-medium">
+                          A fully-equipped campus designed to address clinical emergencies, intensive dialysis care, and sutureless laparoscopic and ophthalmological surgeries.
+                        </p>
+                        <div className="space-y-3.5 text-sm font-semibold">
+                          <div className="flex items-center gap-2.5">
+                            <CheckCircle2 size={16} className="text-yellow-300" />
+                            <span>Empanelled with PM-JAY Cashless Scheme</span>
+                          </div>
+                          <div className="flex items-center gap-2.5">
+                            <CheckCircle2 size={16} className="text-yellow-300" />
+                            <span>24 / 7 Dedicated Ambulance & Trauma Room</span>
+                          </div>
+                          <div className="flex items-center gap-2.5">
+                            <CheckCircle2 size={16} className="text-yellow-300" />
+                            <span>In-house Diagnostic Laboratory</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Main Information */}
+                  <div className="lg:col-span-7 text-left space-y-6">
+                    <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 uppercase tracking-tight">
+                      About Our Hospital
+                    </h3>
+                    <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-semibold">
+                      Navjyoti Multispeciality Hospital is dedicated to providing high-quality, affordable, and compassionate healthcare services to the people of Basti and nearby regions. Our hospital aims to deliver reliable medical care through experienced doctors, skilled nursing staff, and modern medical facilities in a safe and patient-friendly environment.
                     </p>
+                    <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+                      We offer a wide range of specialized healthcare services under one roof, including <em className="not-italic font-extrabold text-blue-900 bg-blue-50/75 px-1 rounded">General Surgery, Eye Care, Pediatrics, General Medicine, Orthopedics, Nephrology, Urology, Neurology, Cardiology, ENT (Ear, Nose & Throat), Dermatology</em>, and many more departments. Our focus is on accurate diagnosis, advanced treatment, and personalized care to ensure the best health outcomes for our patients.
+                    </p>
+                    <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+                      Equipped with modern medical technology and well-maintained infrastructure, Navjyoti Multispeciality Hospital continuously works to improve healthcare standards and patient satisfaction. We are committed to making quality healthcare accessible and trustworthy for the entire community.
+                    </p>
+
+                    {/* Accreditations Row inside About Hospital */}
+                    {credentials.length > 0 && (
+                      <div className="pt-4 border-t border-slate-100 space-y-3">
+                        <span className="text-xs font-mono font-black uppercase text-[#1e66f5] tracking-widest flex items-center gap-1.5">
+                          <Award size={14} /> Approved Accreditations & Permits
+                        </span>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                          {credentials.map((cred: any) => (
+                            <div key={cred.id} className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-2 shadow-sm">
+                              <div className="w-7 h-7 rounded-md overflow-hidden bg-white shrink-0 border border-slate-100 flex items-center justify-center">
+                                {cred.fileUrl.startsWith('data:') ? (
+                                  <img src={cred.fileUrl} alt={cred.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                ) : (
+                                  <FileText size={14} className="text-slate-400" />
+                                )}
+                              </div>
+                              <span className="text-[10px] font-black text-slate-700 truncate block leading-none" title={cred.title}>
+                                {cred.title}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Main Information */}
-                <div className="lg:col-span-7 text-left space-y-6">
-                  <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 uppercase tracking-tight">
-                    About Our Hospital
-                  </h3>
-                  <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-semibold">
-                    Navjyoti Multispeciality Hospital is dedicated to providing high-quality, affordable, and compassionate healthcare services to the people of Basti and nearby regions. Our hospital aims to deliver reliable medical care through experienced doctors, skilled nursing staff, and modern medical facilities in a safe and patient-friendly environment.
-                  </p>
-                  <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-                    We offer a wide range of specialized healthcare services under one roof, including <em className="not-italic font-extrabold text-blue-900 bg-blue-50/75 px-1 rounded">General Surgery, Eye Care, Pediatrics, General Medicine, Orthopedics, Nephrology, Urology, Neurology, Cardiology, ENT (Ear, Nose & Throat), Dermatology</em>, and many more departments. Our focus is on accurate diagnosis, advanced treatment, and personalized care to ensure the best health outcomes for our patients.
-                  </p>
-                  <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-                    Equipped with modern medical technology and well-maintained infrastructure, Navjyoti Multispeciality Hospital continuously works to improve healthcare standards and patient satisfaction. We are committed to making quality healthcare accessible and trustworthy for the entire community.
-                  </p>
-
-                  {/* Accreditations Row inside About Hospital */}
-                  {credentials.length > 0 && (
-                    <div className="pt-4 border-t border-slate-100 space-y-3">
-                      <span className="text-xs font-mono font-black uppercase text-[#1e66f5] tracking-widest flex items-center gap-1.5">
-                        <Award size={14} /> Approved Accreditations & Permits
-                      </span>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                        {credentials.map((cred: any) => (
-                          <div key={cred.id} className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-2 shadow-sm">
-                            <div className="w-7 h-7 rounded-md overflow-hidden bg-white shrink-0 border border-slate-100 flex items-center justify-center">
-                              {cred.fileUrl.startsWith('data:') ? (
-                                <img src={cred.fileUrl} alt={cred.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                              ) : (
-                                <FileText size={14} className="text-slate-400" />
-                              )}
-                            </div>
-                            <span className="text-[10px] font-black text-slate-700 truncate block leading-none" title={cred.title}>
-                              {cred.title}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
+                {/* Unified 3-column row for Pledge, Mission, and Vision at the same level */}
+                <div className="lg:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-5 pt-8 mt-4 border-t border-slate-100 text-left w-full">
+                  {/* Card 1: Our Universal Pledge */}
+                  <div className="p-5 bg-blue-50/40 border border-blue-100/50 rounded-2xl flex flex-col justify-between h-full">
+                    <div>
+                      <span className="block text-sm font-extrabold text-blue-900 mb-1.5 uppercase tracking-wider font-display">Our Universal Pledge</span>
+                      <p className="text-xs text-slate-600 leading-relaxed font-semibold">
+                        To make medical diagnostic procedures and premium specialist attention comfortable, transparently billed, and accessible to families in Basti and nearby areas.
+                      </p>
                     </div>
-                  )}
-                  
-                  {/* Mission & Vision Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4">
-                    <div className="p-5 bg-blue-50/40 border border-blue-100/50 rounded-2xl">
+                  </div>
+
+                  {/* Card 2: Our Mission */}
+                  <div className="p-5 bg-blue-50/40 border border-blue-100/50 rounded-2xl flex flex-col justify-between h-full">
+                    <div>
                       <span className="block text-sm font-extrabold text-blue-900 mb-1.5 uppercase tracking-wider font-display">Our Mission</span>
                       <p className="text-xs text-slate-600 leading-relaxed font-semibold">
                         To provide accessible, affordable, and quality healthcare with compassion, integrity, and a commitment to improving the health of our community.
                       </p>
                     </div>
-                    <div className="p-5 bg-orange-50/30 border border-orange-105 border-orange-100 rounded-2xl">
-                      <span className="block text-sm font-extrabold text-orange-950 mb-1.5 uppercase tracking-wider font-display">Our Vision</span>
+                  </div>
+
+                  {/* Card 3: Our Vision */}
+                  <div className="p-5 bg-orange-50/30 border border-orange-100 rounded-2xl flex flex-col justify-between h-full">
+                    <div>
+                      <span className="block text-sm font-extrabold text-[#7c2d12] mb-1.5 uppercase tracking-wider font-display">Our Vision</span>
                       <p className="text-xs text-slate-600 leading-relaxed font-semibold">
                         To become a trusted and leading healthcare institution in the region by delivering excellence in medical care, innovation, and patient-centered services.
                       </p>

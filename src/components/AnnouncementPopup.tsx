@@ -16,28 +16,19 @@ export default function AnnouncementPopup() {
   }, []);
 
   useEffect(() => {
-    // Check if the current notice has been closed during this session
     const popupConfig = settings.announcementPopup;
     if (popupConfig && popupConfig.enabled && popupConfig.title) {
-      const storageKey = `navjyoti_notice_closed_${popupConfig.title.replace(/\s+/g, '_')}`;
-      const isClosedBefore = localStorage.getItem(storageKey);
-      if (!isClosedBefore) {
-        // Trigger popup with a small delay for premium feels
-        const timer = setTimeout(() => {
-          setIsOpen(true);
-        }, 1000);
-        return () => clearTimeout(timer);
-      }
+      const timer = setTimeout(() => {
+        setIsOpen(true);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setIsOpen(false);
     }
   }, [settings.announcementPopup]);
 
   const handleClose = () => {
     setIsOpen(false);
-    const popupConfig = settings.announcementPopup;
-    if (popupConfig && popupConfig.title) {
-      const storageKey = `navjyoti_notice_closed_${popupConfig.title.replace(/\s+/g, '_')}`;
-      localStorage.setItem(storageKey, 'true');
-    }
   };
 
   const popupConfig = settings.announcementPopup;
