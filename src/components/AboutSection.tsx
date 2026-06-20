@@ -146,11 +146,14 @@ export default function AboutSection() {
                   <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 uppercase tracking-tight">
                     About Our Hospital
                   </h3>
-                  <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-medium">
+                  <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-semibold">
                     Navjyoti Multispeciality Hospital is dedicated to providing high-quality, affordable, and compassionate healthcare services to the people of Basti and nearby regions. Our hospital aims to deliver reliable medical care through experienced doctors, skilled nursing staff, and modern medical facilities in a safe and patient-friendly environment.
                   </p>
-                  <p className="text-slate-605 text-slate-600 text-sm sm:text-base leading-relaxed">
-                    We offer a wide range of specialized healthcare services under one roof, including <em className="not-italic font-extrabold text-blue-900">General Surgery, Eye Surgery, Pediatrics, General Medicine, Orthopedics, Nephrology, Urology, Gynecology</em>, and many more. Our focus is on accurate diagnosis, advanced treatment, and personalized care to ensure the best health outcomes for our patients.
+                  <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+                    We offer a wide range of specialized healthcare services under one roof, including <em className="not-italic font-extrabold text-blue-900 bg-blue-50/75 px-1 rounded">General Surgery, Eye Care, Pediatrics, General Medicine, Orthopedics, Nephrology, Urology, Neurology, Cardiology, ENT (Ear, Nose & Throat), Dermatology</em>, and many more departments. Our focus is on accurate diagnosis, advanced treatment, and personalized care to ensure the best health outcomes for our patients.
+                  </p>
+                  <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+                    Equipped with modern medical technology and well-maintained infrastructure, Navjyoti Multispeciality Hospital continuously works to improve healthcare standards and patient satisfaction. We are committed to making quality healthcare accessible and trustworthy for the entire community.
                   </p>
 
                   {/* Accreditations Row inside About Hospital */}
