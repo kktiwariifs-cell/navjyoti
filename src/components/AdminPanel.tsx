@@ -13,8 +13,20 @@ import { Doctor, Specialty, Appointment, Feedback, Inquiry, SiteSettings, NewsEv
 import { 
   Users, Activity, Calendar, Mail, MessageSquare, LogOut, Plus, Edit, Trash2, 
   Check, X, Menu, Search, CheckCircle2, AlertCircle, Clock, ShieldAlert, Star, 
-  Printer, UserCheck, ChevronRight, LayoutDashboard, Lock, Eye, EyeOff, FileText, Settings, Heart
+  Printer, UserCheck, ChevronRight, LayoutDashboard, Lock, Eye, EyeOff, FileText, Settings, Heart,
+  Ear, HeartPulse, Baby, Bone
 } from 'lucide-react';
+
+const departmentIconMap: Record<string, React.ComponentType<any>> = {
+  Activity: Activity,
+  Eye: Eye,
+  Ear: Ear,
+  HeartPulse: HeartPulse,
+  Baby: Baby,
+  ShieldAlert: ShieldAlert,
+  Bone: Bone,
+  Heart: Heart,
+};
 
 interface AdminPanelProps {
   onLogout: () => void;
@@ -1105,48 +1117,118 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
               </button>
             </div>
 
-            {/* List of departments in grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {services.filter(s => s.title.toLowerCase().includes(searchTerm.toLowerCase())).map(serv => (
-                <div key={serv.id} className="bg-slate-50 p-5 rounded-2xl border border-slate-200/70 flex flex-col justify-between gap-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
-                          <Activity size={18} />
-                        </div>
-                        <h3 className="font-display font-extrabold text-slate-900 text-sm sm:text-base leading-tight">{serv.title}</h3>
-                      </div>
-                      
-                      <div className="flex gap-1">
-                        <button
-                          onClick={() => handleOpenServiceModal(serv)}
-                          className="bg-white hover:bg-slate-100 text-slate-600 p-1.5 rounded-lg border border-slate-200 cursor-pointer"
-                        >
-                          <Edit size={13} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteService(serv.id)}
-                          className="bg-red-55 p-1.5 bg-red-100 hover:bg-red-200 text-red-800 rounded-lg cursor-pointer"
-                        >
-                          <Trash2 size={13} />
-                        </button>
-                      </div>
-                    </div>
+            {/* List of departments in table as requested */}
+            <div className="overflow-x-auto rounded-2xl border border-slate-250 shadow-sm bg-white">
+              <table className="w-full text-left text-xs sm:text-sm min-w-[700px]">
+                <thead className="bg-[#0c2a63] text-white font-bold uppercase tracking-wider border-b border-slate-200">
+                  <tr>
+                    <th className="p-4 rounded-tl-2xl">Department Title</th>
+                    <th className="p-4">Showcase Image</th>
+                    <th className="p-4">Description</th>
+                    <th className="p-4">Surgeries & Features</th>
+                    <th className="p-4 text-right rounded-tr-2xl">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 bg-white">
+                  {services.filter(s => s.title.toLowerCase().includes(searchTerm.toLowerCase())).map(serv => {
+                    const IconComp = departmentIconMap[serv.iconName] || Activity;
+                    const isAttachedJpeg = serv.imageUrl?.startsWith('data:image/');
 
-                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{serv.description}</p>
-                    
-                    <div className="pt-2 flex flex-wrap gap-1.5">
-                      {serv.features.slice(0, 3).map((f, idx) => (
-                        <span key={idx} className="text-[10px] bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded-full">{f}</span>
-                      ))}
-                      {serv.features.length > 3 && (
-                        <span className="text-[10px] text-slate-400 font-bold">+{serv.features.length - 3} more</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
+                    return (
+                      <tr key={serv.id} className="hover:bg-blue-50/20 transition-colors">
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-blue-105 bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                              <IconComp size={16} />
+                            </div>
+                            <div>
+                              <div className="font-extrabold text-slate-900 leading-tight text-sm sm:text-base">{serv.title}</div>
+                              <div className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">Icon: {serv.iconName}</div>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td className="p-4">
+                          {serv.imageUrl ? (
+                            <div className="flex items-center gap-2">
+                              <img 
+                                src={serv.imageUrl} 
+                                alt={serv.title} 
+                                className="w-12 h-12 rounded-lg object-cover border border-slate-200 shadow-xs shrink-0"
+                                referrerPolicy="no-referrer"
+                              />
+                              <div className="flex flex-col gap-0.5">
+                                {isAttachedJpeg ? (
+                                  <span className="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-1.5 py-0.5 rounded-full select-none w-max leading-none">
+                                    Attached JPEG
+                                  </span>
+                                ) : (
+                                  <span className="text-[9px] bg-blue-100 text-blue-800 font-extrabold px-1.5 py-0.5 rounded-full select-none w-max leading-none">
+                                    Image URL
+                                  </span>
+                                )}
+                                <span className="text-[9px] text-slate-400 font-bold max-w-[110px] truncate" title={serv.imageUrl}>
+                                  {isAttachedJpeg ? 'Local JPEG File' : 'External Asset'}
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="text-[9px] bg-slate-100 text-slate-400 font-bold px-2 py-1 rounded-md">
+                              No Image Set
+                            </span>
+                          )}
+                        </td>
+
+                        <td className="p-4 max-w-[200px]">
+                          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed" title={serv.description}>
+                            {serv.description}
+                          </p>
+                        </td>
+
+                        <td className="p-4 max-w-[220px]">
+                          <div className="flex flex-wrap gap-1">
+                            {serv.features && serv.features.map((f, idx) => (
+                              <span key={idx} className="text-[10px] bg-[#f0f4fc] text-blue-900 font-extrabold px-2 py-0.5 rounded-full border border-blue-105">
+                                {f}
+                              </span>
+                            ))}
+                            {(!serv.features || serv.features.length === 0) && (
+                              <span className="text-xs text-slate-400 font-bold">None set</span>
+                            )}
+                          </div>
+                        </td>
+
+                        <td className="p-4 text-right">
+                          <div className="flex gap-1.5 justify-end">
+                            <button
+                              onClick={() => handleOpenServiceModal(serv)}
+                              className="bg-slate-50 hover:bg-slate-100 text-slate-600 p-2 rounded-lg border border-slate-200 cursor-pointer shadow-xs transition-all active:scale-95"
+                              title="Edit Department"
+                            >
+                              <Edit size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteService(serv.id)}
+                              className="bg-red-50 hover:bg-red-100 text-red-700 p-2 rounded-lg border border-red-200 cursor-pointer shadow-xs transition-all active:scale-95"
+                              title="Delete Department"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+
+                  {services.filter(s => s.title.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="p-8 text-center text-slate-400 font-bold text-xs bg-slate-50/50">
+                        No departments found matching "{searchTerm}"
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
