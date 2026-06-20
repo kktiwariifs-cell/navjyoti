@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Navjyoti Multispeciality Hospital",
+  "description": "Official website of Navjyoti Multispeciality Hospital, Basti, Uttar Pradesh. Featuring specialist doctors, Ayushman Bharat (PM-JAY) assistance, and virtual appointment booking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
