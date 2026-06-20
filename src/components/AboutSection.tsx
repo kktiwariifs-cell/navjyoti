@@ -22,14 +22,14 @@ export default function AboutSection() {
     name: settings.chairmanName || 'Dr. Prem Prakash Dubey',
     qualification: settings.chairmanQualification || 'MBBS, MS (Ophthalmology)',
     photo: settings.chairmanPhotoUrl || '',
-    bio: settings.chairmanBio || 'At Navjyoti Multispeciality Hospital, Basti, our mission is to provide high-quality, affordable, and compassionate healthcare to the people of our region. We believe that good health is the foundation of a happy and productive life, and our hospital is dedicated to delivering medical services that meet the highest standards of care and professionalism.'
+    bio: settings.chairmanBio || 'At Navjyoti Multispeciality Hospital, Basti, our mission is to provide high-quality, affordable, and compassionate healthcare to the people of our region. We believe that good health is the foundation of a happy and productive life, and our hospital is dedicated to delivering medical services that meet the highest standards of care and professionalism.\n\nSince its establishment, Navjyoti Multispeciality Hospital has been committed to building a healthcare facility where patients receive not only advanced medical treatment but also respect, empathy, and personal attention. Our team of experienced doctors, skilled nurses, and dedicated healthcare professionals work together to ensure that every patient receives accurate diagnosis, effective treatment, and continuous support throughout their healing journey.'
   };
 
   const director = {
     name: settings.directorName || 'Dr. Vidushi Dubey',
     qualification: settings.directorQualification || 'MBBS, MS (General & Laparoscopic Surgery)',
     photo: settings.directorPhotoUrl || '',
-    bio: settings.directorBio || 'Since its establishment, Navjyoti Multispeciality Hospital has been committed to building a healthcare facility where patients receive not only advanced medical treatment but also respect, empathy, and personal attention. Our team of experienced doctors, skilled nurses, and dedicated healthcare professionals work together to ensure that every patient receives accurate diagnosis, effective treatment, and continuous support throughout their healing journey.'
+    bio: settings.directorBio || 'The hospital is equipped with modern medical infrastructure, advanced diagnostic facilities, and specialized departments that enable us to provide comprehensive healthcare services under one roof. From routine consultations to specialized treatments and emergency care, we strive to maintain excellence in every aspect of patient care.\n\nWe also believe in the importance of preventive healthcare and community awareness. Our goal is not only to treat illness but also to promote healthier lifestyles and improve the overall well-being of our community.\n\nWe take great pride in the commitment and dedication of our medical team. Together, we aim to make Navjyoti Multispeciality Hospital a trusted healthcare destination for families in Basti and surrounding areas. We sincerely thank our patients and the community for their trust and continued support.'
   };
 
   const credentials = settings.credentials || [];
@@ -221,10 +221,10 @@ export default function AboutSection() {
                       <Quote size={50} className="fill-current" />
                     </div>
                     {/* Render chairman bio and director bio as paragraphs of a unified message */}
-                    {chairman.bio.split('\n').map((para, i) => (
+                    {chairman.bio.split('\n').map(p => p.trim()).filter(Boolean).map((para, i) => (
                       <p key={`c-${i}`}>{para}</p>
                     ))}
-                    {director.bio.split('\n').map((para, i) => (
+                    {director.bio.split('\n').map(p => p.trim()).filter(Boolean).map((para, i) => (
                       <p key={`d-${i}`}>{para}</p>
                     ))}
                   </div>

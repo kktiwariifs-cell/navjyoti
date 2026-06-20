@@ -14,7 +14,7 @@ import {
   Users, Activity, Calendar, Mail, MessageSquare, LogOut, Plus, Edit, Trash2, 
   Check, X, Menu, Search, CheckCircle2, AlertCircle, Clock, ShieldAlert, Star, 
   Printer, UserCheck, ChevronRight, LayoutDashboard, Lock, Eye, EyeOff, FileText, Settings, Heart,
-  Ear, HeartPulse, Baby, Bone, Video, Award, Upload
+  Ear, HeartPulse, Baby, Bone, Video, Award, Upload, User
 } from 'lucide-react';
 
 const departmentIconMap: Record<string, React.ComponentType<any>> = {
@@ -1056,8 +1056,26 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                   {doctors.filter(d => d.name.toLowerCase().includes(searchTerm.toLowerCase()) || d.specialization.toLowerCase().includes(searchTerm.toLowerCase())).map(doc => (
                     <tr key={doc.id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="p-4">
-                        <div className="font-bold text-slate-900 text-sm sm:text-base">{doc.name}</div>
-                        <div className="text-xs text-blue-700 font-semibold">{doc.specialization}</div>
+                        <div className="flex items-center gap-3.5">
+                          {doc.image && (doc.image.startsWith('data:image/') || doc.image.startsWith('http://') || doc.image.startsWith('https://')) ? (
+                            <div className="w-12 h-15 sm:w-14 sm:h-17 rounded-xl overflow-hidden border border-slate-200 shadow-sm shrink-0 bg-slate-50">
+                              <img 
+                                src={doc.image} 
+                                alt={doc.name} 
+                                className="w-full h-full object-cover"
+                                referrerPolicy="no-referrer"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-12 h-15 sm:w-14 sm:h-17 rounded-xl bg-gradient-to-tr from-blue-50 to-blue-100 flex items-center justify-center text-blue-600 shrink-0 border border-slate-200">
+                              <User size={22} className="text-blue-700 stroke-[1.5]" />
+                            </div>
+                          )}
+                          <div className="space-y-0.5">
+                            <div className="font-extrabold text-slate-900 text-sm sm:text-base leading-snug">{doc.name}</div>
+                            <div className="text-xs text-blue-700 font-extrabold">{doc.specialization}</div>
+                          </div>
+                        </div>
                       </td>
                       <td className="p-4 text-slate-700 font-medium">{doc.qualification}</td>
                       <td className="p-4 text-slate-800 font-bold">{doc.experience} Years</td>
