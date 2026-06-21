@@ -8,13 +8,29 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 ---------------------------------------------------------
 -- 1. Site Settings Table
 ---------------------------------------------------------
+-- Represents general hospital parameters, biography assets, leadership messages,
+-- medical registration logs, and custom empanelled cashless health systems.
 CREATE TABLE IF NOT EXISTS public.site_settings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     logo_url TEXT,
     hero_title TEXT NOT NULL DEFAULT 'Caring Hearts. Expert Hands.',
     hero_subtitle TEXT NOT NULL DEFAULT 'Navjyoti Multispeciality Hospital, located in Basti, Uttar Pradesh, is committed to delivering modern, affordable, and deeply compassionate healthcare.',
     hero_image_url TEXT,
-    sliders JSONB DEFAULT '[]'::jsonb,
+    
+    -- Sliders & Nested JSONB configuration schema.
+    -- Stores structured content safely to support instant NoSQL structures inside PostgreSQL.
+    -- Structure: {
+    --   "slides": [{ "image": "...", "title": "...", "subtitle": "..." }],
+    --   "aboutPhotoUrl": "...", -- Biography/accreditation section photograph
+    --   "directorName": "...", "directorPhotoUrl": "...", "directorQualification": "...", "directorBio": "...",
+    --   "chairmanName": "...", "chairmanPhotoUrl": "...", "chairmanQualification": "...", "chairmanBio": "...",
+    --   "credentials": [{ "id": "...", "title": "...", "fileUrl": "...", "date": "..." }], -- Accreditations & Certificates
+    --   "gallery": [{ "id": "...", "title": "...", "type": "image|video", "url": "..." }], -- Photo/Video Tour Assets
+    --   "tpaFacilities": [{ "id": "...", "name": "...", "description": "...", "logoUrl": "..." }], -- TPA Cashless partner lists
+    --   "announcementPopup": { "enabled": true|false, "title": "...", "message": "...", "badgeText": "...", ... }
+    -- }
+    sliders JSONB DEFAULT '{"slides": [], "credentials": [], "gallery": [], "tpaFacilities": [], "announcementPopup": {"enabled": false}}'::jsonb,
+    
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );

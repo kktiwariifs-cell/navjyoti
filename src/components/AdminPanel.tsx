@@ -101,6 +101,20 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
   const [newsPhotoUrl, setNewsPhotoUrl] = useState('');
   const [photoError, setPhotoError] = useState('');
 
+  // Editing states for Credentials, Gallery, and TPA
+  const [editingCredId, setEditingCredId] = useState<string | null>(null);
+  const [editingCredTitle, setEditingCredTitle] = useState('');
+
+  const [editingGalId, setEditingGalId] = useState<string | null>(null);
+  const [editingGalTitle, setEditingGalTitle] = useState('');
+  const [editingGalType, setEditingGalType] = useState<'image' | 'video'>('image');
+  const [editingGalUrl, setEditingGalUrl] = useState('');
+
+  const [editingTpaId, setEditingTpaId] = useState<string | null>(null);
+  const [editingTpaName, setEditingTpaName] = useState('');
+  const [editingTpaDesc, setEditingTpaDesc] = useState('');
+  const [editingTpaLogo, setEditingTpaLogo] = useState('');
+
   // Ticket Printing state
   const [printTicket, setPrintTicket] = useState<Appointment | null>(null);
 
@@ -2281,7 +2295,43 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                                   <FileText size={18} className="text-blue-500" />
                                 )}
                               </div>
-                              <span className="font-extrabold text-slate-800 leading-snug">{cred.title}</span>
+                              {editingCredId === cred.id ? (
+                                <div className="space-y-1.5 grow">
+                                  <input
+                                    type="text"
+                                    className="w-full text-xs p-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 font-semibold"
+                                    value={editingCredTitle}
+                                    onChange={e => setEditingCredTitle(e.target.value)}
+                                  />
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-[9px] text-slate-400 font-medium">Re-upload doc (optional):</span>
+                                    <input
+                                      type="file"
+                                      accept="image/*, application/pdf"
+                                      className="text-[9px] w-full"
+                                      onChange={e => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                          const reader = new FileReader();
+                                          reader.onload = () => {
+                                            if (typeof reader.result === 'string') {
+                                              setSiteSettings(prev => ({
+                                                ...prev,
+                                                credentials: (prev.credentials || []).map(c => 
+                                                  c.id === cred.id ? { ...c, fileUrl: reader.result as string } : c
+                                                )
+                                              }));
+                                            }
+                                          };
+                                          reader.readAsDataURL(file);
+                                        }
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              ) : (
+                                <span className="font-extrabold text-slate-800 leading-snug">{cred.title}</span>
+                              )}
                             </div>
                           </td>
                           <td className="p-4 text-slate-500 font-bold">{cred.date || 'Active'}</td>
@@ -2291,19 +2341,66 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                             </span>
                           </td>
                           <td className="p-4 text-right">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSiteSettings(prev => ({
-                                  ...prev,
-                                  credentials: (prev.credentials || []).filter(c => c.id !== cred.id)
-                                }));
-                              }}
-                              className="text-red-500 hover:text-red-700 p-2 bg-slate-50 hover:bg-rose-50 rounded-xl transition-all border border-slate-200 cursor-pointer inline-block shadow-sm"
-                              title="Delete accreditation"
-                            >
-                              <Trash2 size={14} />
-                            </button>
+                            {editingCredId === cred.id ? (
+                              <div className="flex gap-1.5 justify-end">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (!editingCredTitle.trim()) {
+                                      alert('Title cannot be empty');
+                                      return;
+                                    }
+                                    setSiteSettings(prev => ({
+                                      ...prev,
+                                      credentials: (prev.credentials || []).map(c => 
+                                        c.id === cred.id ? { ...c, title: editingCredTitle } : c
+                                      )
+                                    }));
+                                    setEditingCredId(null);
+                                    alert('Certificate details modified in form. Trigger Commit Changes to sync to database.');
+                                  }}
+                                  className="text-emerald-700 hover:text-emerald-900 p-2 bg-emerald-50 rounded-xl transition-all border border-emerald-250 cursor-pointer inline-flex items-center justify-center shadow-sm"
+                                  title="Save Changes"
+                                >
+                                  <Check size={14} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingCredId(null)}
+                                  className="text-slate-500 hover:text-slate-750 p-2 bg-slate-50 rounded-xl transition-all border border-slate-200 cursor-pointer inline-flex items-center justify-center shadow-sm"
+                                  title="Cancel"
+                                >
+                                  <X size={14} />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex gap-1.5 justify-end">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditingCredId(cred.id);
+                                    setEditingCredTitle(cred.title);
+                                  }}
+                                  className="text-blue-500 hover:text-blue-700 p-2 bg-slate-50 hover:bg-blue-50 rounded-xl transition-all border border-slate-200 cursor-pointer inline-block shadow-sm"
+                                  title="Edit certificate details"
+                                >
+                                  <Edit size={14} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSiteSettings(prev => ({
+                                      ...prev,
+                                      credentials: (prev.credentials || []).filter(c => c.id !== cred.id)
+                                    }));
+                                  }}
+                                  className="text-red-500 hover:text-red-700 p-2 bg-slate-50 hover:bg-rose-50 rounded-xl transition-all border border-slate-200 cursor-pointer inline-block shadow-sm"
+                                  title="Delete accreditation"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -2434,43 +2531,158 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                           <td className="p-4">
                             <div className="flex items-center gap-3">
                               <div className="w-16 h-10 rounded-lg overflow-hidden border border-slate-200 bg-slate-900 flex-shrink-0 flex items-center justify-center shadow-sm">
-                                {item.type === 'video' ? (
-                                  <Video size={16} className="text-yellow-400" />
+                                {editingGalId === item.id ? (
+                                  editingGalType === 'video' ? (
+                                    <Video size={16} className="text-yellow-400" />
+                                  ) : (
+                                    <img src={editingGalUrl || item.url} alt={editingGalTitle} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                  )
                                 ) : (
-                                  <img src={item.url} alt={item.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                  item.type === 'video' ? (
+                                    <Video size={16} className="text-yellow-400" />
+                                  ) : (
+                                    <img src={item.url} alt={item.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                  )
                                 )}
                               </div>
-                              <span className="font-extrabold text-slate-800 leading-snug truncate max-w-[200px]">{item.title}</span>
+                              {editingGalId === item.id ? (
+                                <div className="space-y-1.5 grow">
+                                  <input
+                                    type="text"
+                                    className="w-full text-xs p-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 font-semibold"
+                                    value={editingGalTitle}
+                                    onChange={e => setEditingGalTitle(e.target.value)}
+                                    placeholder="Descriptive title/caption..."
+                                  />
+                                  <input
+                                    type="text"
+                                    className="w-full text-[10px] p-1 bg-white border border-slate-200 rounded focus:outline-none focus:border-blue-500 font-mono"
+                                    value={editingGalUrl}
+                                    onChange={e => setEditingGalUrl(e.target.value)}
+                                    placeholder="Paste photo/video URL or file base64..."
+                                  />
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-[9px] text-slate-400 font-medium">Upload file (optional):</span>
+                                    <input
+                                      type="file"
+                                      accept="image/*, video/*"
+                                      className="text-[9px] w-full"
+                                      onChange={e => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                          const reader = new FileReader();
+                                          reader.onload = () => {
+                                            if (typeof reader.result === 'string') {
+                                              setEditingGalUrl(reader.result);
+                                            }
+                                          };
+                                          reader.readAsDataURL(file);
+                                        }
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              ) : (
+                                <span className="font-extrabold text-slate-800 leading-snug truncate max-w-[200px]">{item.title}</span>
+                              )}
                             </div>
                           </td>
                           <td className="p-4">
-                            {item.type === 'video' ? (
-                              <span className="px-2 py-0.5 text-[9px] bg-amber-50 text-amber-700 border border-amber-200 font-extrabold rounded-full inline-flex items-center gap-1 uppercase tracking-wider">
-                                Video Tour
-                              </span>
+                            {editingGalId === item.id ? (
+                              <select
+                                className="text-[10px] p-1 bg-white border border-slate-200 rounded font-semibold"
+                                value={editingGalType}
+                                onChange={e => setEditingGalType(e.target.value as 'image' | 'video')}
+                              >
+                                <option value="image">Still Photo</option>
+                                <option value="video">Video Tour</option>
+                              </select>
                             ) : (
-                              <span className="px-2 py-0.5 text-[9px] bg-blue-50 text-blue-700 border border-blue-200 font-extrabold rounded-full inline-flex items-center gap-1 uppercase tracking-wider">
-                                Still Photo
-                              </span>
+                              item.type === 'video' ? (
+                                <span className="px-2 py-0.5 text-[9px] bg-amber-50 text-amber-700 border border-amber-200 font-extrabold rounded-full inline-flex items-center gap-1 uppercase tracking-wider">
+                                  Video Tour
+                                </span>
+                              ) : (
+                                <span className="px-2 py-0.5 text-[9px] bg-blue-50 text-blue-700 border border-blue-200 font-extrabold rounded-full inline-flex items-center gap-1 uppercase tracking-wider">
+                                  Still Photo
+                                </span>
+                              )
                             )}
                           </td>
                           <td className="p-4 font-mono text-[10px] text-slate-400 truncate max-w-[200px]" title={item.url}>
-                            {item.url.startsWith('data:image/') ? 'Self-Hosted Image (Base64)' : item.url}
+                            {editingGalId === item.id ? (
+                              <span className="text-[9px] text-slate-400">Editing media URL...</span>
+                            ) : (
+                              item.url.startsWith('data:image/') ? 'Self-Hosted Image (Base64)' : item.url
+                            )}
                           </td>
-                          <td className="p-4 text-right">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSiteSettings(prev => ({
-                                  ...prev,
-                                  gallery: (prev.gallery || []).filter(g => g.id !== item.id)
-                                }));
-                              }}
-                              className="text-red-500 hover:text-red-700 p-2 bg-slate-50 hover:bg-rose-50 rounded-xl transition-all border border-slate-200 cursor-pointer inline-block shadow-sm"
-                              title="Delete gallery item"
-                            >
-                              <Trash2 size={14} />
-                            </button>
+                          <td className="p-4 text-right font-semibold">
+                            {editingGalId === item.id ? (
+                              <div className="flex gap-1.5 justify-end">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (!editingGalTitle.trim()) {
+                                      alert('Caption cannot be empty');
+                                      return;
+                                    }
+                                    if (!editingGalUrl.trim()) {
+                                      alert('Media URL / Source cannot be empty');
+                                      return;
+                                    }
+                                    setSiteSettings(prev => ({
+                                      ...prev,
+                                      gallery: (prev.gallery || []).map(g => 
+                                        g.id === item.id ? { ...g, title: editingGalTitle, type: editingGalType, url: editingGalUrl } : g
+                                      )
+                                    }));
+                                    setEditingGalId(null);
+                                    alert('Gallery asset updated and staged! Scroll down and Click Commit Changes to save.');
+                                  }}
+                                  className="text-emerald-700 hover:text-emerald-900 p-2 bg-emerald-50 rounded-xl transition-all border border-emerald-250 cursor-pointer inline-flex items-center justify-center shadow-sm"
+                                  title="Save Changes"
+                                >
+                                  <Check size={14} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingGalId(null)}
+                                  className="text-slate-500 hover:text-slate-750 p-2 bg-slate-50 rounded-xl transition-all border border-slate-200 cursor-pointer inline-flex items-center justify-center shadow-sm"
+                                  title="Cancel"
+                                >
+                                  <X size={14} />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex gap-1.5 justify-end">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditingGalId(item.id);
+                                    setEditingGalTitle(item.title);
+                                    setEditingGalType(item.type);
+                                    setEditingGalUrl(item.url);
+                                  }}
+                                  className="text-blue-500 hover:text-blue-700 p-2 bg-slate-50 hover:bg-blue-50 rounded-xl transition-all border border-slate-200 cursor-pointer inline-block shadow-sm"
+                                  title="Edit gallery item"
+                                >
+                                  <Edit size={14} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSiteSettings(prev => ({
+                                      ...prev,
+                                      gallery: (prev.gallery || []).filter(g => g.id !== item.id)
+                                    }));
+                                  }}
+                                  className="text-red-500 hover:text-red-700 p-2 bg-slate-50 hover:bg-rose-50 rounded-xl transition-all border border-slate-200 cursor-pointer inline-block shadow-sm"
+                                  title="Delete gallery item"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -2758,21 +2970,85 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                             <td className="p-4">
                               <div className="flex items-center gap-3.5 text-left">
                                 <div className="w-12 h-12 rounded-xl bg-white border border-slate-150 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
-                                  {tpa.logoUrl ? (
-                                    <img src={tpa.logoUrl} alt={tpa.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                  {editingTpaId === tpa.id ? (
+                                    editingTpaLogo ? (
+                                      <img src={editingTpaLogo} alt={editingTpaName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                    ) : (
+                                      <span className="text-xs font-bold text-slate-400">TPA</span>
+                                    )
                                   ) : (
-                                    <span className="text-xs font-bold text-slate-400">TPA</span>
+                                    tpa.logoUrl ? (
+                                      <img src={tpa.logoUrl} alt={tpa.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                    ) : (
+                                      <span className="text-xs font-bold text-slate-400">TPA</span>
+                                    )
                                   )}
                                 </div>
-                                <div className="space-y-0.5">
-                                  <h5 className="font-display font-extrabold text-[#0d2a63] text-sm leading-snug uppercase">{tpa.name}</h5>
+                                <div className="space-y-1 select-none grow">
+                                  {editingTpaId === tpa.id ? (
+                                    <div className="space-y-1.5 max-w-[250px]">
+                                      <input
+                                        type="text"
+                                        className="w-full text-xs font-semibold px-2 py-1 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 uppercase"
+                                        value={editingTpaName}
+                                        onChange={e => setEditingTpaName(e.target.value)}
+                                        placeholder="Insurance Partner Name"
+                                      />
+                                      <div className="flex gap-1 items-center">
+                                        <input
+                                          type="text"
+                                          className="w-full text-[9px] font-mono p-1 bg-white border border-slate-200 rounded focus:outline-none focus:border-blue-500"
+                                          value={editingTpaLogo}
+                                          onChange={e => setEditingTpaLogo(e.target.value)}
+                                          placeholder="Logo URL or base64..."
+                                        />
+                                        <input
+                                          type="file"
+                                          accept="image/*"
+                                          id={`edit-tpa-file-${tpa.id}`}
+                                          className="hidden"
+                                          onChange={e => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                              const reader = new FileReader();
+                                              reader.onload = () => {
+                                                if (typeof reader.result === 'string') {
+                                                  setEditingTpaLogo(reader.result);
+                                                }
+                                              };
+                                              reader.readAsDataURL(file);
+                                            }
+                                          }}
+                                        />
+                                        <button
+                                          type="button"
+                                          onClick={() => document.getElementById(`edit-tpa-file-${tpa.id}`)?.click()}
+                                          className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded text-[9px] font-bold border border-slate-200 cursor-pointer"
+                                        >
+                                          File
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <h5 className="font-display font-extrabold text-[#0d2a63] text-sm leading-snug uppercase">{tpa.name}</h5>
+                                  )}
                                 </div>
                               </div>
                             </td>
                             <td className="p-4 text-slate-600 font-semibold text-left">
-                              <p className="max-w-[300px] truncate leading-normal" title={tpa.description || 'Pre-authorization and claim desk managed.'}>
-                                {tpa.description || 'Pre-authorization and claim desk managed.'}
-                              </p>
+                              {editingTpaId === tpa.id ? (
+                                <textarea
+                                  rows={2}
+                                  className="w-full text-xs font-semibold px-2 py-1 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500"
+                                  value={editingTpaDesc}
+                                  onChange={e => setEditingTpaDesc(e.target.value)}
+                                  placeholder="Coverage Description..."
+                                />
+                              ) : (
+                                <p className="max-w-[300px] truncate leading-normal" title={tpa.description || 'Pre-authorization and claim desk managed.'}>
+                                  {tpa.description || 'Pre-authorization and claim desk managed.'}
+                                </p>
+                              )}
                             </td>
                             <td className="p-4 text-left">
                               <span className="px-2.5 py-1 text-[9px] bg-blue-100 text-blue-800 border border-blue-200 font-extrabold rounded-full inline-flex items-center gap-1 uppercase tracking-wider">
@@ -2780,19 +3056,68 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                               </span>
                             </td>
                             <td className="p-4 text-right">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setSiteSettings(prev => ({
-                                    ...prev,
-                                    tpaFacilities: (prev.tpaFacilities || []).filter(t => t.id !== tpa.id)
-                                  }));
-                                }}
-                                className="text-red-500 hover:text-red-700 p-2 bg-slate-50 hover:bg-rose-50 rounded-xl transition-all border border-slate-200 cursor-pointer inline-block shadow-sm"
-                                title="Remove TPA"
-                              >
-                                <Trash2 size={14} />
-                              </button>
+                              {editingTpaId === tpa.id ? (
+                                <div className="flex gap-1.5 justify-end">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      if (!editingTpaName.trim()) {
+                                        alert('Partner Name cannot be empty');
+                                        return;
+                                      }
+                                      setSiteSettings(prev => ({
+                                        ...prev,
+                                        tpaFacilities: (prev.tpaFacilities || []).map(t => 
+                                          t.id === tpa.id ? { ...t, name: editingTpaName, description: editingTpaDesc, logoUrl: editingTpaLogo } : t
+                                        )
+                                      }));
+                                      setEditingTpaId(null);
+                                      alert('Cashless partner updated and staged! Scroll down and Click Commit Changes to save.');
+                                    }}
+                                    className="text-emerald-700 hover:text-emerald-950 p-2 bg-emerald-50 rounded-xl transition-all border border-emerald-250 cursor-pointer inline-flex items-center justify-center shadow-sm"
+                                    title="Save Changes"
+                                  >
+                                    <Check size={14} />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingTpaId(null)}
+                                    className="text-slate-500 hover:text-slate-750 p-2 bg-slate-50 rounded-xl transition-all border border-slate-200 cursor-pointer inline-flex items-center justify-center shadow-sm"
+                                    title="Cancel"
+                                  >
+                                    <X size={14} />
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="flex gap-1.5 justify-end">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditingTpaId(tpa.id);
+                                      setEditingTpaName(tpa.name);
+                                      setEditingTpaDesc(tpa.description || '');
+                                      setEditingTpaLogo(tpa.logoUrl || '');
+                                    }}
+                                    className="text-blue-500 hover:text-blue-700 p-2 bg-slate-50 hover:bg-blue-50 rounded-xl transition-all border border-slate-200 cursor-pointer inline-block shadow-sm"
+                                    title="Edit cashless partner details"
+                                  >
+                                    <Edit size={14} />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSiteSettings(prev => ({
+                                        ...prev,
+                                        tpaFacilities: (prev.tpaFacilities || []).filter(t => t.id !== tpa.id)
+                                      }));
+                                    }}
+                                    className="text-red-500 hover:text-red-700 p-2 bg-slate-50 hover:bg-rose-50 rounded-xl transition-all border border-slate-200 cursor-pointer inline-block shadow-sm"
+                                    title="Remove TPA"
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
+                                </div>
+                              )}
                             </td>
                           </tr>
                         ))}
