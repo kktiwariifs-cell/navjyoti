@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Heart, Landmark, User, FileText, CheckCircle2, Award, ShieldCheck, Quote, X, Eye, Download, ExternalLink } from 'lucide-react';
+import { Heart, Landmark, User, FileText, CheckCircle2, Award, ShieldCheck, Quote, X, Eye, Download, ExternalLink, ZoomIn, ZoomOut } from 'lucide-react';
 import { getSiteSettings } from '../utils/database';
 
 export default function AboutSection() {
   const [settings, setSettings] = useState(() => getSiteSettings());
   const [activeTab, setActiveTab] = useState<'about' | 'founders'>('about');
   const [selectedCred, setSelectedCred] = useState<any | null>(null);
+  const [isZoomed, setIsZoomed] = useState(false);
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -16,11 +17,16 @@ export default function AboutSection() {
     return () => window.removeEventListener('db_update', handleUpdate);
   }, []);
 
+  const closeCredModal = () => {
+    setSelectedCred(null);
+    setIsZoomed(false);
+  };
+
   // Listen for Escape key to close Lightbox modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setSelectedCred(null);
+        closeCredModal();
       }
     };
     if (selectedCred) {
@@ -134,13 +140,14 @@ export default function AboutSection() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -15 }}
                 transition={{ duration: 0.35 }}
-                className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
+                className="flex flex-col gap-10 text-left w-full"
               >
-                {/* Graphic/Stats */}
-                <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                  <div className="lg:col-span-5 space-y-6">
+                {/* Upper Split Grid: Hospital Photo vs text content */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                  {/* Left: Graphic/Stats (5 cols) */}
+                  <div className="lg:col-span-5 w-full">
                     {hospitalPhoto ? (
-                      <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[4/5] sm:aspect-auto sm:h-[480px] border border-slate-200 group">
+                      <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[4/3] lg:aspect-auto lg:h-[450px] border border-slate-200 group w-full">
                         <img 
                           src={hospitalPhoto} 
                           alt="Navjyoti Multispeciality Hospital Campus" 
@@ -153,7 +160,7 @@ export default function AboutSection() {
                         </div>
                       </div>
                     ) : (
-                      <div className="relative p-8 rounded-3xl bg-gradient-to-br from-blue-600 to-blue-900 text-white overflow-hidden shadow-xl shadow-blue-200/30 text-left">
+                      <div className="relative p-8 rounded-3xl bg-gradient-to-br from-blue-600 to-blue-900 text-white overflow-hidden shadow-xl shadow-blue-200/30 text-left h-full min-h-[350px]">
                         <div className="absolute top-0 right-0 p-4 opacity-5">
                           <Landmark size={200} />
                         </div>
@@ -179,8 +186,8 @@ export default function AboutSection() {
                     )}
                   </div>
 
-                  {/* Main Information */}
-                  <div className="lg:col-span-7 text-left space-y-6">
+                  {/* Right: Main Information (7 cols) */}
+                  <div className="lg:col-span-7 text-left space-y-5">
                     <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 uppercase tracking-tight">
                       About Our Hospital
                     </h3>
@@ -193,74 +200,78 @@ export default function AboutSection() {
                     <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
                       Equipped with modern medical technology and well-maintained infrastructure, Navjyoti Multispeciality Hospital continuously works to improve healthcare standards and patient satisfaction. We are committed to making quality healthcare accessible and trustworthy for the entire community.
                     </p>
-
-                    {/* Accreditations Row inside About Hospital (Full Width for Premium Visibility) */}
-                    {displayCredentials.length > 0 && (
-                      <div className="pt-10 mt-6 border-t border-slate-100 space-y-5">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
-                          <div>
-                            <span className="text-xs font-mono font-black uppercase text-[#1e66f5] tracking-widest flex items-center gap-1.5">
-                              <Award size={14} className="animate-pulse" /> Approved Accreditations & Certifications
-                            </span>
-                            <h4 className="font-display font-extrabold text-xl text-slate-900 mt-1 uppercase">
-                              Our Medical Registrations & Standards
-                            </h4>
-                          </div>
-                          <span className="text-[10px] text-slate-500 font-mono font-black uppercase tracking-wider bg-slate-50 border border-slate-200/65 px-3.5 py-2 rounded-full inline-block">
-                            Click on any certificate to view details
-                          </span>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                          {displayCredentials.map((cred: any) => (
-                            <div 
-                              key={cred.id} 
-                              onClick={() => setSelectedCred(cred)}
-                              className="bg-white border border-slate-200/80 rounded-2xl p-3.5 flex flex-col justify-between hover:border-blue-300 hover:shadow-lg hover:shadow-blue-50/50 transition-all duration-300 cursor-pointer group shadow-sm hover:-translate-y-1 relative"
-                            >
-                              <div className="w-full h-44 sm:h-48 bg-slate-50 border border-slate-100 rounded-xl overflow-hidden flex items-center justify-center relative shadow-inner">
-                                {cred.fileUrl ? (
-                                  <img 
-                                    src={cred.fileUrl} 
-                                    alt={cred.title} 
-                                    className="w-full h-full object-contain p-2 group-hover:scale-[1.03] transition-transform duration-300" 
-                                    referrerPolicy="no-referrer"
-                                  />
-                                ) : (
-                                  <div className="flex flex-col items-center gap-2.5 text-slate-300">
-                                    <FileText size={48} className="stroke-[1.25]" />
-                                    <span className="text-[10px] font-bold text-slate-400 font-mono uppercase tracking-wider">Digital Document</span>
-                                  </div>
-                                )}
-                                <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                  <span className="bg-white/95 text-slate-900 text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                                    <Eye size={12} className="text-blue-600" /> View Certificate
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="mt-3 text-left">
-                                <span className="text-xs font-black text-slate-800 line-clamp-2 leading-snug group-hover:text-blue-600 transition-colors block h-10" title={cred.title}>
-                                  {cred.title}
-                                </span>
-                                <div className="flex items-center justify-between gap-1 mt-2 pt-2 border-t border-slate-100">
-                                  <span className="text-[9.5px] font-black uppercase tracking-wider text-[#1e66f5] font-mono flex items-center gap-1">
-                                    <ShieldCheck size={11} /> Registered
-                                  </span>
-                                  <span className="text-[9px] font-mono font-black text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full" title="Validity Details">
-                                    {cred.date || 'Active / Verified'}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
 
+                {/* Accreditations Section (Full Width to avoid blank space under the photo and on the right) */}
+                {displayCredentials.length > 0 && (
+                  <div className="pt-8 border-t border-slate-100 space-y-5 w-full">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
+                      <div>
+                        <span className="text-xs font-mono font-black uppercase text-[#1e66f5] tracking-widest flex items-center gap-1.5">
+                          <Award size={14} className="animate-pulse" /> Approved Accreditations & Certifications
+                        </span>
+                        <h4 className="font-display font-extrabold text-xl text-slate-900 mt-1 uppercase">
+                          Our Medical Registrations & Standards
+                        </h4>
+                      </div>
+                      <span className="text-[10px] text-slate-500 font-mono font-black uppercase tracking-wider bg-slate-50 border border-slate-200/65 px-3.5 py-2 rounded-full inline-block">
+                        Click on any certificate to view details
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
+                      {displayCredentials.map((cred: any) => {
+                        const hasImage = !!cred.fileUrl;
+                        return (
+                          <div 
+                            key={cred.id} 
+                            onClick={() => setSelectedCred(cred)}
+                            className="bg-white border border-slate-200/80 rounded-2xl p-3 flex flex-col justify-between hover:border-blue-300 hover:shadow-lg hover:shadow-blue-50/50 transition-all duration-300 cursor-pointer group shadow-sm hover:-translate-y-1 relative h-[380px] w-full"
+                          >
+                            <div className="h-64 bg-slate-50 border border-slate-100 rounded-xl overflow-hidden flex items-center justify-center relative shadow-inner w-full">
+                              {hasImage ? (
+                                <img 
+                                  src={cred.fileUrl} 
+                                  alt={cred.title} 
+                                  className="h-full w-full object-cover group-hover:scale-[1.03] transition-transform duration-300" 
+                                  style={{ imageRendering: 'auto' }}
+                                  referrerPolicy="no-referrer"
+                                />
+                              ) : (
+                                <div className="flex flex-col items-center gap-2.5 text-slate-300 px-8 py-16">
+                                  <FileText size={48} className="stroke-[1.25]" />
+                                  <span className="text-[10px] font-bold text-slate-400 font-mono uppercase tracking-wider">Digital Document</span>
+                                </div>
+                              )}
+                              <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <span className="bg-white/95 text-slate-900 text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                                  <Eye size={12} className="text-blue-600" /> View Certificate
+                                </span>
+                              </div>
+                            </div>
+                            <div className="mt-3 text-left w-full">
+                              <span className="text-xs font-black text-slate-800 line-clamp-2 leading-snug group-hover:text-blue-600 transition-colors block h-10" title={cred.title}>
+                                {cred.title}
+                              </span>
+                              <div className="flex items-center justify-between gap-2 mt-2 pt-2 border-t border-slate-100 w-full">
+                                <span className="text-[9.5px] font-black uppercase tracking-wider text-[#1e66f5] font-mono flex items-center gap-1 shrink-0">
+                                  <ShieldCheck size={11} /> Registered
+                                </span>
+                                <span className="text-[9px] font-mono font-black text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full truncate max-w-[120px]" title="Validity Details">
+                                  {cred.date || 'Active / Verified'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {/* Unified 3-column row for Pledge, Mission, and Vision at the same level */}
-                <div className="lg:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-5 pt-8 mt-4 border-t border-slate-100 text-left w-full">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-8 mt-4 border-t border-slate-100 text-left w-full">
                   {/* Card 1: Our Universal Pledge */}
                   <div className="p-5 bg-blue-50/40 border border-blue-100/50 rounded-2xl flex flex-col justify-between h-full">
                     <div>
@@ -419,19 +430,21 @@ export default function AboutSection() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10 bg-slate-950/90 backdrop-blur-md"
-            onClick={() => setSelectedCred(null)}
+            onClick={closeCredModal}
           >
             <motion.div
               initial={{ scale: 0.95, y: 15 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 15 }}
               transition={{ type: "spring", duration: 0.3 }}
-              className="relative max-w-4xl w-full bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col items-center p-5 sm:p-7 gap-5 text-center"
+              className={`relative w-full bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col items-center p-5 sm:p-6 gap-4 text-center transition-all duration-300 ${
+                isZoomed ? 'max-w-5xl' : 'max-w-2xl'
+              }`}
               onClick={e => e.stopPropagation()}
             >
               {/* Close Button */}
               <button
-                onClick={() => setSelectedCred(null)}
+                onClick={closeCredModal}
                 className="absolute top-4 right-4 p-2 bg-slate-800/80 hover:bg-slate-700 hover:scale-105 text-slate-300 hover:text-white rounded-xl transition-all cursor-pointer z-10 border border-slate-700/50"
                 title="Close viewer (Esc)"
               >
@@ -452,16 +465,25 @@ export default function AboutSection() {
               </div>
 
               {/* Main Image View */}
-              <div className="w-full max-h-[60vh] sm:max-h-[65vh] bg-slate-950 rounded-2xl overflow-hidden border border-slate-800/60 p-2 sm:p-4 flex items-center justify-center relative">
+              <div 
+                className={`w-full mx-auto bg-slate-950/40 rounded-2xl border border-slate-800/40 p-1.5 flex items-center justify-center relative transition-all duration-300 ${
+                  isZoomed ? 'max-h-[70vh] overflow-auto' : 'w-fit max-w-full max-h-[60vh] sm:max-h-[65vh] overflow-hidden'
+                }`}
+              >
                 {selectedCred.fileUrl ? (
                   <img
                     src={selectedCred.fileUrl}
                     alt={selectedCred.title}
-                    className="max-w-full max-h-[50vh] sm:max-h-[55vh] object-contain rounded-lg shadow-lg"
+                    onClick={() => setIsZoomed(!isZoomed)}
+                    className={`rounded-xl shadow-md transition-all duration-300 ${
+                      isZoomed 
+                        ? 'max-w-none max-h-none w-[130%] sm:w-[160%] md:w-[200%] h-auto cursor-zoom-out' 
+                        : 'max-w-full max-h-[50vh] sm:max-h-[55vh] object-contain cursor-zoom-in'
+                    }`}
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="flex flex-col items-center justify-center py-16 text-slate-600 gap-3">
+                  <div className="flex flex-col items-center justify-center py-16 text-slate-600 gap-3 min-w-[280px]">
                     <FileText size={64} className="stroke-[1.2]" />
                     <p className="text-sm font-semibold">Document view not available</p>
                   </div>
@@ -469,24 +491,40 @@ export default function AboutSection() {
               </div>
 
               {/* Actions Footer */}
-              <div className="flex flex-wrap items-center justify-between gap-3 w-full border-t border-slate-800/80 pt-4.5">
+              <div className="flex flex-wrap items-center justify-between gap-3 w-full border-t border-slate-800/80 pt-4">
                 <span className="text-[11px] text-slate-500 font-medium">
                   Verified by Hospital Registration Board
                 </span>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {selectedCred.fileUrl && (
-                    <a
-                      href={selectedCred.fileUrl}
-                      download={`${selectedCred.title.replace(/\s+/g, '_')}.png`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-500 hover:scale-[1.02] active:scale-[0.98] text-white rounded-xl transition-all font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-lg shadow-blue-900/20"
-                    >
-                      <Download size={14} /> Full Size / Print
-                    </a>
+                    <>
+                      <button
+                        onClick={() => setIsZoomed(!isZoomed)}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 hover:scale-[1.02] active:scale-[0.98] text-white rounded-xl transition-all font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-lg shadow-blue-900/20"
+                      >
+                        {isZoomed ? (
+                          <>
+                            <ZoomOut size={14} /> Normal View
+                          </>
+                        ) : (
+                          <>
+                            <ZoomIn size={14} /> Enlarge View
+                          </>
+                        )}
+                      </button>
+                      <a
+                        href={selectedCred.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 hover:scale-[1.02] active:scale-[0.98] text-slate-200 hover:text-white rounded-xl transition-all font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5 border border-slate-700/60"
+                        title="Open image in high resolution in a new tab"
+                      >
+                        <ExternalLink size={14} /> Full Screen
+                      </a>
+                    </>
                   )}
                   <button
-                    onClick={() => setSelectedCred(null)}
+                    onClick={closeCredModal}
                     className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl transition-all font-extrabold text-xs uppercase tracking-wider border border-slate-700/40"
                   >
                     Close
