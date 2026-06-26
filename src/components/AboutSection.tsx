@@ -8,6 +8,7 @@ export default function AboutSection() {
   const [activeTab, setActiveTab] = useState<'about' | 'founders'>('about');
   const [selectedCred, setSelectedCred] = useState<any | null>(null);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomScale, setZoomScale] = useState(1);
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -20,6 +21,7 @@ export default function AboutSection() {
   const closeCredModal = () => {
     setSelectedCred(null);
     setIsZoomed(false);
+    setZoomScale(1);
   };
 
   // Listen for Escape key to close Lightbox modal
@@ -429,7 +431,7 @@ export default function AboutSection() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10 bg-slate-950/90 backdrop-blur-md"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/95 backdrop-blur-md"
             onClick={closeCredModal}
           >
             <motion.div
@@ -437,9 +439,7 @@ export default function AboutSection() {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 15 }}
               transition={{ type: "spring", duration: 0.3 }}
-              className={`relative w-full bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col items-center p-5 sm:p-6 gap-4 text-center transition-all duration-300 ${
-                isZoomed ? 'max-w-5xl' : 'max-w-2xl'
-              }`}
+              className="relative w-full max-w-5xl bg-[#0b1329] border border-slate-800/90 rounded-3xl overflow-hidden shadow-2xl flex flex-col p-5 sm:p-6 gap-4 text-left max-h-[92vh] md:max-h-[680px]"
               onClick={e => e.stopPropagation()}
             >
               {/* Close Button */}
@@ -462,28 +462,68 @@ export default function AboutSection() {
               </div>
 
               {/* Dynamic Content Grid */}
-              <div className={`w-full ${isZoomed ? 'flex flex-col gap-6' : 'grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch'} mt-2`}>
+              <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch flex-1 min-h-0 overflow-y-auto md:overflow-hidden py-1">
                 
                 {/* Image Container */}
-                <div 
-                  className={`bg-slate-950/40 rounded-2xl border border-slate-800/40 p-2 flex items-center justify-center relative overflow-hidden transition-all duration-300 ${
-                    isZoomed 
-                      ? 'w-full max-h-[70vh] overflow-auto' 
-                      : 'md:col-span-6 w-full h-[320px] md:h-[380px]'
-                  }`}
-                >
+                <div className="md:col-span-7 w-full h-[320px] sm:h-[380px] md:h-full min-h-[280px] bg-slate-950/60 rounded-2xl border border-slate-800/60 flex items-center justify-center relative overflow-hidden">
                   {selectedCred.fileUrl ? (
-                    <img
-                      src={selectedCred.fileUrl}
-                      alt={selectedCred.title}
-                      onClick={() => setIsZoomed(!isZoomed)}
-                      className={`rounded-xl shadow-md transition-all duration-300 ${
-                        isZoomed 
-                          ? 'max-w-none max-h-none w-[130%] sm:w-[160%] md:w-[180%] h-auto cursor-zoom-out' 
-                          : 'max-w-full max-h-full object-contain cursor-zoom-in hover:scale-[1.01]'
-                      }`}
-                      referrerPolicy="no-referrer"
-                    />
+                    <div className="w-full h-full overflow-auto flex items-center justify-center p-4 relative select-none">
+                      <img
+                        src={selectedCred.fileUrl}
+                        alt={selectedCred.title}
+                        onClick={() => {
+                          if (zoomScale > 1.0) {
+                            setZoomScale(1.0);
+                          } else {
+                            setZoomScale(1.75);
+                          }
+                        }}
+                        style={{
+                          width: `${zoomScale * 100}%`,
+                          maxWidth: zoomScale > 1.0 ? 'none' : '100%',
+                          height: 'auto',
+                          maxHeight: zoomScale > 1.0 ? 'none' : '100%',
+                          objectFit: 'contain',
+                        }}
+                        className="rounded-xl shadow-md transition-all duration-200 ease-out cursor-zoom-in"
+                        referrerPolicy="no-referrer"
+                      />
+
+                      {/* Floating gradual zoom bar over the image */}
+                      <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1 bg-slate-900/95 backdrop-blur-md px-2 py-1.5 rounded-xl border border-slate-700/60 shadow-lg">
+                        <button
+                          type="button"
+                          onClick={() => setZoomScale(prev => Math.max(1.0, prev - 0.25))}
+                          disabled={zoomScale <= 1.0}
+                          className="p-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg transition-colors cursor-pointer border-none flex items-center justify-center"
+                          title="Zoom Out"
+                        >
+                          <ZoomOut size={13} />
+                        </button>
+                        <span className="text-[10px] font-mono font-black text-slate-200 min-w-[34px] text-center">
+                          {Math.round(zoomScale * 100)}%
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setZoomScale(prev => Math.min(3.0, prev + 0.25))}
+                          disabled={zoomScale >= 3.0}
+                          className="p-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg transition-colors cursor-pointer border-none flex items-center justify-center"
+                          title="Zoom In"
+                        >
+                          <ZoomIn size={13} />
+                        </button>
+                        {zoomScale > 1.0 && (
+                          <button
+                            type="button"
+                            onClick={() => setZoomScale(1.0)}
+                            className="ml-1 px-1.5 py-0.5 bg-blue-600 hover:bg-blue-500 text-white text-[9px] font-mono font-black rounded-md transition-colors cursor-pointer border-none uppercase"
+                            title="Reset Zoom"
+                          >
+                            Reset
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center py-16 text-slate-600 gap-3 min-w-[280px]">
                       <FileText size={64} className="stroke-[1.2]" />
@@ -493,11 +533,11 @@ export default function AboutSection() {
                 </div>
 
                 {/* Table & Details Panel */}
-                <div className={`${isZoomed ? 'w-full' : 'md:col-span-6'} flex flex-col justify-between text-left gap-4`}>
-                  <div className="border border-slate-800/85 rounded-2xl overflow-hidden bg-slate-950/30 w-full">
+                <div className="md:col-span-5 flex flex-col justify-between text-left gap-4 h-full overflow-y-auto pr-1">
+                  <div className="border border-slate-800/85 rounded-2xl overflow-hidden bg-[#070b14]/50 w-full">
                     <table className="w-full text-left text-xs border-collapse">
                       <thead>
-                        <tr className="bg-slate-950/85 border-b border-slate-800/80 text-blue-400 font-mono text-[9px] uppercase tracking-widest">
+                        <tr className="bg-[#070b14]/90 border-b border-slate-800/80 text-blue-400 font-mono text-[9px] uppercase tracking-widest">
                           <th className="p-3 font-extrabold w-1/3">Property</th>
                           <th className="p-3 font-extrabold w-2/3">Verification Details</th>
                         </tr>
@@ -526,20 +566,39 @@ export default function AboutSection() {
                         <tr className="hover:bg-slate-950/15 transition-colors">
                           <td className="p-3 text-slate-400 font-mono text-[10px] uppercase tracking-wider">Zoom Control</td>
                           <td className="p-3">
-                            <button
-                              onClick={() => setIsZoomed(!isZoomed)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 hover:scale-[1.02] active:scale-[0.98] text-white rounded-lg transition-all font-mono font-black text-[10px] uppercase tracking-wider cursor-pointer border-none"
-                            >
-                              {isZoomed ? (
-                                <>
-                                  <ZoomOut size={12} /> Normal Size
-                                </>
-                              ) : (
-                                <>
-                                  <ZoomIn size={12} /> Enlarge View
-                                </>
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => setZoomScale(prev => Math.max(1.0, prev - 0.25))}
+                                disabled={zoomScale <= 1.0}
+                                className="p-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 text-slate-200 rounded-lg transition-all border border-slate-700/60 cursor-pointer flex items-center justify-center"
+                                title="Zoom Out"
+                              >
+                                <ZoomOut size={12} />
+                              </button>
+                              <span className="text-[11px] font-mono font-bold text-blue-400 bg-slate-950 px-2 py-1 rounded-lg min-w-[42px] text-center border border-slate-800">
+                                {Math.round(zoomScale * 100)}%
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setZoomScale(prev => Math.min(3.0, prev + 0.25))}
+                                disabled={zoomScale >= 3.0}
+                                className="p-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 text-slate-200 rounded-lg transition-all border border-slate-700/60 cursor-pointer flex items-center justify-center"
+                                title="Zoom In"
+                              >
+                                <ZoomIn size={12} />
+                              </button>
+                              {zoomScale > 1.0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => setZoomScale(1.0)}
+                                  className="px-2 py-1 bg-blue-600/20 hover:bg-blue-600/35 text-blue-400 text-[10px] font-mono font-black rounded-lg transition-all border border-blue-500/20 cursor-pointer uppercase"
+                                  title="Reset Zoom"
+                                >
+                                  Reset
+                                </button>
                               )}
-                            </button>
+                            </div>
                           </td>
                         </tr>
                         <tr className="hover:bg-slate-950/15 transition-colors">
@@ -572,11 +631,12 @@ export default function AboutSection() {
               </div>
 
               {/* Actions Footer */}
-              <div className="flex items-center justify-between gap-3 w-full border-t border-slate-800/80 pt-4 mt-2">
+              <div className="flex items-center justify-between gap-3 w-full border-t border-slate-800/80 pt-4 mt-auto">
                 <span className="text-[11px] text-slate-500 font-medium flex items-center gap-1.5">
                   <ShieldCheck size={13} className="text-emerald-500" /> Digitally Verified
                 </span>
                 <button
+                  type="button"
                   onClick={closeCredModal}
                   className="px-5 py-2 bg-slate-800 hover:bg-slate-700 hover:scale-[1.02] active:scale-[0.98] text-slate-300 hover:text-white rounded-xl transition-all font-mono font-extrabold text-xs uppercase tracking-wider border border-slate-700/40 cursor-pointer"
                 >
