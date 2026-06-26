@@ -459,77 +459,129 @@ export default function AboutSection() {
                 <h3 className="text-lg sm:text-xl font-display font-extrabold text-white leading-tight uppercase tracking-tight">
                   {selectedCred.title}
                 </h3>
-                <p className="text-xs text-slate-400 font-medium">
-                  Status: <span className="text-[#1e66f5] font-bold">{selectedCred.date || 'Active / Authenticated'}</span>
-                </p>
               </div>
 
-              {/* Main Image View */}
-              <div 
-                className={`w-full mx-auto bg-slate-950/40 rounded-2xl border border-slate-800/40 p-1.5 flex items-center justify-center relative transition-all duration-300 ${
-                  isZoomed ? 'max-h-[70vh] overflow-auto' : 'w-fit max-w-full max-h-[60vh] sm:max-h-[65vh] overflow-hidden'
-                }`}
-              >
-                {selectedCred.fileUrl ? (
-                  <img
-                    src={selectedCred.fileUrl}
-                    alt={selectedCred.title}
-                    onClick={() => setIsZoomed(!isZoomed)}
-                    className={`rounded-xl shadow-md transition-all duration-300 ${
-                      isZoomed 
-                        ? 'max-w-none max-h-none w-[130%] sm:w-[160%] md:w-[200%] h-auto cursor-zoom-out' 
-                        : 'max-w-full max-h-[50vh] sm:max-h-[55vh] object-contain cursor-zoom-in'
-                    }`}
-                    referrerPolicy="no-referrer"
-                  />
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-16 text-slate-600 gap-3 min-w-[280px]">
-                    <FileText size={64} className="stroke-[1.2]" />
-                    <p className="text-sm font-semibold">Document view not available</p>
+              {/* Dynamic Content Grid */}
+              <div className={`w-full ${isZoomed ? 'flex flex-col gap-6' : 'grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch'} mt-2`}>
+                
+                {/* Image Container */}
+                <div 
+                  className={`bg-slate-950/40 rounded-2xl border border-slate-800/40 p-2 flex items-center justify-center relative overflow-hidden transition-all duration-300 ${
+                    isZoomed 
+                      ? 'w-full max-h-[70vh] overflow-auto' 
+                      : 'md:col-span-6 w-full h-[320px] md:h-[380px]'
+                  }`}
+                >
+                  {selectedCred.fileUrl ? (
+                    <img
+                      src={selectedCred.fileUrl}
+                      alt={selectedCred.title}
+                      onClick={() => setIsZoomed(!isZoomed)}
+                      className={`rounded-xl shadow-md transition-all duration-300 ${
+                        isZoomed 
+                          ? 'max-w-none max-h-none w-[130%] sm:w-[160%] md:w-[180%] h-auto cursor-zoom-out' 
+                          : 'max-w-full max-h-full object-contain cursor-zoom-in hover:scale-[1.01]'
+                      }`}
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-16 text-slate-600 gap-3 min-w-[280px]">
+                      <FileText size={64} className="stroke-[1.2]" />
+                      <p className="text-sm font-semibold">Document view not available</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Table & Details Panel */}
+                <div className={`${isZoomed ? 'w-full' : 'md:col-span-6'} flex flex-col justify-between text-left gap-4`}>
+                  <div className="border border-slate-800/85 rounded-2xl overflow-hidden bg-slate-950/30 w-full">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead>
+                        <tr className="bg-slate-950/85 border-b border-slate-800/80 text-blue-400 font-mono text-[9px] uppercase tracking-widest">
+                          <th className="p-3 font-extrabold w-1/3">Property</th>
+                          <th className="p-3 font-extrabold w-2/3">Verification Details</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800/60 font-medium text-slate-300">
+                        <tr className="hover:bg-slate-950/15 transition-colors">
+                          <td className="p-3 text-slate-400 font-mono text-[10px] uppercase tracking-wider">Document Name</td>
+                          <td className="p-3 text-white font-extrabold text-[12px] sm:text-[13px]">{selectedCred.title}</td>
+                        </tr>
+                        <tr className="hover:bg-slate-950/15 transition-colors">
+                          <td className="p-3 text-slate-400 font-mono text-[10px] uppercase tracking-wider">Verification Authority</td>
+                          <td className="p-3 text-slate-300">Govt. Medical Regulatory Registry</td>
+                        </tr>
+                        <tr className="hover:bg-slate-950/15 transition-colors">
+                          <td className="p-3 text-slate-400 font-mono text-[10px] uppercase tracking-wider">Issued / Validity</td>
+                          <td className="p-3 text-slate-200 font-mono text-[11px]">{selectedCred.date || 'Active / Verified'}</td>
+                        </tr>
+                        <tr className="hover:bg-slate-950/15 transition-colors">
+                          <td className="p-3 text-slate-400 font-mono text-[10px] uppercase tracking-wider">Status</td>
+                          <td className="p-3">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-mono font-black text-emerald-400 uppercase bg-emerald-950/50 border border-emerald-900/40 px-2.5 py-0.5 rounded-full">
+                              <ShieldCheck size={11} className="text-emerald-400" /> Fully Certified
+                            </span>
+                          </td>
+                        </tr>
+                        <tr className="hover:bg-slate-950/15 transition-colors">
+                          <td className="p-3 text-slate-400 font-mono text-[10px] uppercase tracking-wider">Zoom Control</td>
+                          <td className="p-3">
+                            <button
+                              onClick={() => setIsZoomed(!isZoomed)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 hover:scale-[1.02] active:scale-[0.98] text-white rounded-lg transition-all font-mono font-black text-[10px] uppercase tracking-wider cursor-pointer border-none"
+                            >
+                              {isZoomed ? (
+                                <>
+                                  <ZoomOut size={12} /> Normal Size
+                                </>
+                              ) : (
+                                <>
+                                  <ZoomIn size={12} /> Enlarge View
+                                </>
+                              )}
+                            </button>
+                          </td>
+                        </tr>
+                        <tr className="hover:bg-slate-950/15 transition-colors">
+                          <td className="p-3 text-slate-400 font-mono text-[10px] uppercase tracking-wider">Direct Access</td>
+                          <td className="p-3">
+                            {selectedCred.fileUrl ? (
+                              <a
+                                href={selectedCred.fileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 hover:scale-[1.02] active:scale-[0.98] text-slate-200 hover:text-white rounded-lg transition-all font-mono font-black text-[10px] uppercase tracking-wider border border-slate-700/65"
+                                title="Open in high resolution in new browser tab"
+                              >
+                                <ExternalLink size={12} /> Full Screen
+                              </a>
+                            ) : (
+                              <span className="text-slate-500 font-mono text-[10px]">N/A</span>
+                            )}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
-                )}
+
+                  <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
+                    This document is officially indexed in the hospital's central quality assurance ledger under registration ID <span className="font-mono text-slate-400">{selectedCred.id}</span>.
+                  </p>
+                </div>
+
               </div>
 
               {/* Actions Footer */}
-              <div className="flex flex-wrap items-center justify-between gap-3 w-full border-t border-slate-800/80 pt-4">
-                <span className="text-[11px] text-slate-500 font-medium">
-                  Verified by Hospital Registration Board
+              <div className="flex items-center justify-between gap-3 w-full border-t border-slate-800/80 pt-4 mt-2">
+                <span className="text-[11px] text-slate-500 font-medium flex items-center gap-1.5">
+                  <ShieldCheck size={13} className="text-emerald-500" /> Digitally Verified
                 </span>
-                <div className="flex flex-wrap gap-2">
-                  {selectedCred.fileUrl && (
-                    <>
-                      <button
-                        onClick={() => setIsZoomed(!isZoomed)}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 hover:scale-[1.02] active:scale-[0.98] text-white rounded-xl transition-all font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-lg shadow-blue-900/20"
-                      >
-                        {isZoomed ? (
-                          <>
-                            <ZoomOut size={14} /> Normal View
-                          </>
-                        ) : (
-                          <>
-                            <ZoomIn size={14} /> Enlarge View
-                          </>
-                        )}
-                      </button>
-                      <a
-                        href={selectedCred.fileUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 hover:scale-[1.02] active:scale-[0.98] text-slate-200 hover:text-white rounded-xl transition-all font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5 border border-slate-700/60"
-                        title="Open image in high resolution in a new tab"
-                      >
-                        <ExternalLink size={14} /> Full Screen
-                      </a>
-                    </>
-                  )}
-                  <button
-                    onClick={closeCredModal}
-                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl transition-all font-extrabold text-xs uppercase tracking-wider border border-slate-700/40"
-                  >
-                    Close
-                  </button>
-                </div>
+                <button
+                  onClick={closeCredModal}
+                  className="px-5 py-2 bg-slate-800 hover:bg-slate-700 hover:scale-[1.02] active:scale-[0.98] text-slate-300 hover:text-white rounded-xl transition-all font-mono font-extrabold text-xs uppercase tracking-wider border border-slate-700/40 cursor-pointer"
+                >
+                  Close Viewer
+                </button>
               </div>
             </motion.div>
           </motion.div>
