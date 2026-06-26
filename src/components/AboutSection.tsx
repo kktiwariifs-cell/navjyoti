@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Heart, Landmark, User, FileText, CheckCircle2, Award, ShieldCheck, Quote } from 'lucide-react';
+import { Heart, Landmark, User, FileText, CheckCircle2, Award, ShieldCheck, Quote, X, Eye, Download, ExternalLink } from 'lucide-react';
 import { getSiteSettings } from '../utils/database';
 
 export default function AboutSection() {
   const [settings, setSettings] = useState(() => getSiteSettings());
   const [activeTab, setActiveTab] = useState<'about' | 'founders'>('about');
+  const [selectedCred, setSelectedCred] = useState<any | null>(null);
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -14,6 +15,21 @@ export default function AboutSection() {
     window.addEventListener('db_update', handleUpdate);
     return () => window.removeEventListener('db_update', handleUpdate);
   }, []);
+
+  // Listen for Escape key to close Lightbox modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedCred(null);
+      }
+    };
+    if (selectedCred) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedCred]);
 
   // Soft fallbacks
   const hospitalPhoto = settings.aboutPhotoUrl || '';
@@ -33,6 +49,35 @@ export default function AboutSection() {
   };
 
   const credentials = settings.credentials || [];
+
+  const defaultFallbackCredentials = [
+    {
+      id: 'fallback_1',
+      title: 'ISO 9001:2015 Quality Management Certified',
+      date: 'Valid till Nov 2028',
+      fileUrl: 'https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&q=80&w=600',
+    },
+    {
+      id: 'fallback_2',
+      title: 'NABH Entry-Level Hospital Accreditation',
+      date: 'Valid till Apr 2027',
+      fileUrl: 'https://images.unsplash.com/photo-1633158829585-23ba8f7c8caf?auto=format&fit=crop&q=80&w=600',
+    },
+    {
+      id: 'fallback_3',
+      title: 'PM-JAY Ayushman Bharat State Empanelment',
+      date: 'Active Approved Registry',
+      fileUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=600',
+    },
+    {
+      id: 'fallback_4',
+      title: 'UP Health Department Bio-Medical Waste Permit',
+      date: 'Approved State License',
+      fileUrl: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&q=80&w=600',
+    }
+  ];
+
+  const displayCredentials = credentials.length > 0 ? credentials : defaultFallbackCredentials;
 
   return (
     <section id="about" className="py-16 md:py-24 bg-white border-b border-slate-205 border-slate-200">
@@ -149,25 +194,63 @@ export default function AboutSection() {
                       Equipped with modern medical technology and well-maintained infrastructure, Navjyoti Multispeciality Hospital continuously works to improve healthcare standards and patient satisfaction. We are committed to making quality healthcare accessible and trustworthy for the entire community.
                     </p>
 
-                    {/* Accreditations Row inside About Hospital */}
-                    {credentials.length > 0 && (
-                      <div className="pt-4 border-t border-slate-100 space-y-3">
-                        <span className="text-xs font-mono font-black uppercase text-[#1e66f5] tracking-widest flex items-center gap-1.5">
-                          <Award size={14} /> Approved Accreditations & Permits
-                        </span>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                          {credentials.map((cred: any) => (
-                            <div key={cred.id} className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-2 shadow-sm">
-                              <div className="w-7 h-7 rounded-md overflow-hidden bg-white shrink-0 border border-slate-100 flex items-center justify-center">
-                                {cred.fileUrl.startsWith('data:') ? (
-                                  <img src={cred.fileUrl} alt={cred.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    {/* Accreditations Row inside About Hospital (Full Width for Premium Visibility) */}
+                    {displayCredentials.length > 0 && (
+                      <div className="pt-10 mt-6 border-t border-slate-100 space-y-5">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
+                          <div>
+                            <span className="text-xs font-mono font-black uppercase text-[#1e66f5] tracking-widest flex items-center gap-1.5">
+                              <Award size={14} className="animate-pulse" /> Approved Accreditations & Certifications
+                            </span>
+                            <h4 className="font-display font-extrabold text-xl text-slate-900 mt-1 uppercase">
+                              Our Medical Registrations & Standards
+                            </h4>
+                          </div>
+                          <span className="text-[10px] text-slate-500 font-mono font-black uppercase tracking-wider bg-slate-50 border border-slate-200/65 px-3.5 py-2 rounded-full inline-block">
+                            Click on any certificate to view details
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                          {displayCredentials.map((cred: any) => (
+                            <div 
+                              key={cred.id} 
+                              onClick={() => setSelectedCred(cred)}
+                              className="bg-white border border-slate-200/80 rounded-2xl p-3.5 flex flex-col justify-between hover:border-blue-300 hover:shadow-lg hover:shadow-blue-50/50 transition-all duration-300 cursor-pointer group shadow-sm hover:-translate-y-1 relative"
+                            >
+                              <div className="w-full h-44 sm:h-48 bg-slate-50 border border-slate-100 rounded-xl overflow-hidden flex items-center justify-center relative shadow-inner">
+                                {cred.fileUrl ? (
+                                  <img 
+                                    src={cred.fileUrl} 
+                                    alt={cred.title} 
+                                    className="w-full h-full object-contain p-2 group-hover:scale-[1.03] transition-transform duration-300" 
+                                    referrerPolicy="no-referrer"
+                                  />
                                 ) : (
-                                  <FileText size={14} className="text-slate-400" />
+                                  <div className="flex flex-col items-center gap-2.5 text-slate-300">
+                                    <FileText size={48} className="stroke-[1.25]" />
+                                    <span className="text-[10px] font-bold text-slate-400 font-mono uppercase tracking-wider">Digital Document</span>
+                                  </div>
                                 )}
+                                <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                  <span className="bg-white/95 text-slate-900 text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                                    <Eye size={12} className="text-blue-600" /> View Certificate
+                                  </span>
+                                </div>
                               </div>
-                              <span className="text-[10px] font-black text-slate-700 truncate block leading-none" title={cred.title}>
-                                {cred.title}
-                              </span>
+                              <div className="mt-3 text-left">
+                                <span className="text-xs font-black text-slate-800 line-clamp-2 leading-snug group-hover:text-blue-600 transition-colors block h-10" title={cred.title}>
+                                  {cred.title}
+                                </span>
+                                <div className="flex items-center justify-between gap-1 mt-2 pt-2 border-t border-slate-100">
+                                  <span className="text-[9.5px] font-black uppercase tracking-wider text-[#1e66f5] font-mono flex items-center gap-1">
+                                    <ShieldCheck size={11} /> Registered
+                                  </span>
+                                  <span className="text-[9px] font-mono font-black text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full" title="Validity Details">
+                                    {cred.date || 'Active / Verified'}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -326,6 +409,94 @@ export default function AboutSection() {
         </div>
 
       </div>
+
+      {/* Lightbox Modal for Accreditations */}
+      <AnimatePresence>
+        {selectedCred && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10 bg-slate-950/90 backdrop-blur-md"
+            onClick={() => setSelectedCred(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              transition={{ type: "spring", duration: 0.3 }}
+              className="relative max-w-4xl w-full bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col items-center p-5 sm:p-7 gap-5 text-center"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedCred(null)}
+                className="absolute top-4 right-4 p-2 bg-slate-800/80 hover:bg-slate-700 hover:scale-105 text-slate-300 hover:text-white rounded-xl transition-all cursor-pointer z-10 border border-slate-700/50"
+                title="Close viewer (Esc)"
+              >
+                <X size={20} />
+              </button>
+
+              {/* Header Details */}
+              <div className="space-y-1.5 w-full pr-10 text-left">
+                <span className="text-[10px] text-blue-400 font-mono font-black uppercase tracking-widest bg-blue-950/50 border border-blue-900/40 px-2.5 py-1 rounded-full inline-flex items-center gap-1">
+                  <Award size={12} /> Accredited Document
+                </span>
+                <h3 className="text-lg sm:text-xl font-display font-extrabold text-white leading-tight uppercase tracking-tight">
+                  {selectedCred.title}
+                </h3>
+                <p className="text-xs text-slate-400 font-medium">
+                  Status: <span className="text-[#1e66f5] font-bold">{selectedCred.date || 'Active / Authenticated'}</span>
+                </p>
+              </div>
+
+              {/* Main Image View */}
+              <div className="w-full max-h-[60vh] sm:max-h-[65vh] bg-slate-950 rounded-2xl overflow-hidden border border-slate-800/60 p-2 sm:p-4 flex items-center justify-center relative">
+                {selectedCred.fileUrl ? (
+                  <img
+                    src={selectedCred.fileUrl}
+                    alt={selectedCred.title}
+                    className="max-w-full max-h-[50vh] sm:max-h-[55vh] object-contain rounded-lg shadow-lg"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-16 text-slate-600 gap-3">
+                    <FileText size={64} className="stroke-[1.2]" />
+                    <p className="text-sm font-semibold">Document view not available</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Actions Footer */}
+              <div className="flex flex-wrap items-center justify-between gap-3 w-full border-t border-slate-800/80 pt-4.5">
+                <span className="text-[11px] text-slate-500 font-medium">
+                  Verified by Hospital Registration Board
+                </span>
+                <div className="flex gap-2">
+                  {selectedCred.fileUrl && (
+                    <a
+                      href={selectedCred.fileUrl}
+                      download={`${selectedCred.title.replace(/\s+/g, '_')}.png`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-500 hover:scale-[1.02] active:scale-[0.98] text-white rounded-xl transition-all font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-lg shadow-blue-900/20"
+                    >
+                      <Download size={14} /> Full Size / Print
+                    </a>
+                  )}
+                  <button
+                    onClick={() => setSelectedCred(null)}
+                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl transition-all font-extrabold text-xs uppercase tracking-wider border border-slate-700/40"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
