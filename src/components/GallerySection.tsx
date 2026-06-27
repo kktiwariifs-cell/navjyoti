@@ -17,36 +17,6 @@ function getYouTubeEmbedUrl(url: string): string | null {
 // Pre-seeded high quality fallback gallery assets
 const DEFAULT_GALLERY = [
   {
-    id: 'def_1',
-    title: 'Advanced Surgical Theater Bloc',
-    type: 'image' as const,
-    url: 'https://images.unsplash.com/photo-1551076805-e1869e43f49b?auto=format&fit=crop&q=80&w=1200'
-  },
-  {
-    id: 'def_2',
-    title: 'Hospital Main Diagnostic Center',
-    type: 'image' as const,
-    url: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=1200'
-  },
-  {
-    id: 'def_3',
-    title: 'Digital Patient Consultation Suit',
-    type: 'image' as const,
-    url: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=1200'
-  },
-  {
-    id: 'def_4',
-    title: 'Premium Pediatric & Neo-natal Ward',
-    type: 'image' as const,
-    url: 'https://images.unsplash.com/photo-1502740479091-635887520276?auto=format&fit=crop&q=80&w=1200'
-  },
-  {
-    id: 'def_5',
-    title: 'Universal Trauma & Ambulance Bay',
-    type: 'image' as const,
-    url: 'https://images.unsplash.com/photo-1587351021355-a479a299d2f9?auto=format&fit=crop&q=80&w=1200'
-  },
-  {
     id: 'def_6',
     title: 'Hospital Tour Presentation (Overview)',
     type: 'video' as const,
@@ -135,83 +105,101 @@ export default function GallerySection() {
         {/* Gallery Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence mode="popLayout">
-            {filteredItems.map((item, index) => {
-              const ytEmbed = item.type === 'video' ? getYouTubeEmbedUrl(item.url) : null;
-              
-              return (
-                <motion.div
-                  key={item.id || index}
-                  layout
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.35, ease: 'easeOut' }}
-                  className="bg-white rounded-3xl overflow-hidden border border-slate-150 shadow-sm hover:shadow-xl hover:border-slate-300 group cursor-pointer transition-all flex flex-col justify-between"
-                  onClick={() => setSelectedMedia({ url: item.url, type: item.type, title: item.title })}
-                >
-                  {/* Aspect Box */}
-                  <div className="aspect-video w-full bg-slate-900 relative overflow-hidden">
-                    {item.type === 'video' ? (
-                      <>
-                        {ytEmbed ? (
-                          <div className="absolute inset-0 w-full h-full bg-slate-950 flex flex-col items-center justify-center">
-                            <img 
-                              src={`https://img.youtube.com/vi/${item.url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/)?.[2]}/0.jpg`} 
-                              alt={item.title} 
-                              className="w-full h-full object-cover opacity-60 absolute inset-0"
-                            />
-                            <div className="absolute inset-0 bg-slate-950/40" />
+            {filteredItems.length === 0 ? (
+              <motion.div
+                key="empty-gallery"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="col-span-full py-16 text-center bg-white rounded-3xl border border-slate-150 p-8 flex flex-col items-center justify-center gap-3"
+              >
+                <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 mb-2">
+                  <Image size={28} />
+                </div>
+                <h4 className="font-display font-extrabold text-[#0d2a63] text-sm uppercase">No items in this category</h4>
+                <p className="text-xs text-slate-400 max-w-sm leading-relaxed">
+                  There are currently no items available in this category. You can manage or add new photographs and videos from the Administrator Portal.
+                </p>
+              </motion.div>
+            ) : (
+              filteredItems.map((item, index) => {
+                const ytEmbed = item.type === 'video' ? getYouTubeEmbedUrl(item.url) : null;
+                
+                return (
+                  <motion.div
+                    key={item.id || index}
+                    layout
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.35, ease: 'easeOut' }}
+                    className="bg-white rounded-3xl overflow-hidden border border-slate-150 shadow-sm hover:shadow-xl hover:border-slate-300 group cursor-pointer transition-all flex flex-col justify-between"
+                    onClick={() => setSelectedMedia({ url: item.url, type: item.type, title: item.title })}
+                  >
+                    {/* Aspect Box */}
+                    <div className="aspect-video w-full bg-slate-900 relative overflow-hidden">
+                      {item.type === 'video' ? (
+                        <>
+                          {ytEmbed ? (
+                            <div className="absolute inset-0 w-full h-full bg-slate-950 flex flex-col items-center justify-center">
+                              <img 
+                                src={`https://img.youtube.com/vi/${item.url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/)?.[2]}/0.jpg`} 
+                                alt={item.title} 
+                                className="w-full h-full object-cover opacity-60 absolute inset-0"
+                              />
+                              <div className="absolute inset-0 bg-slate-950/40" />
+                            </div>
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#0d2a63] to-slate-900" />
+                          )}
+                          {/* Play overlay button */}
+                          <div className="absolute inset-0 flex items-center justify-center transition-transform group-hover:scale-110">
+                            <span className="w-14 h-14 rounded-full bg-[#1e66f5]/90 text-white flex items-center justify-center shadow-lg backdrop-blur-sm relative z-10 border-4 border-white/20">
+                              <Play size={20} className="fill-white ml-0.5" />
+                            </span>
                           </div>
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#0d2a63] to-slate-900" />
-                        )}
-                        {/* Play overlay button */}
-                        <div className="absolute inset-0 flex items-center justify-center transition-transform group-hover:scale-110">
-                          <span className="w-14 h-14 rounded-full bg-[#1e66f5]/90 text-white flex items-center justify-center shadow-lg backdrop-blur-sm relative z-10 border-4 border-white/20">
-                            <Play size={20} className="fill-white ml-0.5" />
-                          </span>
-                        </div>
-                      </>
-                    ) : (
-                      <img
-                        src={item.url}
-                        alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        referrerPolicy="no-referrer"
-                      />
-                    )}
+                        </>
+                      ) : (
+                        <img
+                          src={item.url}
+                          alt={item.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          referrerPolicy="no-referrer"
+                        />
+                      )}
 
-                    {/* Badge */}
-                    <div className="absolute top-3.5 left-3.5 bg-slate-900/80 backdrop-blur-md text-white font-mono font-black text-[9px] uppercase px-2.5 py-1 tracking-widest rounded-full z-10">
-                      {item.type === 'video' ? 'VIDEO Walkthrough' : 'PHOTOGRAPH'}
+                      {/* Badge */}
+                      <div className="absolute top-3.5 left-3.5 bg-slate-900/80 backdrop-blur-md text-white font-mono font-black text-[9px] uppercase px-2.5 py-1 tracking-widest rounded-full z-10">
+                        {item.type === 'video' ? 'VIDEO Walkthrough' : 'PHOTOGRAPH'}
+                      </div>
+
+                      {/* Glass hover sheet */}
+                      <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center z-10">
+                        <span className="text-white text-xs font-bold font-display tracking-widest uppercase flex items-center gap-2">
+                          <Eye size={14} />
+                          Launch Viewer
+                        </span>
+                      </div>
                     </div>
 
-                    {/* Glass hover sheet */}
-                    <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center z-10">
-                      <span className="text-white text-xs font-bold font-display tracking-widest uppercase flex items-center gap-2">
-                        <Eye size={14} />
-                        Launch Viewer
+                    {/* Caption details footer */}
+                    <div className="p-5 flex items-center justify-between border-t border-slate-100 bg-white">
+                      <div className="min-w-0 pr-3">
+                        <h4 className="font-display font-black text-[#0d2a63] text-sm truncate uppercase tracking-tight">
+                          {item.title}
+                        </h4>
+                        <p className="text-[10px] text-slate-400 font-bold tracking-tight">
+                          {item.type === 'video' ? 'Interactive YouTube/Video Presentation' : 'Hospital facility & infrastructure showcase'}
+                        </p>
+                      </div>
+                      <span className="text-slate-300 hover:text-blue-500 shrink-0">
+                        {item.type === 'video' ? <Film size={18} /> : <Image size={18} />}
                       </span>
                     </div>
-                  </div>
-
-                  {/* Caption details footer */}
-                  <div className="p-5 flex items-center justify-between border-t border-slate-100 bg-white">
-                    <div className="min-w-0 pr-3">
-                      <h4 className="font-display font-black text-[#0d2a63] text-sm truncate uppercase tracking-tight">
-                        {item.title}
-                      </h4>
-                      <p className="text-[10px] text-slate-400 font-bold tracking-tight">
-                        {item.type === 'video' ? 'Interactive YouTube/Video Presentation' : 'Hospital facility & infrastructure showcase'}
-                      </p>
-                    </div>
-                    <span className="text-slate-300 hover:text-blue-500 shrink-0">
-                      {item.type === 'video' ? <Film size={18} /> : <Image size={18} />}
-                    </span>
-                  </div>
-                </motion.div>
-              );
-            })}
+                  </motion.div>
+                );
+              })
+            )}
           </AnimatePresence>
         </div>
 

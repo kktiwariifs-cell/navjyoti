@@ -2490,15 +2490,17 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                             type: typeEl.value as 'image' | 'video',
                             url: urlEl.value
                           };
-                          setSiteSettings(prev => ({
-                            ...prev,
-                            gallery: [...(prev.gallery || []), newItem]
-                          }));
+                          const updatedSettings = {
+                            ...siteSettings,
+                            gallery: [...(siteSettings.gallery || []), newItem]
+                          };
+                          setSiteSettings(updatedSettings);
+                          saveSiteSettings(updatedSettings);
                           titleEl.value = '';
                           urlEl.value = '';
                           const fileEl = document.getElementById('new-gal-file') as HTMLInputElement;
                           if (fileEl) fileEl.value = '';
-                          alert('Gallery file appended! Make sure to Click "Commit Changes" at page bottom to preserve config forever.');
+                          alert('Gallery item uploaded and saved to the database successfully!');
                         }}
                         className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 rounded-xl text-xs flex items-center justify-center shrink-0 border-none cursor-pointer transition-all active:scale-95"
                       >
@@ -2630,14 +2632,16 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                                       alert('Media URL / Source cannot be empty');
                                       return;
                                     }
-                                    setSiteSettings(prev => ({
-                                      ...prev,
-                                      gallery: (prev.gallery || []).map(g => 
+                                    const updatedSettings = {
+                                      ...siteSettings,
+                                      gallery: (siteSettings.gallery || []).map(g => 
                                         g.id === item.id ? { ...g, title: editingGalTitle, type: editingGalType, url: editingGalUrl } : g
                                       )
-                                    }));
+                                    };
+                                    setSiteSettings(updatedSettings);
+                                    saveSiteSettings(updatedSettings);
                                     setEditingGalId(null);
-                                    alert('Gallery asset updated and staged! Scroll down and Click Commit Changes to save.');
+                                    alert('Gallery asset updated and saved to the database successfully!');
                                   }}
                                   className="text-emerald-700 hover:text-emerald-900 p-2 bg-emerald-50 rounded-xl transition-all border border-emerald-250 cursor-pointer inline-flex items-center justify-center shadow-sm"
                                   title="Save Changes"
@@ -2671,10 +2675,13 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    setSiteSettings(prev => ({
-                                      ...prev,
-                                      gallery: (prev.gallery || []).filter(g => g.id !== item.id)
-                                    }));
+                                    const updatedSettings = {
+                                      ...siteSettings,
+                                      gallery: (siteSettings.gallery || []).filter(g => g.id !== item.id)
+                                    };
+                                    setSiteSettings(updatedSettings);
+                                    saveSiteSettings(updatedSettings);
+                                    alert('Gallery item deleted and saved to the database successfully!');
                                   }}
                                   className="text-red-500 hover:text-red-700 p-2 bg-slate-50 hover:bg-rose-50 rounded-xl transition-all border border-slate-200 cursor-pointer inline-block shadow-sm"
                                   title="Delete gallery item"
