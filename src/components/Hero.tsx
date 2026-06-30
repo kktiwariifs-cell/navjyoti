@@ -56,6 +56,7 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
   );
 
   const renderTitle = () => {
+    if (settings.heroTitle === '') return null;
     if (!settings.heroTitle) return defaultTitle;
     const index = settings.heroTitle.indexOf('.');
     if (index !== -1 && index < settings.heroTitle.length - 1) {
@@ -78,7 +79,7 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
       id="home" 
       className={`relative overflow-hidden border-b border-slate-200 transition-all duration-500 ${
         hasSlides 
-          ? 'min-h-[85vh] flex items-center pt-28 pb-20 md:pt-36 md:pb-28 bg-slate-950' 
+          ? 'min-h-[85vh] flex items-start pt-24 pb-12 md:pt-28 md:pb-16 bg-slate-950' 
           : 'bg-gradient-to-br from-blue-50 via-white to-slate-50/50 pt-8 pb-16 md:py-24'
       }`}
     >
@@ -109,57 +110,17 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full flex justify-center">
-        <div className={hasSlides ? "w-full max-w-4xl text-center flex flex-col items-center justify-center py-8" : "grid grid-cols-1 lg:grid-cols-12 gap-12 items-center w-full"}>
+        <div className={hasSlides ? "w-full max-w-4xl text-center flex flex-col items-center justify-start pt-2 md:pt-4 pb-8" : "grid grid-cols-1 lg:grid-cols-12 gap-12 items-center w-full"}>
           
           {/* Main Hero copy & actions */}
-          <div className={hasSlides ? "flex flex-col items-center text-center space-y-6 md:space-y-8 max-w-3xl" : "lg:col-span-7 flex flex-col items-start text-left space-y-6"}>
+          <div className={hasSlides ? "flex flex-col items-center text-center space-y-4 max-w-3xl" : "lg:col-span-7 flex flex-col items-start text-left space-y-6"}>
             
-            {/* PM-JAY Notification chip */}
+            {/* Action buttons (rendered at top for slider to avoid overlapping banner graphics) */}
             <motion.div 
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className={`inline-flex items-center gap-2 text-xs sm:text-sm font-bold px-4 py-1.5 rounded-full shadow-sm transition-all duration-300 ${
-                hasSlides
-                  ? 'bg-blue-500/15 backdrop-blur-md border border-blue-400/30 text-blue-300 shadow-md'
-                  : 'bg-blue-50/85 border border-blue-100 text-blue-800'
-              }`}
-              id="hero-pmjay-badge"
-            >
-              <ShieldCheck size={16} className={`${hasSlides ? 'text-blue-400' : 'text-blue-600'} stroke-[3]`} />
-              <span>Ayushman Bharat (PM-JAY) Approved Cashless Treatment</span>
-            </motion.div>
-
-            {/* Display header */}
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className={`font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-[1.1] tracking-tight transition-colors duration-300 ${
-                hasSlides ? 'text-white' : 'text-slate-900'
-              }`}
-            >
-              {renderTitle()}
-            </motion.h1>
-
-            {/* Sub-copy */}
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className={`text-base sm:text-lg max-w-xl leading-relaxed font-sans transition-colors duration-300 ${
-                hasSlides ? 'text-slate-100/95 mx-auto' : 'text-slate-600'
-              }`}
-            >
-              {settings.heroSubtitle !== undefined && settings.heroSubtitle !== null ? settings.heroSubtitle : "Navjyoti Multispeciality Hospital, located in Basti, Uttar Pradesh, is committed to delivering modern, affordable, and deeply compassionate healthcare. Bring your Ayushman Bharat Card to enjoy free cashless hospital treatments today."}
-            </motion.p>
-
-            {/* Action buttons */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className={`flex flex-col sm:flex-row gap-4 w-full sm:w-auto ${hasSlides ? 'justify-center items-center' : ''}`}
+              className={`flex flex-col sm:flex-row gap-4 w-full sm:w-auto ${hasSlides ? 'justify-center items-center mb-4' : 'order-4'}`}
             >
               <button
                 id="hero-book-btn"
@@ -185,28 +146,66 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
               </button>
             </motion.div>
 
-            {/* Micro stats banner */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className={`grid grid-cols-3 gap-6 pt-6 border-t w-full transition-all duration-300 ${
-                hasSlides ? 'border-white/10 text-center justify-center' : 'border-slate-200'
-              }`}
-            >
-              <div>
-                <span className={`block text-3xl font-extrabold font-display ${hasSlides ? 'text-white' : 'text-blue-900'}`}>15k+</span>
-                <span className={`text-xs font-medium ${hasSlides ? 'text-slate-300' : 'text-slate-500'}`}>Patients Treated</span>
-              </div>
-              <div>
-                <span className={`block text-3xl font-extrabold font-display ${hasSlides ? 'text-white' : 'text-blue-900'}`}>12+</span>
-                <span className={`text-xs font-medium ${hasSlides ? 'text-slate-300' : 'text-slate-500'}`}>Specialists Doctors</span>
-              </div>
-              <div>
-                <span className={`block text-3xl font-extrabold font-display ${hasSlides ? 'text-white' : 'text-blue-900'}`}>100%</span>
-                <span className={`text-xs font-medium ${hasSlides ? 'text-slate-300' : 'text-slate-500'}`}>Cashless eligible PMJAY</span>
-              </div>
-            </motion.div>
+            {/* PM-JAY Notification chip - Only shown when NO slides are present to avoid overlapping slide graphics */}
+            {!hasSlides && (
+              <motion.div 
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold px-4 py-1.5 rounded-full shadow-sm transition-all duration-300 bg-blue-50/85 border border-blue-100 text-blue-800"
+                id="hero-pmjay-badge"
+              >
+                <ShieldCheck size={16} className="text-blue-600 stroke-[3]" />
+                <span>Ayushman Bharat (PM-JAY) Approved Cashless Treatment</span>
+              </motion.div>
+            )}
+
+            {/* Display header - Only shown when NO slides are present to avoid overlapping slide graphics */}
+            {!hasSlides && renderTitle() && (
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-[1.1] tracking-tight transition-colors duration-300 text-slate-900"
+              >
+                {renderTitle()}
+              </motion.h1>
+            )}
+
+            {/* Sub-copy - Only shown when NO slides are present to avoid overlapping slide graphics */}
+            {!hasSlides && settings.heroSubtitle !== "" && (
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="text-base sm:text-lg max-w-xl leading-relaxed font-sans transition-colors duration-300 text-slate-600"
+              >
+                {settings.heroSubtitle !== undefined && settings.heroSubtitle !== null ? settings.heroSubtitle : "Navjyoti Multispeciality Hospital, located in Basti, Uttar Pradesh, is committed to delivering modern, affordable, and deeply compassionate healthcare. Bring your Ayushman Bharat Card to enjoy free cashless hospital treatments today."}
+              </motion.p>
+            )}
+
+            {/* Micro stats banner - Only shown when NO slides are present to avoid overlapping slide graphics */}
+            {!hasSlides && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="grid grid-cols-3 gap-6 pt-6 border-t w-full transition-all duration-300 border-slate-200"
+              >
+                <div>
+                  <span className="block text-3xl font-extrabold font-display text-blue-900">15k+</span>
+                  <span className="text-xs font-medium text-slate-500">Patients Treated</span>
+                </div>
+                <div>
+                  <span className="block text-3xl font-extrabold font-display text-blue-900">12+</span>
+                  <span className="text-xs font-medium text-slate-500">Specialists Doctors</span>
+                </div>
+                <div>
+                  <span className="block text-3xl font-extrabold font-display text-blue-900">100%</span>
+                  <span className="text-xs font-medium text-slate-500">Cashless eligible PMJAY</span>
+                </div>
+              </motion.div>
+            )}
 
           </div>
 
@@ -288,13 +287,6 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
       {/* Sleek edge arrows & slide name overlay */}
       {hasSlides && (
         <>
-          {/* Caption banner overlay top/center */}
-          <div className="absolute top-24 left-1/2 -translate-x-1/2 text-center pointer-events-none text-white z-10 select-none hidden sm:block">
-            <span className="bg-blue-500/10 backdrop-blur-md border border-blue-400/20 text-blue-300 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
-              {slides[currentSlide].label}
-            </span>
-          </div>
-
           {slides.length > 1 && (
             <>
               <button
