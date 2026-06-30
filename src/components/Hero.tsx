@@ -151,7 +151,7 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
                 hasSlides ? 'text-slate-100/95 mx-auto' : 'text-slate-600'
               }`}
             >
-              {settings.heroSubtitle || "Navjyoti Multispeciality Hospital, located in Basti, Uttar Pradesh, is committed to delivering modern, affordable, and deeply compassionate healthcare. Bring your Ayushman Bharat Card to enjoy free cashless hospital treatments today."}
+              {settings.heroSubtitle !== undefined && settings.heroSubtitle !== null ? settings.heroSubtitle : "Navjyoti Multispeciality Hospital, located in Basti, Uttar Pradesh, is committed to delivering modern, affordable, and deeply compassionate healthcare. Bring your Ayushman Bharat Card to enjoy free cashless hospital treatments today."}
             </motion.p>
 
             {/* Action buttons */}
