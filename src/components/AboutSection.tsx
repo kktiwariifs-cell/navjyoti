@@ -9,6 +9,16 @@ export default function AboutSection() {
   const [selectedCred, setSelectedCred] = useState<any | null>(null);
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomScale, setZoomScale] = useState(1);
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    if (zoomScale <= 1.0) {
+      setPanOffset({ x: 0, y: 0 });
+      setIsDragging(false);
+    }
+  }, [zoomScale]);
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -22,6 +32,38 @@ export default function AboutSection() {
     setSelectedCred(null);
     setIsZoomed(false);
     setZoomScale(1);
+    setPanOffset({ x: 0, y: 0 });
+    setIsDragging(false);
+  };
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (zoomScale > 1.0) {
+      setIsDragging(true);
+      setDragStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y });
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (isDragging && zoomScale > 1.0) {
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+      
+      // Boundaries to prevent dragging completely out of view
+      const maxDragX = (zoomScale - 1) * 300;
+      const maxDragY = (zoomScale - 1) * 300;
+      setPanOffset({
+        x: Math.min(Math.max(newX, -maxDragX), maxDragX),
+        y: Math.min(Math.max(newY, -maxDragY), maxDragY)
+      });
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    setIsDragging(false);
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch (err) {}
   };
 
   // Listen for Escape key to close Lightbox modal
@@ -431,7 +473,7 @@ export default function AboutSection() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/95 backdrop-blur-md"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-[#04060b]/98 backdrop-blur-xl"
             onClick={closeCredModal}
           >
             <motion.div
@@ -439,7 +481,7 @@ export default function AboutSection() {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 15 }}
               transition={{ type: "spring", duration: 0.3 }}
-              className="relative w-full max-w-5xl bg-[#0b1329] border border-slate-800/90 rounded-3xl overflow-hidden shadow-2xl flex flex-col p-5 sm:p-6 gap-4 text-left max-h-[92vh] md:max-h-[680px]"
+              className="relative w-full max-w-5xl bg-[#080d1a] border border-slate-800/80 rounded-3xl overflow-hidden shadow-2xl flex flex-col p-5 sm:p-6 gap-4 text-left max-h-[92vh] md:max-h-[680px]"
               onClick={e => e.stopPropagation()}
             >
               {/* Close Button */}
@@ -467,11 +509,18 @@ export default function AboutSection() {
                 {/* Image Container */}
                 <div className="md:col-span-7 w-full h-[320px] sm:h-[380px] md:h-full min-h-[280px] bg-slate-950/60 rounded-2xl border border-slate-800/60 flex items-center justify-center relative overflow-hidden">
                   {selectedCred.fileUrl ? (
-                    <div className="w-full h-full overflow-auto flex items-center justify-center p-4 relative select-none">
+                    <div className="w-full h-full overflow-hidden flex items-center justify-center p-4 relative select-none">
                       <img
                         src={selectedCred.fileUrl}
                         alt={selectedCred.title}
-                        onClick={() => {
+                        onPointerDown={handlePointerDown}
+                        onPointerMove={handlePointerMove}
+                        onPointerUp={handlePointerUp}
+                        onPointerCancel={handlePointerUp}
+                        onClick={(e) => {
+                          if (Math.abs(panOffset.x) > 5 || Math.abs(panOffset.y) > 5) {
+                            return;
+                          }
                           if (zoomScale > 1.0) {
                             setZoomScale(1.0);
                           } else {
@@ -479,13 +528,15 @@ export default function AboutSection() {
                           }
                         }}
                         style={{
-                          width: `${zoomScale * 100}%`,
-                          maxWidth: zoomScale > 1.0 ? 'none' : '100%',
-                          height: 'auto',
-                          maxHeight: zoomScale > 1.0 ? 'none' : '100%',
+                          transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomScale})`,
+                          transformOrigin: 'center center',
+                          maxWidth: '100%',
+                          maxHeight: '100%',
                           objectFit: 'contain',
                         }}
-                        className="rounded-xl shadow-md transition-all duration-200 ease-out cursor-zoom-in"
+                        className={`rounded-xl shadow-md transition-transform duration-200 ease-out select-none touch-none ${
+                          zoomScale > 1.0 ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in'
+                        }`}
                         referrerPolicy="no-referrer"
                       />
 

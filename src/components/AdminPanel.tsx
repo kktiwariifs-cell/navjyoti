@@ -9,6 +9,7 @@ import {
   getSiteSettings, saveSiteSettings,
   getNewsEvents, addNewsEvent, updateNewsEvent, deleteNewsEvent
 } from '../utils/database';
+import { compressImage, handleImageUpload } from '../utils/imageCompressor';
 import { Doctor, Specialty, Appointment, Feedback, Inquiry, SiteSettings, NewsEvent } from '../types';
 import { 
   Users, Activity, Calendar, Mail, MessageSquare, LogOut, Plus, Edit, Trash2, 
@@ -385,13 +386,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
         return;
       }
       setPhotoError('');
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          setNewsPhotoUrl(reader.result);
-        }
-      };
-      reader.readAsDataURL(file);
+      handleImageUpload(file, url => setNewsPhotoUrl(url));
     }
   };
 
@@ -642,18 +637,22 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
   const updateSliderImage = (index: number, base64: string) => {
     const nextSliders = [...(siteSettings.sliders || [])];
     nextSliders[index] = base64;
-    setSiteSettings(prev => ({
-      ...prev,
+    const updated = {
+      ...siteSettings,
       sliders: nextSliders
-    }));
+    };
+    setSiteSettings(updated);
+    saveSiteSettings(updated);
   };
 
   const removeSliderImage = (index: number) => {
     const nextSliders = (siteSettings.sliders || []).filter((_, idx) => idx !== index);
-    setSiteSettings(prev => ({
-      ...prev,
+    const updated = {
+      ...siteSettings,
       sliders: nextSliders
-    }));
+    };
+    setSiteSettings(updated);
+    saveSiteSettings(updated);
   };
 
   // Count helper statistics
@@ -1654,13 +1653,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                       e.preventDefault();
                       const file = e.dataTransfer.files?.[0];
                       if (file) {
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                          if (typeof reader.result === 'string') {
-                            setSiteSettings(prev => ({ ...prev, logoUrl: reader.result as string }));
-                          }
-                        };
-                        reader.readAsDataURL(file);
+                        handleImageUpload(file, url => setSiteSettings(prev => ({ ...prev, logoUrl: url })));
                       }
                     }}
                     onClick={() => document.getElementById('logo-file-input')?.click()}
@@ -1677,13 +1670,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                       onChange={e => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          const reader = new FileReader();
-                          reader.onload = () => {
-                            if (typeof reader.result === 'string') {
-                              setSiteSettings(prev => ({ ...prev, logoUrl: reader.result as string }));
-                            }
-                          };
-                          reader.readAsDataURL(file);
+                          handleImageUpload(file, url => setSiteSettings(prev => ({ ...prev, logoUrl: url })));
                         }
                       }}
                     />
@@ -1753,13 +1740,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                         e.preventDefault();
                         const file = e.dataTransfer.files?.[0];
                         if (file) {
-                          const reader = new FileReader();
-                          reader.onload = () => {
-                            if (typeof reader.result === 'string') {
-                              setSiteSettings(prev => ({ ...prev, heroImageUrl: reader.result as string }));
-                            }
-                          };
-                          reader.readAsDataURL(file);
+                          handleImageUpload(file, url => setSiteSettings(prev => ({ ...prev, heroImageUrl: url })));
                         }
                       }}
                       onClick={() => document.getElementById('herobg-file-input')?.click()}
@@ -1775,13 +1756,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                         onChange={e => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            const reader = new FileReader();
-                            reader.onload = () => {
-                              if (typeof reader.result === 'string') {
-                                setSiteSettings(prev => ({ ...prev, heroImageUrl: reader.result as string }));
-                              }
-                            };
-                            reader.readAsDataURL(file);
+                            handleImageUpload(file, url => setSiteSettings(prev => ({ ...prev, heroImageUrl: url })));
                           }
                         }}
                       />
@@ -1850,13 +1825,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                                 e.preventDefault();
                                 const file = e.dataTransfer.files?.[0];
                                 if (file) {
-                                  const reader = new FileReader();
-                                  reader.onload = () => {
-                                    if (typeof reader.result === 'string') {
-                                      updateSliderImage(index, reader.result as string);
-                                    }
-                                  };
-                                  reader.readAsDataURL(file);
+                                  handleImageUpload(file, url => updateSliderImage(index, url));
                                 }
                               }}
                               onClick={() => document.getElementById(`slider-file-input-${index}`)?.click()}
@@ -1878,13 +1847,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                           onChange={e => {
                             const file = e.target.files?.[0];
                             if (file) {
-                              const reader = new FileReader();
-                              reader.onload = () => {
-                                if (typeof reader.result === 'string') {
-                                  updateSliderImage(index, reader.result as string);
-                                }
-                              };
-                              reader.readAsDataURL(file);
+                              handleImageUpload(file, url => updateSliderImage(index, url));
                             }
                           }}
                         />
@@ -1951,13 +1914,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                     e.preventDefault();
                     const file = e.dataTransfer.files?.[0];
                     if (file) {
-                      const reader = new FileReader();
-                      reader.onload = () => {
-                        if (typeof reader.result === 'string') {
-                          setSiteSettings(prev => ({ ...prev, aboutPhotoUrl: reader.result as string }));
-                        }
-                      };
-                      reader.readAsDataURL(file);
+                      handleImageUpload(file, url => setSiteSettings(prev => ({ ...prev, aboutPhotoUrl: url })));
                     }
                   }}
                   onClick={() => document.getElementById('about-photo-file-input')?.click()}
@@ -1974,13 +1931,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                     onChange={e => {
                       const file = e.target.files?.[0];
                       if (file) {
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                          if (typeof reader.result === 'string') {
-                            setSiteSettings(prev => ({ ...prev, aboutPhotoUrl: reader.result as string }));
-                          }
-                        };
-                        reader.readAsDataURL(file);
+                        handleImageUpload(file, url => setSiteSettings(prev => ({ ...prev, aboutPhotoUrl: url })));
                       }
                     }}
                   />
@@ -2068,13 +2019,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                           onChange={e => {
                             const file = e.target.files?.[0];
                             if (file) {
-                              const reader = new FileReader();
-                              reader.onload = () => {
-                                if (typeof reader.result === 'string') {
-                                  setSiteSettings(prev => ({ ...prev, chairmanPhotoUrl: reader.result as string }));
-                                }
-                              };
-                              reader.readAsDataURL(file);
+                              handleImageUpload(file, url => setSiteSettings(prev => ({ ...prev, chairmanPhotoUrl: url })));
                             }
                           }}
                         />
@@ -2165,13 +2110,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                           onChange={e => {
                             const file = e.target.files?.[0];
                             if (file) {
-                              const reader = new FileReader();
-                              reader.onload = () => {
-                                if (typeof reader.result === 'string') {
-                                  setSiteSettings(prev => ({ ...prev, directorPhotoUrl: reader.result as string }));
-                                }
-                              };
-                              reader.readAsDataURL(file);
+                              handleImageUpload(file, url => setSiteSettings(prev => ({ ...prev, directorPhotoUrl: url })));
                             }
                           }}
                         />
@@ -2237,25 +2176,21 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                             alert('Please select or drag a valid certificate document image first.');
                             return;
                           }
-                          const reader = new FileReader();
-                          reader.onload = () => {
-                            if (typeof reader.result === 'string') {
-                              const newCred = {
-                                id: `cred_${Date.now()}`,
-                                title: titleEl.value,
-                                fileUrl: reader.result,
-                                date: new Date().toLocaleDateString()
-                              };
-                              setSiteSettings(prev => ({
-                                ...prev,
-                                credentials: [...(prev.credentials || []), newCred]
-                              }));
-                              titleEl.value = '';
-                              fileEl.value = '';
-                              alert('Certificate prepared! Please make sure to Hit "Commit Changes" at the bottom to sync safely to the cloud.');
-                            }
-                          };
-                          reader.readAsDataURL(file);
+                          handleImageUpload(file, url => {
+                            const newCred = {
+                              id: `cred_${Date.now()}`,
+                              title: titleEl.value,
+                              fileUrl: url,
+                              date: new Date().toLocaleDateString()
+                            };
+                            setSiteSettings(prev => ({
+                              ...prev,
+                              credentials: [...(prev.credentials || []), newCred]
+                            }));
+                            titleEl.value = '';
+                            fileEl.value = '';
+                            alert('Certificate prepared! Please make sure to Hit "Commit Changes" at the bottom to sync safely to the cloud.');
+                          });
                         }}
                         className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 rounded-xl text-xs flex items-center gap-1 cursor-pointer transition-all active:scale-95 border-none"
                       >
@@ -2312,18 +2247,14 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                                       onChange={e => {
                                         const file = e.target.files?.[0];
                                         if (file) {
-                                          const reader = new FileReader();
-                                          reader.onload = () => {
-                                            if (typeof reader.result === 'string') {
-                                              setSiteSettings(prev => ({
-                                                ...prev,
-                                                credentials: (prev.credentials || []).map(c => 
-                                                  c.id === cred.id ? { ...c, fileUrl: reader.result as string } : c
-                                                )
-                                              }));
-                                            }
-                                          };
-                                          reader.readAsDataURL(file);
+                                          handleImageUpload(file, url => {
+                                            setSiteSettings(prev => ({
+                                              ...prev,
+                                              credentials: (prev.credentials || []).map(c => 
+                                                c.id === cred.id ? { ...c, fileUrl: url } : c
+                                              )
+                                            }));
+                                          });
                                         }
                                       }}
                                     />
@@ -2457,14 +2388,10 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                           onChange={e => {
                             const file = e.target.files?.[0];
                             if (file) {
-                              const reader = new FileReader();
-                              reader.onload = () => {
-                                if (typeof reader.result === 'string') {
-                                  const urlInput = document.getElementById('new-gal-url') as HTMLInputElement;
-                                  if (urlInput) urlInput.value = reader.result;
-                                }
-                              };
-                              reader.readAsDataURL(file);
+                              handleImageUpload(file, url => {
+                                const urlInput = document.getElementById('new-gal-url') as HTMLInputElement;
+                                if (urlInput) urlInput.value = url;
+                              });
                             }
                           }}
                           className="w-full text-[10px] text-slate-400 bg-white border p-1 rounded-lg"
@@ -2572,13 +2499,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                                       onChange={e => {
                                         const file = e.target.files?.[0];
                                         if (file) {
-                                          const reader = new FileReader();
-                                          reader.onload = () => {
-                                            if (typeof reader.result === 'string') {
-                                              setEditingGalUrl(reader.result);
-                                            }
-                                          };
-                                          reader.readAsDataURL(file);
+                                          handleImageUpload(file, url => setEditingGalUrl(url));
                                         }
                                       }}
                                     />
@@ -2890,14 +2811,10 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                         onChange={e => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            const reader = new FileReader();
-                            reader.onload = () => {
-                              if (typeof reader.result === 'string') {
-                                const logoInput = document.getElementById('new-tpa-logo') as HTMLInputElement;
-                                if (logoInput) logoInput.value = reader.result;
-                              }
-                            };
-                            reader.readAsDataURL(file);
+                            handleImageUpload(file, url => {
+                              const logoInput = document.getElementById('new-tpa-logo') as HTMLInputElement;
+                              if (logoInput) logoInput.value = url;
+                            });
                           }
                         }}
                         className="hidden"
@@ -3017,13 +2934,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                                           onChange={e => {
                                             const file = e.target.files?.[0];
                                             if (file) {
-                                              const reader = new FileReader();
-                                              reader.onload = () => {
-                                                if (typeof reader.result === 'string') {
-                                                  setEditingTpaLogo(reader.result);
-                                                }
-                                              };
-                                              reader.readAsDataURL(file);
+                                              handleImageUpload(file, url => setEditingTpaLogo(url));
                                             }
                                           }}
                                         />
@@ -3432,13 +3343,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                     const file = e.dataTransfer.files?.[0];
                     if (file) {
                       if (file.type === 'image/jpeg' || file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg')) {
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                          if (typeof reader.result === 'string') {
-                            setDocImage(reader.result);
-                          }
-                        };
-                        reader.readAsDataURL(file);
+                        handleImageUpload(file, url => setDocImage(url));
                       } else {
                         alert('Only JPEG/JPG portrait files are accepted.');
                       }
@@ -3459,13 +3364,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                       const file = e.target.files?.[0];
                       if (file) {
                         if (file.type === 'image/jpeg' || file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg')) {
-                          const reader = new FileReader();
-                          reader.onload = () => {
-                            if (typeof reader.result === 'string') {
-                              setDocImage(reader.result);
-                            }
-                          };
-                          reader.readAsDataURL(file);
+                          handleImageUpload(file, url => setDocImage(url));
                         } else {
                           alert('Only JPEG/JPG portrait files are accepted.');
                         }
@@ -3606,13 +3505,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                     const file = e.dataTransfer.files?.[0];
                     if (file) {
                       if (file.type === 'image/jpeg' || file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg')) {
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                          if (typeof reader.result === 'string') {
-                            setServiceImg(reader.result);
-                          }
-                        };
-                        reader.readAsDataURL(file);
+                        handleImageUpload(file, url => setServiceImg(url));
                       } else {
                         alert('Only JPEG/JPG files are accepted.');
                       }
@@ -3633,13 +3526,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                       const file = e.target.files?.[0];
                       if (file) {
                         if (file.type === 'image/jpeg' || file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg')) {
-                          const reader = new FileReader();
-                          reader.onload = () => {
-                            if (typeof reader.result === 'string') {
-                              setServiceImg(reader.result);
-                            }
-                          };
-                          reader.readAsDataURL(file);
+                          handleImageUpload(file, url => setServiceImg(url));
                         } else {
                           alert('Only JPEG/JPG files are accepted.');
                         }
