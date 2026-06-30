@@ -80,13 +80,13 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
         id="home" 
         className={`relative overflow-hidden border-b border-slate-200 transition-all duration-500 ${
           hasSlides 
-            ? 'w-full aspect-[16/9] sm:aspect-[21/9] lg:aspect-[2.4/1] xl:aspect-[2.8/1] min-h-[280px] sm:min-h-[400px] md:min-h-[500px] lg:min-h-[580px] pt-16 md:pt-20 bg-slate-950 flex items-stretch' 
+            ? 'w-full bg-slate-950 flex items-stretch h-auto' 
             : 'bg-gradient-to-br from-blue-50 via-white to-slate-50/50 pt-8 pb-16 md:py-24'
         }`}
       >
         {/* Background Slider behind all components if slides exist */}
         {hasSlides ? (
-          <div className="absolute inset-0 z-0 overflow-hidden select-none bg-slate-950">
+          <div className="relative w-full overflow-hidden select-none bg-slate-950">
             {/* Blurred backing copy to prevent empty sidebar spaces on non-matching ratios */}
             <img
               src={slides[currentSlide].url}
@@ -99,14 +99,34 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
                 key={currentSlide}
                 src={slides[currentSlide].url}
                 alt={slides[currentSlide].label}
-                initial={{ opacity: 0, scale: 1.01 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.99 }}
-                transition={{ duration: 0.6 }}
-                className="w-full h-full object-cover relative z-10"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                className="w-full h-auto block relative z-10"
                 referrerPolicy="no-referrer"
               />
             </AnimatePresence>
+
+            {/* Action buttons floating in the top-right vacant sky area of the slider */}
+            <div className="absolute top-2 sm:top-4 right-2 sm:right-6 z-30 flex flex-col sm:flex-row gap-2 max-w-[90%] sm:max-w-none">
+              <button
+                id="hero-book-btn-floating"
+                onClick={onOpenBooking}
+                className="bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white shadow-lg shadow-blue-500/30 font-bold px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full flex items-center justify-center gap-1.5 text-[11px] sm:text-sm tracking-wide transition-all duration-300 cursor-pointer border border-blue-500/30"
+              >
+                <CalendarRange size={14} className="sm:w-4 sm:h-4 shrink-0" />
+                <span className="truncate">Book Free Consultation</span>
+              </button>
+              <button
+                id="hero-pmjay-btn-floating"
+                onClick={() => onNavigate('pmjay')}
+                className="font-bold px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full flex items-center justify-center gap-1.5 text-[11px] sm:text-sm transition-all duration-300 cursor-pointer border border-blue-400/40 bg-slate-900/80 hover:bg-slate-900 text-white shadow-lg backdrop-blur-sm"
+              >
+                <HeartHandshake size={14} className="text-blue-300 sm:w-4 sm:h-4 shrink-0" />
+                <span className="truncate">Ayushman Guide</span>
+              </button>
+            </div>
           </div>
         ) : (
           <>
@@ -318,30 +338,6 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
           </>
         )}
       </section>
-
-      {/* Dynamic CTA Tray (Rendered directly under slider to eliminate overlap issues while remaining beautifully accessible) */}
-      {hasSlides && (
-        <div className="w-full bg-gradient-to-br from-[#0a1a3a] to-[#040d1f] border-t border-slate-800 py-6 px-4 relative z-20 flex flex-col sm:flex-row gap-4 justify-center items-center shadow-lg">
-          <button
-            id="hero-book-btn-floating"
-            onClick={onOpenBooking}
-            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white shadow-xl shadow-blue-500/20 font-bold px-8 py-4 rounded-full flex items-center justify-center gap-2 text-sm tracking-wide transition-all duration-300 cursor-pointer"
-          >
-            <CalendarRange size={18} />
-            Book Free Consultation
-          </button>
-
-          <button
-            id="hero-pmjay-btn-floating"
-            onClick={() => onNavigate('pmjay')}
-            className="w-full sm:w-auto font-bold px-8 py-4 rounded-full flex items-center justify-center gap-2 text-sm transition-all duration-300 cursor-pointer border border-blue-400/30 bg-blue-950/50 hover:bg-blue-900/60 text-white shadow-xl"
-          >
-            <HeartHandshake size={18} className="text-blue-300" />
-            Ayushman Bharat Guide
-            <ChevronRight size={16} />
-          </button>
-        </div>
-      )}
     </div>
   );
 }
