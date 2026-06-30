@@ -2388,10 +2388,33 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                           onChange={e => {
                             const file = e.target.files?.[0];
                             if (file) {
-                              handleImageUpload(file, url => {
-                                const urlInput = document.getElementById('new-gal-url') as HTMLInputElement;
-                                if (urlInput) urlInput.value = url;
-                              });
+                              const urlInput = document.getElementById('new-gal-url') as HTMLInputElement;
+                              if (urlInput) {
+                                urlInput.value = 'Loading media file into database, please wait...';
+                              }
+                              if (file.type.startsWith('video/')) {
+                                const reader = new FileReader();
+                                reader.onload = () => {
+                                  if (typeof reader.result === 'string') {
+                                    if (urlInput) urlInput.value = reader.result;
+                                    // Auto-select type as video
+                                    const typeEl = document.getElementById('new-gal-type') as HTMLSelectElement;
+                                    if (typeEl) typeEl.value = 'video';
+                                  }
+                                };
+                                reader.onerror = () => {
+                                  if (urlInput) urlInput.value = '';
+                                  alert('Failed to read video file.');
+                                };
+                                reader.readAsDataURL(file);
+                              } else {
+                                handleImageUpload(file, url => {
+                                  if (urlInput) urlInput.value = url;
+                                  // Auto-select type as image
+                                  const typeEl = document.getElementById('new-gal-type') as HTMLSelectElement;
+                                  if (typeEl) typeEl.value = 'image';
+                                });
+                              }
                             }
                           }}
                           className="w-full text-[10px] text-slate-400 bg-white border p-1 rounded-lg"
@@ -2407,7 +2430,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                             alert('Please write a descriptive caption for this gallery publication.');
                             return;
                           }
-                          if (!urlEl || !urlEl.value) {
+                          if (!urlEl || !urlEl.value || urlEl.value.startsWith('Loading')) {
                             alert('Please insert a valid video URL, photo address or select a local photo file.');
                             return;
                           }
@@ -2499,7 +2522,26 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                                       onChange={e => {
                                         const file = e.target.files?.[0];
                                         if (file) {
-                                          handleImageUpload(file, url => setEditingGalUrl(url));
+                                          setEditingGalUrl('Loading media file...');
+                                          if (file.type.startsWith('video/')) {
+                                            const reader = new FileReader();
+                                            reader.onload = () => {
+                                              if (typeof reader.result === 'string') {
+                                                setEditingGalUrl(reader.result);
+                                                setEditingGalType('video');
+                                              }
+                                            };
+                                            reader.onerror = () => {
+                                              setEditingGalUrl('');
+                                              alert('Failed to read video file.');
+                                            };
+                                            reader.readAsDataURL(file);
+                                          } else {
+                                            handleImageUpload(file, url => {
+                                              setEditingGalUrl(url);
+                                              setEditingGalType('image');
+                                            });
+                                          }
                                         }
                                       }}
                                     />
@@ -3061,7 +3103,33 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
               <button
                 type="button"
                 onClick={() => {
-                  saveSiteSettings(siteSettings);
+                  // Auto-commit any drafted gallery item before saving settings
+                  const typeEl = document.getElementById('new-gal-type') as HTMLSelectElement;
+                  const titleEl = document.getElementById('new-gal-title') as HTMLInputElement;
+                  const urlEl = document.getElementById('new-gal-url') as HTMLInputElement;
+                  let finalSettings = siteSettings;
+                  
+                  if (titleEl && titleEl.value.trim() && urlEl && urlEl.value.trim() && !urlEl.value.startsWith('Loading')) {
+                    const newItem = {
+                      id: `gal_${Date.now()}`,
+                      title: titleEl.value.trim(),
+                      type: (typeEl ? typeEl.value : 'video') as 'image' | 'video',
+                      url: urlEl.value.trim()
+                    };
+                    finalSettings = {
+                      ...siteSettings,
+                      gallery: [...(siteSettings.gallery || []), newItem]
+                    };
+                    setSiteSettings(finalSettings);
+                    
+                    // Clear inputs
+                    titleEl.value = '';
+                    urlEl.value = '';
+                    const fileEl = document.getElementById('new-gal-file') as HTMLInputElement;
+                    if (fileEl) fileEl.value = '';
+                  }
+                  
+                  saveSiteSettings(finalSettings);
                   setIsSettingsSavedStatus(true);
                   setTimeout(() => setIsSettingsSavedStatus(false), 5150);
                 }}

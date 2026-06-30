@@ -51,32 +51,174 @@ const keyOf = (name: string) => `navjyoti_${name}`;
 // Memory storage fallback to prevent crashes in private navigation or inside sandboxed iframes
 const memoryStorage: Record<string, string> = {};
 
+// Simple IndexedDB implementation for persistent storage of large assets (e.g. video files, high-res photos)
+const DB_NAME = 'NavjyotiDB';
+const STORE_NAME = 'StorageStore';
+const DB_VERSION = 1;
+
+const openDB = (): Promise<IDBDatabase> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve(request.result);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME);
+        }
+      };
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+export const saveToIndexedDB = async (key: string, value: string): Promise<void> => {
+  try {
+    const db = await openDB();
+    await new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.put(value, key);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  } catch (e) {
+    console.error(`IndexedDB put failed for key ${key}:`, e);
+  }
+};
+
+export const getFromIndexedDB = async (key: string): Promise<string | null> => {
+  try {
+    const db = await openDB();
+    return await new Promise<string | null>((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readonly');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.get(key);
+      request.onsuccess = () => resolve(request.result || null);
+      request.onerror = () => reject(request.error);
+    });
+  } catch (e) {
+    console.error(`IndexedDB get failed for key ${key}:`, e);
+    return null;
+  }
+};
+
+export const removeFromIndexedDB = async (key: string): Promise<void> => {
+  try {
+    const db = await openDB();
+    await new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.delete(key);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  } catch (e) {
+    console.error(`IndexedDB delete failed for key ${key}:`, e);
+  }
+};
+
 export const safeGetItem = (key: string): string | null => {
+  if (memoryStorage[key] !== undefined) {
+    return memoryStorage[key];
+  }
   try {
     return localStorage.getItem(key);
   } catch (e) {
     console.warn(`localStorage getItem blocked: ${e}`);
-    return memoryStorage[key] || null;
+    return null;
   }
 };
 
 export const safeSetItem = (key: string, value: string): void => {
+  memoryStorage[key] = value;
   try {
     localStorage.setItem(key, value);
   } catch (e) {
-    console.warn(`localStorage setItem blocked: ${e}`);
-    memoryStorage[key] = value;
+    console.warn(`localStorage setItem blocked or full: ${e}`);
   }
+  saveToIndexedDB(key, value);
 };
 
 export const safeRemoveItem = (key: string): void => {
+  delete memoryStorage[key];
   try {
     localStorage.removeItem(key);
   } catch (e) {
     console.warn(`localStorage removeItem blocked: ${e}`);
-    delete memoryStorage[key];
+  }
+  removeFromIndexedDB(key);
+};
+
+export const loadAllFromIndexedDB = async (): Promise<void> => {
+  try {
+    const db = await openDB();
+    const keys = await new Promise<string[]>((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readonly');
+      const store = transaction.objectStore(STORE_NAME);
+      
+      if (typeof store.getAllKeys === 'function') {
+        const request = store.getAllKeys();
+        request.onsuccess = () => resolve(request.result as string[]);
+        request.onerror = () => reject(request.error);
+      } else {
+        const keysList: string[] = [];
+        const request = store.openCursor();
+        request.onsuccess = (event: any) => {
+          const cursor = event.target.result;
+          if (cursor) {
+            keysList.push(cursor.key as string);
+            cursor.continue();
+          } else {
+            resolve(keysList);
+          }
+        };
+        request.onerror = () => reject(request.error);
+      }
+    });
+
+    for (const key of keys) {
+      const val = await getFromIndexedDB(key);
+      if (val) {
+        memoryStorage[key] = val;
+      }
+    }
+    
+    // Backup keys from localStorage if they aren't in memoryStorage yet
+    const localKeys = ['doctors', 'services', 'feedbacks', 'appointments', 'inquiries', 'site_settings', 'news_events'];
+    for (const baseKey of localKeys) {
+      const fullKey = keyOf(baseKey);
+      if (memoryStorage[fullKey] === undefined) {
+        const localVal = localStorage.getItem(fullKey);
+        if (localVal) {
+          memoryStorage[fullKey] = localVal;
+          saveToIndexedDB(fullKey, localVal);
+        }
+      }
+    }
+
+    initDB();
+    window.dispatchEvent(new Event('db_update'));
+  } catch (e) {
+    console.error('Failed to load all items from IndexedDB:', e);
+    const localKeys = ['doctors', 'services', 'feedbacks', 'appointments', 'inquiries', 'site_settings', 'news_events'];
+    for (const baseKey of localKeys) {
+      const fullKey = keyOf(baseKey);
+      try {
+        const localVal = localStorage.getItem(fullKey);
+        if (localVal) {
+          memoryStorage[fullKey] = localVal;
+        }
+      } catch (err) {}
+    }
+    initDB();
   }
 };
+
+// Start loading asynchronously immediately
+loadAllFromIndexedDB();
 
 // ---------------------------------------------------------
 // Default Local Seeding Data
