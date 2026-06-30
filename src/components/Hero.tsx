@@ -103,7 +103,7 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.99 }}
                 transition={{ duration: 0.6 }}
-                className="w-full h-full object-contain relative z-10"
+                className="w-full h-full object-cover relative z-10"
                 referrerPolicy="no-referrer"
               />
             </AnimatePresence>

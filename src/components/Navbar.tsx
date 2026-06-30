@@ -83,7 +83,7 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
       </div>
 
       {/* Main header navigation */}
-      <nav id="header-nav" className="bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm sticky top-0 transition-all duration-300">
+      <nav id="header-nav" className="bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm sticky top-0 z-50 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20">
             {/* Logo area */}
@@ -107,7 +107,7 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
               </div>
 
               {/* NABH Certification Badge - Compact & Ultra-trustworthy */}
-              <div className="flex items-center pl-2 sm:pl-3 ml-1 sm:ml-2 border-l border-slate-200 shrink-0">
+              <div className="hidden sm:flex items-center pl-2 sm:pl-3 ml-1 sm:ml-2 border-l border-slate-200 shrink-0">
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center shrink-0" title="NABH Certified (Entry Level)">
                     <svg viewBox="0 0 100 100" className="w-full h-full select-none" aria-label="NABH Entry Level Certified">
