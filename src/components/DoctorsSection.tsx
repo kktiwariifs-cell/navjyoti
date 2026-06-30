@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Doctor } from '../types';
 import { Heart, Stethoscope, Eye, Ear, ShieldCheck, Activity, Award, Clock, Calendar, CheckSquare, EyeOff, User } from 'lucide-react';
-import { getDoctors } from '../utils/database';
+import { getDoctors, getServices } from '../utils/database';
 
 // Help identifier matching
 const doctorAvatars: Record<string, string> = {
@@ -31,20 +31,41 @@ interface DoctorsSectionProps {
 
 export default function DoctorsSection({ onOpenBooking }: DoctorsSectionProps) {
   const [doctorsList, setDoctorsList] = useState<Doctor[]>([]);
+  const [servicesList, setServicesList] = useState<any[]>([]);
   const [selectedSpecialty, setSelectedSpecialty] = useState<string>('All');
   const [activeProfileDoctor, setActiveProfileDoctor] = useState<Doctor | null>(null);
 
   useEffect(() => {
     setDoctorsList(getDoctors());
+    setServicesList(getServices());
     const handleSync = () => {
       setDoctorsList(getDoctors());
+      setServicesList(getServices());
     };
     window.addEventListener('db_update', handleSync);
     return () => window.removeEventListener('db_update', handleSync);
   }, []);
 
   // Group specialties
-  const specialtiesList = ['All', 'Surgery', 'Eye', 'ENT', 'Nephrology', 'Pediatrics', 'Urology', 'Orthopedic'];
+  const specialtiesList = Array.from(
+    new Set([
+      'All',
+      'Surgery',
+      'Eye',
+      'ENT',
+      'Nephrology',
+      'Pediatrics',
+      'Urology',
+      'Orthopedic',
+      ...servicesList.map(s => {
+        return s.title
+          .replace(' Department', '')
+          .replace(' Specialist', '')
+          .replace(' Surgery', '')
+          .replace(' Specialty', '');
+      })
+    ])
+  );
 
   // Filter logic
   const filteredDoctors = doctorsList.filter((doc) => {
@@ -52,24 +73,19 @@ export default function DoctorsSection({ onOpenBooking }: DoctorsSectionProps) {
     if (!doc || !doc.specialization) return false;
     
     const specLower = doc.specialization.toLowerCase();
-    switch (selectedSpecialty) {
-      case 'Surgery':
-        return specLower.includes('surgeon') || specLower.includes('surgery');
-      case 'Eye':
-        return specLower.includes('eye');
-      case 'ENT':
-        return specLower.includes('ent');
-      case 'Nephrology':
-        return specLower.includes('nephrolog') || specLower.includes('kidney');
-      case 'Pediatrics':
-        return specLower.includes('pediatric');
-      case 'Urology':
-        return specLower.includes('urolog');
-      case 'Orthopedic':
-        return specLower.includes('orthopedic');
-      default:
-        return false;
-    }
+    const selectedLower = selectedSpecialty.toLowerCase();
+
+    // Standard cases
+    if (selectedLower === 'surgery' && (specLower.includes('surgeon') || specLower.includes('surgery'))) return true;
+    if (selectedLower === 'eye' && specLower.includes('eye')) return true;
+    if (selectedLower === 'ent' && specLower.includes('ent')) return true;
+    if (selectedLower === 'nephrology' && (specLower.includes('nephrolog') || specLower.includes('kidney'))) return true;
+    if (selectedLower === 'pediatrics' && specLower.includes('pediatric')) return true;
+    if (selectedLower === 'urology' && specLower.includes('urolog')) return true;
+    if (selectedLower === 'orthopedic' && specLower.includes('orthopedic')) return true;
+
+    // Custom cases
+    return specLower.includes(selectedLower) || selectedLower.includes(specLower);
   });
 
 

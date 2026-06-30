@@ -3308,13 +3308,22 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                     onChange={e => setDocSpec(e.target.value)}
                     className="w-full text-sm p-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none bg-white"
                   >
-                    <option value="General & Laparoscopic Surgeon">General & Laparoscopic Surgeon</option>
-                    <option value="Eye Specialist">Eye Specialist</option>
-                    <option value="ENT Specialist">ENT Specialist</option>
-                    <option value="Nephrologist">Nephrologist</option>
-                    <option value="Pediatrician">Pediatrician</option>
-                    <option value="Urologist">Urologist</option>
-                    <option value="Orthopedic Specialist">Orthopedic Specialist</option>
+                    {Array.from(
+                      new Set([
+                        'General & Laparoscopic Surgeon',
+                        'Eye Specialist',
+                        'ENT Specialist',
+                        'Nephrologist',
+                        'Pediatrician',
+                        'Urologist',
+                        'Orthopedic Specialist',
+                        ...services.map(s => s.title)
+                      ])
+                    ).map(spec => (
+                      <option key={spec} value={spec}>
+                        {spec}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
