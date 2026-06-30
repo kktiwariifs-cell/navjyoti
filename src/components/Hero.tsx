@@ -109,42 +109,69 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
         </>
       )}
 
+      {/* Action buttons (rendered absolutely at top sky area for slider to avoid overlapping banner graphics) */}
+      {hasSlides && (
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="absolute top-3 sm:top-4 md:top-6 lg:top-8 left-1/2 -translate-x-1/2 z-30 flex flex-col sm:flex-row gap-3 sm:gap-4 w-[90%] sm:w-auto justify-center items-center"
+        >
+          <button
+            id="hero-book-btn-floating"
+            onClick={onOpenBooking}
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white shadow-xl shadow-blue-500/20 font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-full flex items-center justify-center gap-2 text-xs sm:text-sm tracking-wide transition-all duration-300 cursor-pointer"
+          >
+            <CalendarRange size={18} />
+            Book Free Consultation
+          </button>
+
+          <button
+            id="hero-pmjay-btn-floating"
+            onClick={() => onNavigate('pmjay')}
+            className="w-full sm:w-auto font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-full flex items-center justify-center gap-2 text-xs sm:text-sm transition-all duration-300 cursor-pointer border border-blue-400/30 bg-blue-950/70 hover:bg-blue-950/80 text-white backdrop-blur-md shadow-xl"
+          >
+            <HeartHandshake size={18} className="text-blue-300" />
+            Ayushman Bharat Guide
+            <ChevronRight size={16} />
+          </button>
+        </motion.div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full flex justify-center">
         <div className={hasSlides ? "w-full max-w-4xl text-center flex flex-col items-center justify-start pt-2 md:pt-4 pb-8" : "grid grid-cols-1 lg:grid-cols-12 gap-12 items-center w-full"}>
           
           {/* Main Hero copy & actions */}
           <div className={hasSlides ? "flex flex-col items-center text-center space-y-4 max-w-3xl" : "lg:col-span-7 flex flex-col items-start text-left space-y-6"}>
             
-            {/* Action buttons (rendered at top for slider to avoid overlapping banner graphics) */}
-            <motion.div 
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className={`flex flex-col sm:flex-row gap-4 w-full sm:w-auto ${hasSlides ? 'justify-center items-center mb-4' : 'order-4'}`}
-            >
-              <button
-                id="hero-book-btn"
-                onClick={onOpenBooking}
-                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white shadow-lg shadow-blue-500/20 font-bold px-7 py-4 rounded-full flex items-center justify-center gap-2 text-sm tracking-wide transition-all duration-300 cursor-pointer"
+            {/* Action buttons (Only shown when NO slides are present) */}
+            {!hasSlides && (
+              <motion.div 
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto order-4"
               >
-                <CalendarRange size={18} />
-                Book Free Consultation
-              </button>
+                <button
+                  id="hero-book-btn"
+                  onClick={onOpenBooking}
+                  className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white shadow-lg shadow-blue-500/20 font-bold px-7 py-4 rounded-full flex items-center justify-center gap-2 text-sm tracking-wide transition-all duration-300 cursor-pointer"
+                >
+                  <CalendarRange size={18} />
+                  Book Free Consultation
+                </button>
 
-              <button
-                id="hero-pmjay-btn"
-                onClick={() => onNavigate('pmjay')}
-                className={`w-full sm:w-auto font-bold px-7 py-4 rounded-full flex items-center justify-center gap-2 text-sm transition-all duration-300 cursor-pointer ${
-                  hasSlides
-                    ? 'border border-white/20 bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm'
-                    : 'border border-slate-200 bg-white hover:bg-blue-50 text-slate-800 shadow-sm'
-                }`}
-              >
-                <HeartHandshake size={18} className={hasSlides ? 'text-blue-300' : 'text-blue-600'} />
-                Ayushman Bharat Guide
-                <ChevronRight size={16} />
-              </button>
-            </motion.div>
+                <button
+                  id="hero-pmjay-btn"
+                  onClick={() => onNavigate('pmjay')}
+                  className="w-full sm:w-auto font-bold px-7 py-4 rounded-full flex items-center justify-center gap-2 text-sm transition-all duration-300 cursor-pointer border border-slate-200 bg-white hover:bg-blue-50 text-slate-800 shadow-sm"
+                >
+                  <HeartHandshake size={18} className="text-blue-600" />
+                  Ayushman Bharat Guide
+                  <ChevronRight size={16} />
+                </button>
+              </motion.div>
+            )}
 
             {/* PM-JAY Notification chip - Only shown when NO slides are present to avoid overlapping slide graphics */}
             {!hasSlides && (
