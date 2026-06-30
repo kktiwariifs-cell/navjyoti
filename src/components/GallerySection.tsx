@@ -252,21 +252,12 @@ export default function GallerySection() {
                         );
                       }
                       return (
-                        <div className="p-8 text-center text-slate-300 text-xs w-full">
-                          <p className="font-extrabold mb-3">Custom/Native Video Document Link :</p>
-                          <a 
-                            href={selectedMedia.url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-blue-400 hover:underline break-all block font-mono text-[11px]"
-                          >
-                            {selectedMedia.url}
-                          </a>
+                        <div className="absolute inset-0 w-full h-full bg-black flex items-center justify-center">
                           <video 
                             src={selectedMedia.url} 
                             controls 
                             autoPlay 
-                            className="w-full max-h-[80vh] mt-4 rounded-xl"
+                            className="w-full h-full object-contain"
                           />
                         </div>
                       );
