@@ -10,6 +10,7 @@ interface Facility {
   shortDesc: string;
   longDesc: string;
   features: string[];
+  imageUrl?: string;
 }
 
 export default function FacilitiesSection() {
@@ -23,7 +24,8 @@ export default function FacilitiesSection() {
       iconName: 'ICU',
       shortDesc: '24/7 cardiac monitoring, ultra-modern ventilators, and highly trained critical-care nursing team.',
       longDesc: 'Our Intensive Care Unit (ICU) and Neonatal ICU are built to handle life-threatening situations. Equipped with high-end multi-channel patient monitors, defibrillators, central gas pipelines, and computerized infusion pumps to ensure safety.',
-      features: ['24/7 Doctor On-Duty', 'Invasive & Non-Invasive Ventilators', 'Central Nursing Station Monitoring', 'Neonatal Warmers' ]
+      features: ['24/7 Doctor On-Duty', 'Invasive & Non-Invasive Ventilators', 'Central Nursing Station Monitoring', 'Neonatal Warmers' ],
+      imageUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=800'
     },
     {
       id: 'dialysis',
@@ -32,7 +34,8 @@ export default function FacilitiesSection() {
       iconName: 'Dialysis',
       shortDesc: 'Equipped with multiple state-of-the-art hemodialysis machines and RO water purifiers.',
       longDesc: 'Our Nephrology department is supported by a dedicated Dialysis Suite operating under senior kidney specialists. We offer high-quality dialysis care in comfortable reclining patient bays with high strictness for infection controls.',
-      features: ['Double-pass RO Purification System', 'Dedicated HCV/HBsAg Negative Bays', 'Cardiac-safe Dialysis Schemes', 'Nominal Subsidized Charges']
+      features: ['Double-pass RO Purification System', 'Dedicated HCV/HBsAg Negative Bays', 'Cardiac-safe Dialysis Schemes', 'Nominal Subsidized Charges'],
+      imageUrl: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&q=80&w=800'
     },
     {
       id: 'ot',
@@ -41,7 +44,8 @@ export default function FacilitiesSection() {
       iconName: 'OT',
       shortDesc: 'Ultra-clean laminar airflow and modern sterilization systems for zero-infection operations.',
       longDesc: 'Our modular operating suites are designed to conduct complex General and Laparoscopic surgeries, Ophthalmic Micro-surgeries, and Orthopedic trauma therapies. Supported by central autoclaving and supreme surgical lighting.',
-      features: ['Laminar Air Flow with HEPA filters', 'Advanced Laparoscopic Surgical Towers', 'Accredited Anesthesia Station', 'Sutureless Cataract Microsurgery']
+      features: ['Laminar Air Flow with HEPA filters', 'Advanced Laparoscopic Surgical Towers', 'Accredited Anesthesia Station', 'Sutureless Cataract Microsurgery'],
+      imageUrl: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&q=80&w=800'
     },
     {
       id: 'emergency',
@@ -50,7 +54,8 @@ export default function FacilitiesSection() {
       iconName: 'Emergency',
       shortDesc: 'Triage-ready emergency casualty ward and in-house fully stocked pharmacy running 24/7.',
       longDesc: 'Our clinical casualty center is prepared for any sudden cardiac events, trauma, pediatric emergencies, or surgical cases. The in-house pharmacy ensures life-saving immediate medications are dispensed instantly.',
-      features: ['Trauma Management Desks', 'Adult & Pediatric Triage Protocols', '24/7 In-house Pharmacy Dispensing', 'Fully Equipped Ambulance On-Standby']
+      features: ['Trauma Management Desks', 'Adult & Pediatric Triage Protocols', '24/7 In-house Pharmacy Dispensing', 'Fully Equipped Ambulance On-Standby'],
+      imageUrl: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800'
     },
     {
       id: 'diagnostics',
@@ -59,7 +64,8 @@ export default function FacilitiesSection() {
       iconName: 'Diagnostics',
       shortDesc: 'Fully automated diagnostic lab machines & high-definition digital radiology reports.',
       longDesc: 'Our clinical laboratories are equipped with computerized biochemistry analyzers and cell counters for quick test results. We also offer portable and stationary digital radiology services under expert supervision.',
-      features: ['Computerized Bio-chemistry Panels', 'Digital Radiography (X-Ray)', 'Advanced Ultrasound (USG)', 'Accurate Fluid & Pathology Analysis']
+      features: ['Computerized Bio-chemistry Panels', 'Digital Radiography (X-Ray)', 'Advanced Ultrasound (USG)', 'Accurate Fluid & Pathology Analysis'],
+      imageUrl: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&q=80&w=800'
     },
     {
       id: 'wards',
@@ -68,7 +74,8 @@ export default function FacilitiesSection() {
       iconName: 'Wards',
       shortDesc: 'Clean air-conditioned single-occupancy deluxe deluxe rooms and spacious general wards.',
       longDesc: 'We believe a clean and healing environment is crucial to fast recovery. Our hospital features neat, spacious general wards, semi-private cabins, and deluxe fully air-conditioned rooms, all equipped with nursing call systems and central oxygen supply.',
-      features: ['Continuous Central Oxygen Lines', 'Individual Attendant Couch', 'Strict Cleaning & Sanitization Cycles', 'Special Low-income General Wards']
+      features: ['Continuous Central Oxygen Lines', 'Individual Attendant Couch', 'Strict Cleaning & Sanitization Cycles', 'Special Low-income General Wards'],
+      imageUrl: 'https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&q=80&w=800'
     }
   ];
 
@@ -160,6 +167,17 @@ export default function FacilitiesSection() {
                   transition={{ duration: 0.3 }}
                   className="space-y-6"
                 >
+                  {selected.imageUrl && (
+                    <div className="h-48 sm:h-60 w-full rounded-2xl overflow-hidden relative border border-slate-150 shadow-sm bg-slate-50 flex items-center justify-center">
+                      <img
+                        src={selected.imageUrl}
+                        alt={selected.title}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover transform hover:scale-[1.01] transition-transform duration-700"
+                      />
+                    </div>
+                  )}
+
                   <div>
                     <span className="text-xs font-bold uppercase tracking-wider text-blue-600 mb-1.5 block">
                       {selected.category}

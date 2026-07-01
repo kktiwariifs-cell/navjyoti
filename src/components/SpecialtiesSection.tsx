@@ -115,14 +115,13 @@ export default function SpecialtiesSection({ onOpenBooking }: SpecialtiesSection
                   
                   {/* Good Image of active department */}
                   {spec.imageUrl && (
-                    <div className="h-48 sm:h-60 w-full rounded-2xl overflow-hidden relative border border-slate-100 shadow-inner">
+                    <div className="h-64 sm:h-80 md:h-[380px] w-full rounded-2xl overflow-hidden relative border border-slate-200 shadow-sm bg-slate-50 flex items-center justify-center">
                       <img
                         src={spec.imageUrl}
                         alt={spec.title}
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover transform hover:scale-102 transition-transform duration-700"
+                        className="w-full h-full object-contain transform hover:scale-[1.01] transition-transform duration-700"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent pointer-events-none" />
                     </div>
                   )}
 
