@@ -1,83 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { HeartPulse, Activity, ShieldCheck, Thermometer, Sparkles, PlusCircle } from 'lucide-react';
-
-interface Facility {
-  id: string;
-  title: string;
-  category: string;
-  iconName: 'ICU' | 'Dialysis' | 'OT' | 'Emergency' | 'Diagnostics' | 'Wards';
-  shortDesc: string;
-  longDesc: string;
-  features: string[];
-  imageUrl?: string;
-}
+import { Facility } from '../types';
+import { getSiteSettings } from '../utils/database';
 
 export default function FacilitiesSection() {
+  const [facilities, setFacilities] = useState<Facility[]>([]);
   const [activeFacility, setActiveFacility] = useState<string>('icu');
 
-  const facilities: Facility[] = [
-    {
-      id: 'icu',
-      title: 'Advanced ICU & Patient Monitoring',
-      category: 'Critical Care',
-      iconName: 'ICU',
-      shortDesc: '24/7 cardiac monitoring, ultra-modern ventilators, and highly trained critical-care nursing team.',
-      longDesc: 'Our Intensive Care Unit (ICU) and Neonatal ICU are built to handle life-threatening situations. Equipped with high-end multi-channel patient monitors, defibrillators, central gas pipelines, and computerized infusion pumps to ensure safety.',
-      features: ['24/7 Doctor On-Duty', 'Invasive & Non-Invasive Ventilators', 'Central Nursing Station Monitoring', 'Neonatal Warmers' ],
-      imageUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=800'
-    },
-    {
-      id: 'dialysis',
-      title: 'State-of-the-Art Dialysis Center',
-      category: 'Renal Care',
-      iconName: 'Dialysis',
-      shortDesc: 'Equipped with multiple state-of-the-art hemodialysis machines and RO water purifiers.',
-      longDesc: 'Our Nephrology department is supported by a dedicated Dialysis Suite operating under senior kidney specialists. We offer high-quality dialysis care in comfortable reclining patient bays with high strictness for infection controls.',
-      features: ['Double-pass RO Purification System', 'Dedicated HCV/HBsAg Negative Bays', 'Cardiac-safe Dialysis Schemes', 'Nominal Subsidized Charges'],
-      imageUrl: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&q=80&w=800'
-    },
-    {
-      id: 'ot',
-      title: 'Modular Operation Theaters (OT)',
-      category: 'Surgical Care',
-      iconName: 'OT',
-      shortDesc: 'Ultra-clean laminar airflow and modern sterilization systems for zero-infection operations.',
-      longDesc: 'Our modular operating suites are designed to conduct complex General and Laparoscopic surgeries, Ophthalmic Micro-surgeries, and Orthopedic trauma therapies. Supported by central autoclaving and supreme surgical lighting.',
-      features: ['Laminar Air Flow with HEPA filters', 'Advanced Laparoscopic Surgical Towers', 'Accredited Anesthesia Station', 'Sutureless Cataract Microsurgery'],
-      imageUrl: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&q=80&w=800'
-    },
-    {
-      id: 'emergency',
-      title: '24/7 Emergency & Pharmacy Support',
-      category: 'Emergency Services',
-      iconName: 'Emergency',
-      shortDesc: 'Triage-ready emergency casualty ward and in-house fully stocked pharmacy running 24/7.',
-      longDesc: 'Our clinical casualty center is prepared for any sudden cardiac events, trauma, pediatric emergencies, or surgical cases. The in-house pharmacy ensures life-saving immediate medications are dispensed instantly.',
-      features: ['Trauma Management Desks', 'Adult & Pediatric Triage Protocols', '24/7 In-house Pharmacy Dispensing', 'Fully Equipped Ambulance On-Standby'],
-      imageUrl: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800'
-    },
-    {
-      id: 'diagnostics',
-      title: 'High-Precision Pathology & Radiology',
-      category: 'Diagnostics',
-      iconName: 'Diagnostics',
-      shortDesc: 'Fully automated diagnostic lab machines & high-definition digital radiology reports.',
-      longDesc: 'Our clinical laboratories are equipped with computerized biochemistry analyzers and cell counters for quick test results. We also offer portable and stationary digital radiology services under expert supervision.',
-      features: ['Computerized Bio-chemistry Panels', 'Digital Radiography (X-Ray)', 'Advanced Ultrasound (USG)', 'Accurate Fluid & Pathology Analysis'],
-      imageUrl: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&q=80&w=800'
-    },
-    {
-      id: 'wards',
-      title: 'Deluxe & Comfort Ward Cabins',
-      category: 'In-Patient Wards',
-      iconName: 'Wards',
-      shortDesc: 'Clean air-conditioned single-occupancy deluxe deluxe rooms and spacious general wards.',
-      longDesc: 'We believe a clean and healing environment is crucial to fast recovery. Our hospital features neat, spacious general wards, semi-private cabins, and deluxe fully air-conditioned rooms, all equipped with nursing call systems and central oxygen supply.',
-      features: ['Continuous Central Oxygen Lines', 'Individual Attendant Couch', 'Strict Cleaning & Sanitization Cycles', 'Special Low-income General Wards'],
-      imageUrl: 'https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&q=80&w=800'
+  useEffect(() => {
+    const settings = getSiteSettings();
+    const list = settings.facilities || [];
+    setFacilities(list);
+    if (list.length > 0) {
+      setActiveFacility(list[0].id);
     }
-  ];
+
+    const handleSync = () => {
+      const updatedSettings = getSiteSettings();
+      setFacilities(updatedSettings.facilities || []);
+    };
+    window.addEventListener('db_update', handleSync);
+    return () => window.removeEventListener('db_update', handleSync);
+  }, []);
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -97,6 +42,10 @@ export default function FacilitiesSection() {
   };
 
   const selected = facilities.find((f) => f.id === activeFacility) || facilities[0];
+
+  if (!selected) {
+    return null;
+  }
 
   return (
     <section id="facilities" className="py-16 md:py-24 bg-slate-50 border-b border-slate-200 font-sans text-left">
@@ -168,7 +117,7 @@ export default function FacilitiesSection() {
                   className="space-y-6"
                 >
                   {selected.imageUrl && (
-                    <div className="h-48 sm:h-60 w-full rounded-2xl overflow-hidden relative border border-slate-150 shadow-sm bg-slate-50 flex items-center justify-center">
+                    <div className="h-64 sm:h-[350px] md:h-[420px] w-full rounded-2xl overflow-hidden relative border border-slate-150 shadow-sm bg-slate-50 flex items-center justify-center">
                       <img
                         src={selected.imageUrl}
                         alt={selected.title}

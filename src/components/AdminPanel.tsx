@@ -10,12 +10,12 @@ import {
   getNewsEvents, addNewsEvent, updateNewsEvent, deleteNewsEvent
 } from '../utils/database';
 import { compressImage, handleImageUpload } from '../utils/imageCompressor';
-import { Doctor, Specialty, Appointment, Feedback, Inquiry, SiteSettings, NewsEvent } from '../types';
+import { Doctor, Specialty, Appointment, Feedback, Inquiry, SiteSettings, NewsEvent, Facility } from '../types';
 import { 
   Users, Activity, Calendar, Mail, MessageSquare, LogOut, Plus, Edit, Trash2, 
   Check, X, Menu, Search, CheckCircle2, AlertCircle, Clock, ShieldAlert, Star, 
   Printer, UserCheck, ChevronRight, LayoutDashboard, Lock, Eye, EyeOff, FileText, Settings, Heart,
-  Ear, HeartPulse, Baby, Bone, Video, Award, Upload, User
+  Ear, HeartPulse, Baby, Bone, Video, Award, Upload, User, Building2
 } from 'lucide-react';
 
 const departmentIconMap: Record<string, React.ComponentType<any>> = {
@@ -33,7 +33,7 @@ interface AdminPanelProps {
   onLogout: () => void;
 }
 
-type TabType = 'dashboard' | 'doctors' | 'services' | 'appointments' | 'inquiries' | 'feedbacks' | 'settings' | 'news';
+type TabType = 'dashboard' | 'doctors' | 'services' | 'appointments' | 'inquiries' | 'feedbacks' | 'settings' | 'news' | 'facilities';
 
 export default function AdminPanel({ onLogout }: AdminPanelProps) {
   // Login State
@@ -85,6 +85,17 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
   const [serviceDesc, setServiceDesc] = useState('');
   const [serviceFeatures, setServiceFeatures] = useState('');
   const [serviceImg, setServiceImg] = useState('');
+
+  // Facility Form Fields
+  const [isFacilityModalOpen, setIsFacilityModalOpen] = useState(false);
+  const [activeFacilityObj, setActiveFacilityObj] = useState<Facility | null>(null);
+  const [facilityTitle, setFacilityTitle] = useState('');
+  const [facilityCategory, setFacilityCategory] = useState('');
+  const [facilityIcon, setFacilityIcon] = useState<'ICU' | 'Dialysis' | 'OT' | 'Emergency' | 'Diagnostics' | 'Wards'>('ICU');
+  const [facilityShortDesc, setFacilityShortDesc] = useState('');
+  const [facilityLongDesc, setFacilityLongDesc] = useState('');
+  const [facilityFeatures, setFacilityFeatures] = useState('');
+  const [facilityImg, setFacilityImg] = useState('');
 
   // Manual Feedback Form Fields
   const [fbName, setFbName] = useState('');
@@ -298,6 +309,79 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
       'Are you sure you want to remove this medical department?',
       () => {
         deleteService(id);
+        loadData();
+      }
+    );
+  };
+
+  // Facilities Actions
+  const handleOpenFacilityModal = (fac: Facility | null) => {
+    setActiveFacilityObj(fac);
+    if (fac) {
+      setFacilityTitle(fac.title);
+      setFacilityCategory(fac.category);
+      setFacilityIcon(fac.iconName);
+      setFacilityShortDesc(fac.shortDesc);
+      setFacilityLongDesc(fac.longDesc);
+      setFacilityFeatures(fac.features.join(', '));
+      setFacilityImg(fac.imageUrl || '');
+    } else {
+      setFacilityTitle('');
+      setFacilityCategory('Clinical Service');
+      setFacilityIcon('ICU');
+      setFacilityShortDesc('');
+      setFacilityLongDesc('');
+      setFacilityFeatures('Feature 1, Feature 2');
+      setFacilityImg('https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&q=80&w=800');
+    }
+    setIsFacilityModalOpen(true);
+  };
+
+  const handleSaveFacility = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanFeatures = facilityFeatures.split(',').map(f => f.trim()).filter(Boolean);
+    const facData: Facility = {
+      id: activeFacilityObj ? activeFacilityObj.id : `fac_${Date.now()}`,
+      title: facilityTitle,
+      category: facilityCategory,
+      iconName: facilityIcon,
+      shortDesc: facilityShortDesc,
+      longDesc: facilityLongDesc,
+      features: cleanFeatures,
+      imageUrl: facilityImg || undefined
+    };
+
+    const nextFacilities = [...(siteSettings.facilities || [])];
+    if (activeFacilityObj) {
+      const idx = nextFacilities.findIndex(f => f.id === activeFacilityObj.id);
+      if (idx !== -1) {
+        nextFacilities[idx] = facData;
+      }
+    } else {
+      nextFacilities.push(facData);
+    }
+
+    const updatedSettings = {
+      ...siteSettings,
+      facilities: nextFacilities
+    };
+
+    saveSiteSettings(updatedSettings);
+    setIsFacilityModalOpen(false);
+    loadData();
+  };
+
+  const handleDeleteFacility = (id: string) => {
+    triggerConfirm(
+      'Remove Facility',
+      'Are you sure you want to remove this hospital facility?',
+      () => {
+        const nextFacilities = (siteSettings.facilities || []).filter(f => f.id !== id);
+        const updatedSettings = {
+          ...siteSettings,
+          facilities: nextFacilities
+        };
+        saveSiteSettings(updatedSettings);
         loadData();
       }
     );
@@ -798,6 +882,20 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
               <span className="text-[10px] bg-sky-500 text-white font-extrabold px-2 py-0.5 rounded-full">{newsEvents.length}</span>
             )}
           </button>
+
+          {/* Facilities Nav button */}
+          <button
+            onClick={() => { setActiveTab('facilities'); setSearchTerm(''); setIsMobileNavOpen(false); }}
+            className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-colors ${
+              activeTab === 'facilities' ? 'bg-[#1e66f5] text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Building2 size={18} />
+            <span className="grow">Facilities</span>
+            {(siteSettings.facilities || []).length > 0 && (
+              <span className="text-[10px] bg-indigo-500 text-white font-extrabold px-2 py-0.5 rounded-full">{(siteSettings.facilities || []).length}</span>
+            )}
+          </button>
         </nav>
 
         {/* Sidebar Footer Log Out action */}
@@ -832,6 +930,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
               {activeTab === 'feedbacks' && 'Testimonial Moderation Hub'}
               {activeTab === 'settings' && 'Website Settings & Slideshow'}
               {activeTab === 'news' && 'News & Campus Events Blog Manager'}
+              {activeTab === 'facilities' && 'Hospital Facilities & Operations'}
             </h2>
             <p className="text-xs text-slate-400 font-medium tracking-tight mt-1">
               Navjyoti Multispeciality Hospital • Real-time Administration Panel
@@ -3272,6 +3371,141 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
           </div>
         )}
 
+        {activeTab === 'facilities' && (
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-6 animate-fadeIn">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="relative w-full max-w-sm">
+                <Search className="absolute left-3.5 top-3 text-slate-400" size={17} />
+                <input
+                  type="text"
+                  placeholder="Search hospital facilities..."
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="w-full text-sm pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none bg-slate-50 text-slate-800"
+                />
+              </div>
+
+              <button
+                onClick={() => handleOpenFacilityModal(null)}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+              >
+                <Plus size={16} />
+                Add Hospital Facility
+              </button>
+            </div>
+
+            {/* List of facilities */}
+            <div className="overflow-x-auto rounded-3xl border border-slate-200 shadow-sm bg-white">
+              <table className="w-full text-left border-collapse min-w-[750px]">
+                <thead className="bg-[#0c2a63] text-white font-extrabold uppercase tracking-wider border-b border-slate-200 text-[10px] font-mono">
+                  <tr>
+                    <th className="p-4 rounded-tl-3xl">Facility Title</th>
+                    <th className="p-4">Showcase Image</th>
+                    <th className="p-4">Category</th>
+                    <th className="p-4">Features</th>
+                    <th className="p-4 text-right rounded-tr-3xl">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-150 bg-white">
+                  {(siteSettings.facilities || []).filter(f => f.title.toLowerCase().includes(searchTerm.toLowerCase())).map(fac => {
+                    const isAttachedJpeg = fac.imageUrl?.startsWith('data:image/');
+
+                    return (
+                      <tr key={fac.id} className="hover:bg-indigo-50/20 transition-colors">
+                        <td className="p-4">
+                          <div className="flex items-center gap-3 text-left">
+                            <div className="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 font-bold text-xs uppercase">
+                              {fac.iconName}
+                            </div>
+                            <div>
+                              <div className="font-extrabold text-slate-900 leading-tight text-sm sm:text-base">{fac.title}</div>
+                              <div className="text-[10px] text-slate-400 font-bold uppercase mt-0.5 max-w-[280px] truncate" title={fac.shortDesc}>{fac.shortDesc}</div>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td className="p-4">
+                          {fac.imageUrl ? (
+                            <div className="flex items-center gap-2 text-left">
+                              <img 
+                                src={fac.imageUrl} 
+                                alt={fac.title} 
+                                className="w-12 h-12 rounded-lg object-cover border border-slate-200 shadow-xs shrink-0"
+                                referrerPolicy="no-referrer"
+                              />
+                              <div className="flex flex-col gap-0.5">
+                                {isAttachedJpeg ? (
+                                  <span className="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-1.5 py-0.5 rounded-full select-none w-max leading-none">
+                                    Attached JPEG
+                                  </span>
+                                ) : (
+                                  <span className="text-[9px] bg-blue-100 text-blue-800 font-extrabold px-1.5 py-0.5 rounded-full select-none w-max leading-none">
+                                    Image URL
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="text-[9px] bg-slate-100 text-slate-400 font-bold px-2 py-1 rounded-md">
+                              No Image Set
+                            </span>
+                          )}
+                        </td>
+
+                        <td className="p-4">
+                          <span className="text-xs font-bold text-slate-605 bg-indigo-50 text-indigo-800 px-2.5 py-1 rounded-full uppercase">
+                            {fac.category}
+                          </span>
+                        </td>
+
+                        <td className="p-4 max-w-[220px]">
+                          <div className="flex flex-wrap gap-1 text-left">
+                            {fac.features && fac.features.map((f, idx) => (
+                              <span key={idx} className="text-[10px] bg-[#f0f4fc] text-indigo-900 font-extrabold px-2 py-0.5 rounded-full border border-indigo-105">
+                                {f}
+                              </span>
+                            ))}
+                            {(!fac.features || fac.features.length === 0) && (
+                              <span className="text-xs text-slate-400 font-bold">None set</span>
+                            )}
+                          </div>
+                        </td>
+
+                        <td className="p-4 text-right">
+                          <div className="flex gap-1.5 justify-end">
+                            <button
+                              onClick={() => handleOpenFacilityModal(fac)}
+                              className="bg-slate-50 hover:bg-slate-100 text-slate-600 p-2 rounded-lg border border-slate-200 cursor-pointer shadow-xs transition-all active:scale-95 duration-100"
+                              title="Edit Facility"
+                            >
+                              <Edit size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteFacility(fac.id)}
+                              className="bg-red-50 hover:bg-red-100 text-red-700 p-2 rounded-lg border border-red-200 cursor-pointer shadow-xs transition-all active:scale-95 duration-100"
+                              title="Delete Facility"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+
+                  {(siteSettings.facilities || []).filter(f => f.title.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="p-8 text-center text-slate-400 font-bold text-xs bg-slate-50/50">
+                        No hospital facilities found matching "{searchTerm}"
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
       </main>
 
       {/* --- FORM MODAL POPUPS --- */}
@@ -3673,6 +3907,205 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                   className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs sm:text-sm shadow-md cursor-pointer"
                 >
                   Save Department
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Facility Manager Modal */}
+      {isFacilityModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-white rounded-3xl w-full max-w-xl text-left shadow-2xl relative border border-slate-200 max-h-[90vh] overflow-y-auto my-8">
+            <div className="bg-gradient-to-br from-[#0d2a63] to-blue-900 text-white p-6 rounded-t-3xl">
+              <h3 className="font-display font-extrabold text-lg uppercase tracking-wide">
+                {activeFacilityObj ? 'Modify Hospital Facility' : 'Add New Hospital Facility'}
+              </h3>
+              <p className="text-xs text-blue-200">Set up or edit clinical setup profiles running in real-time</p>
+            </div>
+
+            <form onSubmit={handleSaveFacility} className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-600 uppercase">Facility Title *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Deluxe Cardiac Suite"
+                    value={facilityTitle}
+                    onChange={e => setFacilityTitle(e.target.value)}
+                    className="w-full text-sm p-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-600 uppercase">Icon Category *</label>
+                  <select
+                    value={facilityIcon}
+                    onChange={e => setFacilityIcon(e.target.value as any)}
+                    className="w-full text-sm p-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none bg-white"
+                  >
+                    <option value="ICU">ICU (Critical Care)</option>
+                    <option value="Dialysis">Dialysis (Renal Care)</option>
+                    <option value="OT">Modular OT (Surgical)</option>
+                    <option value="Emergency">Emergency & Pharmacy</option>
+                    <option value="Diagnostics">Diagnostics Lab</option>
+                    <option value="Wards">Wards & Rooms</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-600 uppercase">Showcase Category *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Critical Care, Renal Care..."
+                    value={facilityCategory}
+                    onChange={e => setFacilityCategory(e.target.value)}
+                    className="w-full text-sm p-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-600 uppercase">Short Description *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. 24/7 cardiac monitoring and patient monitoring rooms..."
+                    value={facilityShortDesc}
+                    onChange={e => setFacilityShortDesc(e.target.value)}
+                    className="w-full text-sm p-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-600 uppercase block">Facility Showcase Image Source</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Paste Unsplash URL, static image address or upload below"
+                    value={facilityImg}
+                    onChange={e => setFacilityImg(e.target.value)}
+                    className="grow text-sm p-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none"
+                  />
+                  {facilityImg && (
+                    <button
+                      type="button"
+                      onClick={() => setFacilityImg('')}
+                      className="bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all active:scale-95"
+                      title="Clear image"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* JPEG File Attachment for Facility */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-500 uppercase block">OR ATTACH JPEG FILE (OPTIONAL)</label>
+                <div 
+                  onDragOver={e => e.preventDefault()}
+                  onDrop={e => {
+                    e.preventDefault();
+                    const file = e.dataTransfer.files?.[0];
+                    if (file) {
+                      if (file.type === 'image/jpeg' || file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg')) {
+                        handleImageUpload(file, url => setFacilityImg(url));
+                      } else {
+                        alert('Only JPEG/JPG files are accepted.');
+                      }
+                    }
+                  }}
+                  onClick={() => document.getElementById('fac-file-input')?.click()}
+                  className="border-2 border-dashed border-slate-200 hover:border-blue-500 rounded-2xl p-4 text-center cursor-pointer hover:bg-blue-50/20 transition-all space-y-1 flex flex-col items-center justify-center min-h-[90px]"
+                >
+                  <Plus size={16} className="text-blue-500" />
+                  <p className="text-xs font-extrabold text-slate-700">Drag & Drop JPEG or Click to Browse</p>
+                  <p className="text-[10px] text-slate-405 text-slate-400">Accepts .jpg, .jpeg images</p>
+                  <input 
+                    type="file" 
+                    id="fac-file-input"
+                    className="hidden" 
+                    accept="image/jpeg, image/jpg"
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        if (file.type === 'image/jpeg' || file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg')) {
+                          handleImageUpload(file, url => setFacilityImg(url));
+                        } else {
+                          alert('Only JPEG/JPG files are accepted.');
+                        }
+                      }
+                    }}
+                  />
+                </div>
+
+                {/* Micro-preview of the facility image */}
+                {facilityImg && (
+                  <div className="flex items-center gap-3 bg-blue-50/60 p-2.5 rounded-xl border border-blue-100/60 mt-2">
+                    <img 
+                      src={facilityImg} 
+                      alt="Facility Showcase Preview" 
+                      className="w-12 h-12 object-cover rounded-lg border border-blue-200 shadow-sm"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[11px] font-bold text-blue-900 truncate">Image Attached Successfully</p>
+                      <p className="text-[9px] text-slate-400 truncate">{facilityImg.startsWith('data:') ? 'Stored locally' : facilityImg}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setFacilityImg('')}
+                      className="text-red-500 hover:text-red-700 p-1.5 bg-white hover:bg-red-50 rounded-lg shadow-sm border border-red-100 cursor-pointer text-[10px] font-bold transition-all active:scale-95"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-600 uppercase">Long Detailed Description *</label>
+                <textarea
+                  rows={3}
+                  required
+                  placeholder="Comprehensive description of operations, machine capacities, room types..."
+                  value={facilityLongDesc}
+                  onChange={e => setFacilityLongDesc(e.target.value)}
+                  className="w-full text-sm p-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-600 uppercase">Features & Highlights (Comma-divided list) *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 24/7 Doctor On-Duty, Double-pass RO Purification System, Air-conditioned Rooms..."
+                  value={facilityFeatures}
+                  onChange={e => setFacilityFeatures(e.target.value)}
+                  className="w-full text-sm p-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+
+              <div className="flex gap-3 justify-end pt-3">
+                <button
+                  type="button"
+                  onClick={() => setIsFacilityModalOpen(false)}
+                  className="bg-slate-100 hover:bg-slate-200 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-600 cursor-pointer"
+                >
+                  Discard
+                </button>
+                <button
+                  type="submit"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs sm:text-sm shadow-md cursor-pointer"
+                >
+                  Save Facility
                 </button>
               </div>
             </form>

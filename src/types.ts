@@ -55,6 +55,17 @@ export interface Inquiry {
   status: 'New' | 'Read' | 'Resolved';
 }
 
+export interface Facility {
+  id: string;
+  title: string;
+  category: string;
+  iconName: 'ICU' | 'Dialysis' | 'OT' | 'Emergency' | 'Diagnostics' | 'Wards';
+  shortDesc: string;
+  longDesc: string;
+  features: string[];
+  imageUrl?: string;
+}
+
 export interface SiteSettings {
   logoUrl?: string;
   heroTitle?: string;
@@ -74,6 +85,7 @@ export interface SiteSettings {
   credentials?: { id: string; title: string; fileUrl: string; date?: string }[];
   gallery?: { id: string; url: string; type: 'image' | 'video'; title: string }[];
   tpaFacilities?: { id: string; name: string; logoUrl?: string; description?: string }[];
+  facilities?: Facility[];
   announcementPopup?: { enabled: boolean; title: string; message: string; badgeText?: string; linkText?: string; linkUrl?: string };
 }
 
