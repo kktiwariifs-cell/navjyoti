@@ -3,7 +3,7 @@
  * This converts large base64 images into a smaller, optimized base64 jpeg,
  * preventing QuotaExceededError in localStorage and payload limits in database sync.
  */
-export const compressImage = (base64Str: string, maxWidth = 1000, maxHeight = 750, quality = 0.7): Promise<string> => {
+export const compressImage = (base64Str: string, maxWidth = 1920, maxHeight = 1080, quality = 0.9): Promise<string> => {
   return new Promise((resolve) => {
     // If it's not a standard image data URL, return original
     if (!base64Str || !base64Str.startsWith('data:image/')) {

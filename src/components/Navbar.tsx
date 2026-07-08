@@ -107,7 +107,7 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
               </div>
 
               {/* NABH Certification Badge - Compact & Ultra-trustworthy */}
-              <div className="hidden sm:flex items-center pl-2 sm:pl-3 ml-1 sm:ml-2 border-l border-slate-200 shrink-0">
+              <div className="flex items-center pl-1.5 sm:pl-3 ml-1 sm:ml-2 border-l border-slate-200 shrink-0">
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center shrink-0" title="NABH Certified (Entry Level)">
                     <svg viewBox="0 0 100 100" className="w-full h-full select-none" aria-label="NABH Entry Level Certified">

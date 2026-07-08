@@ -103,7 +103,12 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4 }}
-                className="w-full h-auto block relative z-10"
+                className="w-full h-auto block relative z-10 select-none"
+                style={{
+                  imageRendering: '-webkit-optimize-contrast',
+                  WebkitBackfaceVisibility: 'hidden',
+                  transform: 'translateZ(0)'
+                }}
                 referrerPolicy="no-referrer"
               />
             </AnimatePresence>

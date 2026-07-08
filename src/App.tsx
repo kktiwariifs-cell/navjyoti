@@ -27,6 +27,16 @@ export default function App() {
   // Navigation active control
   const [activeSection, setActiveSection] = useState('home');
 
+  // Programmatic scroll lock to prevent scrollspy during navigation transitions
+  const isProgrammaticScroll = React.useRef(false);
+  const scrollTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    };
+  }, []);
 
   // Booking states
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -37,9 +47,16 @@ export default function App() {
   const handleNavigate = (sectionId: string) => {
     setActiveSection(sectionId);
     
-    if (['news', 'services', 'facilities', 'contact', 'pmjay'].includes(sectionId)) {
+    if (['news', 'services', 'facilities', 'contact', 'pmjay', 'gallery'].includes(sectionId)) {
       window.scrollTo(0, 0);
     } else {
+      // Set programmatic scroll lock to prevent scrollspy listener from prematurely resetting the activeSection back to 'home'
+      isProgrammaticScroll.current = true;
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      scrollTimeoutRef.current = setTimeout(() => {
+        isProgrammaticScroll.current = false;
+      }, 1200);
+
       // Allow DOM to render standard home section elements before calculating their scroll position.
       // We implement a robust polling mechanism to ensure the element is found after mount.
       let attempts = 0;
@@ -68,7 +85,8 @@ export default function App() {
   // Setup dynamic scroll listener to update navbar state
   useEffect(() => {
     const handleScroll = () => {
-      if (['news', 'services', 'facilities', 'contact', 'pmjay'].includes(activeSection)) return;
+      if (isProgrammaticScroll.current) return;
+      if (['news', 'services', 'facilities', 'contact', 'pmjay', 'gallery'].includes(activeSection)) return;
       const sections = ['home', 'about', 'specialists', 'feedback'];
       const scrollPos = window.scrollY + 120; // offset
 
