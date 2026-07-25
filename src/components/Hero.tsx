@@ -126,23 +126,27 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
               />
             </AnimatePresence>
 
-            {/* Action buttons floating in the top-right vacant sky area of the slider */}
-            <div className="absolute top-2 sm:top-4 right-2 sm:right-6 z-30 flex flex-col sm:flex-row gap-2 max-w-[90%] sm:max-w-none">
+            {/* Action buttons floating in top-right corner - icon-only on mobile so image is unobscured */}
+            <div className="absolute top-2.5 sm:top-4 right-2.5 sm:right-6 z-30 flex items-center gap-2">
               <button
                 id="hero-book-btn-floating"
                 onClick={onOpenBooking}
-                className="bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white shadow-lg shadow-blue-500/30 font-bold px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full flex items-center justify-center gap-1.5 text-[11px] sm:text-sm tracking-wide transition-all duration-300 cursor-pointer border border-blue-500/30"
+                title="Book Free Consultation"
+                aria-label="Book Free Consultation"
+                className="bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white shadow-lg shadow-blue-500/30 font-bold p-2.5 sm:px-5 sm:py-2.5 rounded-full flex items-center justify-center gap-1.5 text-xs sm:text-sm tracking-wide transition-all duration-300 cursor-pointer border border-blue-500/30"
               >
-                <CalendarRange size={14} className="sm:w-4 sm:h-4 shrink-0" />
-                <span className="truncate">Book Free Consultation</span>
+                <CalendarRange size={16} className="sm:w-4 sm:h-4 shrink-0" />
+                <span className="hidden sm:inline truncate">Book Free Consultation</span>
               </button>
               <button
                 id="hero-pmjay-btn-floating"
                 onClick={() => onNavigate('pmjay')}
-                className="font-bold px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full flex items-center justify-center gap-1.5 text-[11px] sm:text-sm transition-all duration-300 cursor-pointer border border-blue-400/40 bg-slate-900/80 hover:bg-slate-900 text-white shadow-lg backdrop-blur-sm"
+                title="Ayushman Guide"
+                aria-label="Ayushman Guide"
+                className="font-bold p-2.5 sm:px-5 sm:py-2.5 rounded-full flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all duration-300 cursor-pointer border border-blue-400/40 bg-slate-900/80 hover:bg-slate-900 text-white shadow-lg backdrop-blur-sm"
               >
-                <HeartHandshake size={14} className="text-blue-300 sm:w-4 sm:h-4 shrink-0" />
-                <span className="truncate">Ayushman Guide</span>
+                <HeartHandshake size={16} className="text-blue-300 sm:w-4 sm:h-4 shrink-0" />
+                <span className="hidden sm:inline truncate">Ayushman Guide</span>
               </button>
             </div>
           </div>
