@@ -29,7 +29,8 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
       });
     } else if (settings.heroImageUrl && settings.heroImageUrl.trim().length > 0) {
       arr.push({ url: settings.heroImageUrl, label: 'Main Hospital View' });
-    } else {
+    } else if (!Array.isArray(settings.sliders)) {
+      // Fallback to DEFAULT_SLIDERS only if site settings were never initialized (settings.sliders is null/undefined)
       DEFAULT_SLIDERS.forEach((slide, idx) => {
         arr.push({ url: slide, label: `Hospital Facility Showcase #${idx + 1}` });
       });
