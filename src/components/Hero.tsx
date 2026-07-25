@@ -27,10 +27,9 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
       validSliders.forEach((slide, idx) => {
         arr.push({ url: slide, label: `Clinical Facility Highlight #${idx + 1}` });
       });
-    } else if (settings.heroImageUrl && settings.heroImageUrl.trim().length > 0 && settings.heroImageUrl !== DEFAULT_HERO_IMAGE) {
+    } else if (settings.heroImageUrl && settings.heroImageUrl.trim().length > 0) {
       arr.push({ url: settings.heroImageUrl, label: 'Main Hospital View' });
-    } else if (!Array.isArray(settings.sliders) && !settings.heroImageUrl) {
-      // Only fallback to DEFAULT_SLIDERS if sliders and heroImageUrl were never defined in settings
+    } else {
       DEFAULT_SLIDERS.forEach((slide, idx) => {
         arr.push({ url: slide, label: `Hospital Facility Showcase #${idx + 1}` });
       });
