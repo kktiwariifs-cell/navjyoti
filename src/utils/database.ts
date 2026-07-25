@@ -452,12 +452,31 @@ const mapSettingsToDb = (set: SiteSettings) => ({
   }
 });
 
+export const DEFAULT_HERO_IMAGE = 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=1600';
+
+export const DEFAULT_SLIDERS = [
+  'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=1600',
+  'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&q=80&w=1600',
+  'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=1600',
+  'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=1600'
+];
+
 const mapSettingsFromDb = (dbSet: any): SiteSettings => {
   const dbSliders = dbSet.sliders;
   const logoUrl = dbSet.logo_url || dbSet.logoUrl || '';
   const heroTitle = dbSet.hero_title || dbSet.heroTitle || 'Caring Hearts. Expert Hands.';
   const heroSubtitle = dbSet.hero_subtitle || dbSet.heroSubtitle || '';
-  const heroImageUrl = dbSet.hero_image_url || dbSet.heroImageUrl || '';
+  const heroImageUrl = dbSet.hero_image_url || dbSet.heroImageUrl || DEFAULT_HERO_IMAGE;
+
+  let rawSliders: string[] = [];
+  if (dbSliders && !Array.isArray(dbSliders) && typeof dbSliders === 'object') {
+    rawSliders = dbSliders.slides || [];
+  } else if (Array.isArray(dbSliders)) {
+    rawSliders = dbSliders;
+  }
+
+  const validSliders = rawSliders.filter(s => typeof s === 'string' && s.trim().length > 0);
+  const sliders = validSliders.length > 0 ? validSliders : DEFAULT_SLIDERS;
 
   if (dbSliders && !Array.isArray(dbSliders) && typeof dbSliders === 'object') {
     return {
@@ -465,8 +484,8 @@ const mapSettingsFromDb = (dbSet: any): SiteSettings => {
       heroTitle,
       heroSubtitle,
       heroImageUrl,
-      sliders: dbSliders.slides || [],
-      aboutPhotoUrl: dbSliders.aboutPhotoUrl || '',
+      sliders,
+      aboutPhotoUrl: dbSliders.aboutPhotoUrl || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=1200',
       directorName: dbSliders.directorName || '',
       directorPhotoUrl: dbSliders.directorPhotoUrl || '',
       directorQualification: dbSliders.directorQualification || '',
@@ -479,7 +498,7 @@ const mapSettingsFromDb = (dbSet: any): SiteSettings => {
       gallery: dbSliders.gallery || [],
       tpaFacilities: dbSliders.tpaFacilities || [],
       facilities: dbSliders.facilities || [],
-      announcementPopup: dbSliders.announcementPopup || { enabled: false, title: '', message: '' }
+      announcementPopup: dbSliders.announcementPopup || { enabled: true, title: 'Free Mega Surgical Camp & PM-JAY Card Registration', message: 'Navjyoti Multispeciality Hospital is hosting a Free Health Checkup & Surgery Camp this upcoming Sunday. Call 05542-243001 for details.', badgeText: 'IMPORTANT NOTICE', linkText: 'Register Now', linkUrl: '#pmjay' }
     };
   }
 
@@ -489,8 +508,8 @@ const mapSettingsFromDb = (dbSet: any): SiteSettings => {
     heroTitle,
     heroSubtitle,
     heroImageUrl,
-    sliders: Array.isArray(dbSliders) ? dbSliders : [],
-    aboutPhotoUrl: '',
+    sliders,
+    aboutPhotoUrl: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=1200',
     directorName: '',
     directorPhotoUrl: '',
     directorQualification: '',
@@ -1051,8 +1070,8 @@ export const getSiteSettings = (): SiteSettings => {
     logoUrl: '',
     heroTitle: 'Caring Hearts. Expert Hands.',
     heroSubtitle: 'Navjyoti Multispeciality Hospital, located in Basti, Uttar Pradesh, is committed to delivering modern, affordable, and deeply compassionate healthcare. Bring your Ayushman Bharat Card to enjoy free cashless hospital treatments today.',
-    heroImageUrl: '',
-    sliders: [],
+    heroImageUrl: DEFAULT_HERO_IMAGE,
+    sliders: DEFAULT_SLIDERS,
     tpaFacilities: [
       {
         id: 'tpa_1',
@@ -1154,7 +1173,16 @@ export const getSiteSettings = (): SiteSettings => {
   if (!settingsStr) return defaultSettings;
   try {
     const parsed = JSON.parse(settingsStr);
-    return { ...defaultSettings, ...parsed };
+    const heroImg = parsed.heroImageUrl || defaultSettings.heroImageUrl;
+    const validSliders = Array.isArray(parsed.sliders) ? parsed.sliders.filter((s: string) => s && typeof s === 'string' && s.trim().length > 0) : [];
+    const sliderList = validSliders.length > 0 ? validSliders : defaultSettings.sliders;
+
+    return {
+      ...defaultSettings,
+      ...parsed,
+      heroImageUrl: heroImg,
+      sliders: sliderList
+    };
   } catch (e) {
     return defaultSettings;
   }

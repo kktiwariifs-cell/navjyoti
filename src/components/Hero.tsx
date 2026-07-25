@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ShieldCheck, CalendarRange, HeartHandshake, ChevronRight, ChevronLeft, Activity, Users } from 'lucide-react';
-import { getSiteSettings } from '../utils/database';
+import { getSiteSettings, DEFAULT_SLIDERS } from '../utils/database';
 
 interface HeroProps {
   onOpenBooking: () => void;
@@ -26,13 +26,29 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
     }
     if (settings.sliders && settings.sliders.length > 0) {
       settings.sliders.forEach((slide, idx) => {
-        if (slide) {
+        if (slide && !arr.some(item => item.url === slide)) {
           arr.push({ url: slide, label: `Clinical Facility Highlight #${idx + 1}` });
         }
       });
     }
+    // Always fall back to DEFAULT_SLIDERS if empty so slider never disappears
+    if (arr.length === 0) {
+      DEFAULT_SLIDERS.forEach((slide, idx) => {
+        arr.push({ url: slide, label: `Hospital Facility Showcase #${idx + 1}` });
+      });
+    }
     return arr;
   }, [settings]);
+
+  // Preload slide images in browser cache so slide transitions are instant
+  useEffect(() => {
+    slides.forEach(slide => {
+      if (slide.url) {
+        const img = new Image();
+        img.src = slide.url;
+      }
+    });
+  }, [slides]);
 
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -94,15 +110,15 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
               className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-35 scale-105 pointer-events-none"
               referrerPolicy="no-referrer"
             />
-            <AnimatePresence mode="wait">
+            <AnimatePresence initial={false}>
               <motion.img
                 key={currentSlide}
                 src={slides[currentSlide].url}
                 alt={slides[currentSlide].label}
-                initial={{ opacity: 0 }}
+                initial={{ opacity: 0.3 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
+                transition={{ duration: 0.6 }}
                 className="w-full h-auto block relative z-10 select-none"
                 style={{
                   imageRendering: '-webkit-optimize-contrast',
