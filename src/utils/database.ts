@@ -468,15 +468,17 @@ const mapSettingsFromDb = (dbSet: any): SiteSettings => {
   const heroSubtitle = dbSet.hero_subtitle || dbSet.heroSubtitle || '';
   const heroImageUrl = dbSet.hero_image_url || dbSet.heroImageUrl || DEFAULT_HERO_IMAGE;
 
-  let rawSliders: string[] = [];
+  let rawSliders: string[] | null = null;
   if (dbSliders && !Array.isArray(dbSliders) && typeof dbSliders === 'object') {
     rawSliders = dbSliders.slides || [];
   } else if (Array.isArray(dbSliders)) {
     rawSliders = dbSliders;
   }
 
-  const validSliders = rawSliders.filter(s => typeof s === 'string' && s.trim().length > 0);
-  const sliders = validSliders.length > 0 ? validSliders : DEFAULT_SLIDERS;
+  // Preserve user customizations: if dbSliders was explicitly set, filter out blank strings without forcing DEFAULT_SLIDERS
+  const sliders = rawSliders !== null
+    ? rawSliders.filter(s => typeof s === 'string' && s.trim().length > 0)
+    : DEFAULT_SLIDERS;
 
   if (dbSliders && !Array.isArray(dbSliders) && typeof dbSliders === 'object') {
     return {
@@ -1174,14 +1176,16 @@ export const getSiteSettings = (): SiteSettings => {
   try {
     const parsed = JSON.parse(settingsStr);
     const heroImg = parsed.heroImageUrl || defaultSettings.heroImageUrl;
-    const validSliders = Array.isArray(parsed.sliders) ? parsed.sliders.filter((s: string) => s && typeof s === 'string' && s.trim().length > 0) : [];
-    const sliderList = validSliders.length > 0 ? validSliders : defaultSettings.sliders;
+    let sliders = defaultSettings.sliders;
+    if (Array.isArray(parsed.sliders)) {
+      sliders = parsed.sliders.filter((s: string) => s && typeof s === 'string' && s.trim().length > 0);
+    }
 
     return {
       ...defaultSettings,
       ...parsed,
       heroImageUrl: heroImg,
-      sliders: sliderList
+      sliders
     };
   } catch (e) {
     return defaultSettings;

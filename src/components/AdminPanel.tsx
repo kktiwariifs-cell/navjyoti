@@ -720,6 +720,9 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
   // Website Settings Helpers
   const updateSliderImage = (index: number, base64: string) => {
     const nextSliders = [...(siteSettings.sliders || [])];
+    while (nextSliders.length <= index) {
+      nextSliders.push('');
+    }
     nextSliders[index] = base64;
     const updated = {
       ...siteSettings,
@@ -730,10 +733,23 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
   };
 
   const removeSliderImage = (index: number) => {
-    const nextSliders = (siteSettings.sliders || []).filter((_, idx) => idx !== index);
+    const nextSliders = [...(siteSettings.sliders || [])];
+    while (nextSliders.length <= index) {
+      nextSliders.push('');
+    }
+    nextSliders[index] = '';
     const updated = {
       ...siteSettings,
       sliders: nextSliders
+    };
+    setSiteSettings(updated);
+    saveSiteSettings(updated);
+  };
+
+  const clearAllSliders = () => {
+    const updated = {
+      ...siteSettings,
+      sliders: ['', '', '', '']
     };
     setSiteSettings(updated);
     saveSiteSettings(updated);
@@ -1867,9 +1883,21 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
 
             {/* Section C: Slider Image Management (Up to 4 Slots) */}
             <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-5">
-              <div className="border-b pb-3">
-                <h4 className="font-display font-extrabold text-[#0d2a63] text-sm uppercase tracking-wider">Homepage Image Slider Carousel (Up to 4 Slots)</h4>
-                <p className="text-[11px] text-slate-400 font-medium">Add up to 4 high-resolution slider photographs. If slides are saved, the home header visual will slide automatically!</p>
+              <div className="border-b pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h4 className="font-display font-extrabold text-[#0d2a63] text-sm uppercase tracking-wider">Homepage Image Slider Carousel (Up to 4 Slots)</h4>
+                  <p className="text-[11px] text-slate-400 font-medium">Add up to 4 high-resolution slider photographs. If slides are saved, the home header visual will slide automatically!</p>
+                </div>
+                {siteSettings.sliders?.some(s => typeof s === 'string' && s.trim().length > 0) && (
+                  <button
+                    type="button"
+                    onClick={clearAllSliders}
+                    className="self-start sm:self-center bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer transition-all shrink-0 flex items-center gap-1 shadow-xs"
+                  >
+                    <Trash2 size={13} />
+                    <span>Clear All Slides</span>
+                  </button>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
