@@ -750,6 +750,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
   const clearAllSliders = () => {
     const updated = {
       ...siteSettings,
+      heroImageUrl: '',
       sliders: []
     };
     setSiteSettings(updated);

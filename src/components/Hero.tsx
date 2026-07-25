@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ShieldCheck, CalendarRange, HeartHandshake, ChevronRight, ChevronLeft, Activity, Users } from 'lucide-react';
-import { getSiteSettings, DEFAULT_SLIDERS } from '../utils/database';
+import { getSiteSettings, DEFAULT_SLIDERS, DEFAULT_HERO_IMAGE } from '../utils/database';
 
 interface HeroProps {
   onOpenBooking: () => void;
@@ -27,9 +27,10 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
       validSliders.forEach((slide, idx) => {
         arr.push({ url: slide, label: `Clinical Facility Highlight #${idx + 1}` });
       });
-    } else if (settings.heroImageUrl) {
+    } else if (settings.heroImageUrl && settings.heroImageUrl.trim().length > 0 && settings.heroImageUrl !== DEFAULT_HERO_IMAGE) {
       arr.push({ url: settings.heroImageUrl, label: 'Main Hospital View' });
-    } else {
+    } else if (!Array.isArray(settings.sliders) && !settings.heroImageUrl) {
+      // Only fallback to DEFAULT_SLIDERS if sliders and heroImageUrl were never defined in settings
       DEFAULT_SLIDERS.forEach((slide, idx) => {
         arr.push({ url: slide, label: `Hospital Facility Showcase #${idx + 1}` });
       });

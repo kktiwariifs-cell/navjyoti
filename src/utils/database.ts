@@ -466,7 +466,7 @@ const mapSettingsFromDb = (dbSet: any): SiteSettings => {
   const logoUrl = dbSet.logo_url || dbSet.logoUrl || '';
   const heroTitle = dbSet.hero_title || dbSet.heroTitle || 'Caring Hearts. Expert Hands.';
   const heroSubtitle = dbSet.hero_subtitle || dbSet.heroSubtitle || '';
-  const heroImageUrl = dbSet.hero_image_url || dbSet.heroImageUrl || DEFAULT_HERO_IMAGE;
+  const heroImageUrl = dbSet.hero_image_url ?? dbSet.heroImageUrl ?? '';
 
   let rawSliders: string[] | null = null;
   if (dbSliders && !Array.isArray(dbSliders) && typeof dbSliders === 'object') {
@@ -1175,7 +1175,7 @@ export const getSiteSettings = (): SiteSettings => {
   if (!settingsStr) return defaultSettings;
   try {
     const parsed = JSON.parse(settingsStr);
-    const heroImg = parsed.heroImageUrl || defaultSettings.heroImageUrl;
+    const heroImg = typeof parsed.heroImageUrl === 'string' ? parsed.heroImageUrl : defaultSettings.heroImageUrl;
     let sliders = defaultSettings.sliders;
     if (Array.isArray(parsed.sliders)) {
       sliders = parsed.sliders.filter((s: string) => s && typeof s === 'string' && s.trim().length > 0);
