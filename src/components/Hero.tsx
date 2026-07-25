@@ -21,18 +21,15 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
 
   const slides = useMemo(() => {
     const arr: { url: string; label: string }[] = [];
-    if (settings.heroImageUrl) {
-      arr.push({ url: settings.heroImageUrl, label: 'Main Hospital View' });
-    }
-    if (settings.sliders && settings.sliders.length > 0) {
-      settings.sliders.forEach((slide, idx) => {
-        if (slide && !arr.some(item => item.url === slide)) {
-          arr.push({ url: slide, label: `Clinical Facility Highlight #${idx + 1}` });
-        }
+    const validSliders = (settings.sliders || []).filter(s => typeof s === 'string' && s.trim().length > 0);
+
+    if (validSliders.length > 0) {
+      validSliders.forEach((slide, idx) => {
+        arr.push({ url: slide, label: `Clinical Facility Highlight #${idx + 1}` });
       });
-    }
-    // Always fall back to DEFAULT_SLIDERS if empty so slider never disappears
-    if (arr.length === 0) {
+    } else if (settings.heroImageUrl) {
+      arr.push({ url: settings.heroImageUrl, label: 'Main Hospital View' });
+    } else {
       DEFAULT_SLIDERS.forEach((slide, idx) => {
         arr.push({ url: slide, label: `Hospital Facility Showcase #${idx + 1}` });
       });

@@ -719,7 +719,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
 
   // Website Settings Helpers
   const updateSliderImage = (index: number, base64: string) => {
-    const nextSliders = [...(siteSettings.sliders || [])];
+    const nextSliders = Array.isArray(siteSettings.sliders) ? [...siteSettings.sliders] : [];
     while (nextSliders.length <= index) {
       nextSliders.push('');
     }
@@ -733,14 +733,15 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
   };
 
   const removeSliderImage = (index: number) => {
-    const nextSliders = [...(siteSettings.sliders || [])];
-    while (nextSliders.length <= index) {
-      nextSliders.push('');
+    const nextSliders = Array.isArray(siteSettings.sliders) ? [...siteSettings.sliders] : [];
+    if (index < nextSliders.length) {
+      nextSliders[index] = '';
     }
-    nextSliders[index] = '';
+    const hasAnySlide = nextSliders.some(s => typeof s === 'string' && s.trim().length > 0);
+    const updatedSliders = hasAnySlide ? nextSliders : [];
     const updated = {
       ...siteSettings,
-      sliders: nextSliders
+      sliders: updatedSliders
     };
     setSiteSettings(updated);
     saveSiteSettings(updated);
@@ -749,7 +750,7 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
   const clearAllSliders = () => {
     const updated = {
       ...siteSettings,
-      sliders: ['', '', '', '']
+      sliders: []
     };
     setSiteSettings(updated);
     saveSiteSettings(updated);
