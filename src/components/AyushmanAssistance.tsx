@@ -18,11 +18,11 @@ export default function AyushmanAssistance() {
   };
 
   return (
-    <section id="pmjay" className="py-16 md:py-24 bg-gradient-to-b from-white to-slate-50/50 border-b border-slate-200 font-sans">
+    <section id="pmjay" className="py-8 sm:py-10 md:py-12 bg-gradient-to-b from-white to-slate-50/50 border-b border-slate-200 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header title */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-8">
           <span className="text-xs font-bold uppercase tracking-widest text-orange-600 bg-orange-50 px-3.5 py-1.5 rounded-full inline-block mb-3 border border-orange-100/50">
             Govt. Cashless Treatment Scheme
           </span>

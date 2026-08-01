@@ -95,7 +95,7 @@ export default function Hero({ onOpenBooking, onNavigate }: HeroProps) {
         className={`relative overflow-hidden border-b border-slate-200 transition-all duration-500 ${
           hasSlides 
             ? 'w-full bg-slate-950 flex items-stretch h-auto' 
-            : 'bg-gradient-to-br from-blue-50 via-white to-slate-50/50 pt-8 pb-16 md:py-24'
+            : 'bg-gradient-to-br from-blue-50 via-white to-slate-50/50 pt-4 sm:pt-6 pb-8 md:py-12'
         }`}
       >
         {/* Background Slider behind all components if slides exist */}

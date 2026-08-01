@@ -17,11 +17,11 @@ export default function TpaSection() {
   const tpaList = settings.tpaFacilities || [];
 
   return (
-    <section className="py-12 bg-white border-t border-slate-200">
+    <section className="py-6 sm:py-8 bg-white border-t border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header Block */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
+        <div className="text-center max-w-3xl mx-auto mb-6">
           <span className="text-xs font-black uppercase tracking-widest text-blue-600 bg-blue-50 px-3.5 py-1.5 rounded-full inline-block mb-3.5">
             Cashless Insurance Wards
           </span>

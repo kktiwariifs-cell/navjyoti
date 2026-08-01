@@ -70,11 +70,11 @@ export default function FeedbackSection() {
 
 
   return (
-    <section id="feedback" className="py-16 md:py-24 bg-slate-50/70 border-b border-slate-200">
+    <section id="feedback" className="py-8 sm:py-10 md:py-12 bg-slate-50/70 border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Double block container: Newsletter & Feedback Forms */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
           
           {/* Left Block: Newsletter + Live feedbacks list (8 columns or split) */}
           <div className="lg:col-span-6 space-y-8 text-left">

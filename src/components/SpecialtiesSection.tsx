@@ -38,11 +38,11 @@ export default function SpecialtiesSection({ onOpenBooking }: SpecialtiesSection
   }, []);
 
   return (
-    <section id="services" className="py-16 md:py-24 bg-slate-50/70 border-b border-slate-200">
+    <section id="services" className="py-8 sm:py-10 md:py-12 bg-slate-50/70 border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section title */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-8">
           <span className="text-xs font-bold uppercase tracking-widest text-blue-600 bg-blue-50 px-3.5 py-1.5 rounded-full inline-block mb-3">
             Our Medical Departments
           </span>

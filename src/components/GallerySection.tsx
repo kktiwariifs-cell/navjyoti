@@ -50,11 +50,11 @@ export default function GallerySection() {
   }, [galleryItems, filter]);
 
   return (
-    <section className="py-12 bg-slate-50 min-h-[70vh]">
+    <section className="py-6 sm:py-8 bg-slate-50 min-h-[70vh]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Decorative Header */}
-        <div className="text-center max-w-3xl mx-auto mb-10">
+        <div className="text-center max-w-3xl mx-auto mb-6">
           <span className="text-xs font-black uppercase tracking-widest text-[#1e66f5] bg-blue-50 px-3.5 py-1.5 rounded-full inline-block mb-3.5">
             Visual Media & Walkthroughs
           </span>

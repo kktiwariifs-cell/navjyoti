@@ -44,7 +44,7 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
   return (
     <header className="w-full z-50">
       {/* Top emergency bar */}
-      <div className="bg-blue-900 text-white text-[10px] sm:text-xs py-1.5 sm:py-2 px-3 sm:px-6 shadow-inner">
+      <div className="bg-blue-900 text-white text-[10px] sm:text-xs py-1 sm:py-1.5 px-3 sm:px-6 shadow-inner">
         <div className="max-w-7xl mx-auto flex flex-row justify-between items-center gap-1.5 sm:gap-2">
           {/* Emergency support */}
           <div className="flex items-center gap-1 sm:gap-1.5 font-bold min-w-0">
@@ -74,7 +74,7 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
             </div>
             <button
               onClick={() => handleLinkClick('pmjay')}
-              className="bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold px-2.5 sm:px-3 py-1 rounded-full text-[9px] sm:text-[10px] uppercase flex items-center gap-1 tracking-wider shadow-sm animate-pulse cursor-pointer border-none transition-all"
+              className="bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] uppercase flex items-center gap-1 tracking-wider shadow-sm animate-pulse cursor-pointer border-none transition-all"
             >
               <ShieldAlert size={10} className="stroke-[3]" /> <span className="hidden xs:inline">PM-JAY</span> Cashless
             </button>
@@ -85,23 +85,23 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
       {/* Main header navigation */}
       <nav id="header-nav" className="bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm sticky top-0 z-50 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20">
+          <div className="flex justify-between h-14 sm:h-16">
             {/* Logo area */}
             <div className="flex-shrink-0 flex items-center gap-2 sm:gap-3 max-w-[85%] sm:max-w-none">
               <img
                 src={settings.logoUrl || logoImg}
                 alt="Navjyoti Multi Speciality Hospital Basti Logo"
-                className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-xl shadow-md border border-slate-150 bg-white shrink-0"
+                className="w-8 h-8 sm:w-10 sm:h-10 object-contain rounded-xl shadow-md border border-slate-150 bg-white shrink-0"
                 referrerPolicy="no-referrer"
               />
               <div className="flex flex-col min-w-0 justify-center">
-                <span className="font-display font-black text-[13px] xs:text-sm sm:text-lg text-blue-900 leading-none tracking-tight uppercase">
+                <span className="font-display font-black text-[12px] xs:text-xs sm:text-base text-blue-900 leading-none tracking-tight uppercase">
                   NAVJYOTI
                 </span>
-                <span className="text-[9px] sm:text-[10px] text-slate-500 font-bold tracking-wide uppercase mt-1 leading-none truncate">
+                <span className="text-[8px] sm:text-[9.5px] text-slate-500 font-bold tracking-wide uppercase mt-0.5 leading-none truncate">
                   Multispeciality Hospital
                 </span>
-                <span className="text-[8px] sm:text-[9px] text-gray-400 font-semibold tracking-tight mt-1 leading-none truncate">
+                <span className="text-[7.5px] sm:text-[8.5px] text-gray-400 font-semibold tracking-tight mt-0.5 leading-none truncate">
                   Basti, UP • Ayushman Approved
                 </span>
               </div>
@@ -109,7 +109,7 @@ export default function Navbar({ onNavigate, onOpenBooking, activeSection }: Nav
               {/* NABH Certification Badge - Compact & Ultra-trustworthy */}
               <div className="flex items-center pl-1.5 sm:pl-3 ml-1 sm:ml-2 border-l border-slate-200 shrink-0">
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center shrink-0" title="NABH Certified (Entry Level)">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center shrink-0" title="NABH Certified (Entry Level)">
                     <svg viewBox="0 0 100 100" className="w-full h-full select-none" aria-label="NABH Entry Level Certified">
                       <defs>
                         <path id="left-side" d="M 12,71 L 50,16" />

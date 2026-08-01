@@ -14,11 +14,11 @@ const iconMap: Record<string, React.ComponentType<any>> = {
 
 export default function WhyChooseUs() {
   return (
-    <section className="py-16 md:py-24 bg-white border-b border-slate-200">
+    <section className="py-8 sm:py-10 md:py-12 bg-white border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header summary */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-8">
           <span className="text-xs font-bold uppercase tracking-widest text-blue-600 bg-blue-50 px-3.5 py-1.5 rounded-full inline-block mb-3">
             The Navjyoti Standard
           </span>

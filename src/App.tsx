@@ -142,8 +142,8 @@ export default function App() {
         {activeSection === 'news' ? (
           <div className="bg-slate-50 min-h-[60vh] pb-8">
             {/* Breadcrumbs navigation */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-              <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6 bg-white px-4 py-2.5 rounded-2xl border border-slate-100 w-fit">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-1">
+              <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-2 bg-white px-4 py-2 rounded-2xl border border-slate-100 w-fit">
                 <button onClick={() => handleNavigate('home')} className="hover:text-blue-600 transition-colors cursor-pointer">
                   Home
                 </button>
@@ -158,8 +158,8 @@ export default function App() {
         ) : activeSection === 'services' ? (
           <div className="bg-slate-50 min-h-[60vh] pb-8">
             {/* Breadcrumbs navigation */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-              <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6 bg-white px-4 py-2.5 rounded-2xl border border-slate-100 w-fit">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-1">
+              <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-2 bg-white px-4 py-2 rounded-2xl border border-slate-100 w-fit">
                 <button onClick={() => handleNavigate('home')} className="hover:text-blue-600 transition-colors cursor-pointer">
                   Home
                 </button>
@@ -174,8 +174,8 @@ export default function App() {
         ) : activeSection === 'facilities' ? (
           <div className="bg-slate-50 min-h-[60vh] pb-8">
             {/* Breadcrumbs navigation */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-              <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6 bg-white px-4 py-2.5 rounded-2xl border border-slate-100 w-fit">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-1">
+              <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-2 bg-white px-4 py-2 rounded-2xl border border-slate-100 w-fit">
                 <button onClick={() => handleNavigate('home')} className="hover:text-blue-600 transition-colors cursor-pointer">
                   Home
                 </button>
@@ -191,8 +191,8 @@ export default function App() {
         ) : activeSection === 'contact' ? (
           <div className="bg-slate-50 min-h-[60vh] pb-8">
             {/* Breadcrumbs navigation */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-              <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6 bg-white px-4 py-2.5 rounded-2xl border border-slate-100 w-fit">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-1">
+              <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-2 bg-white px-4 py-2 rounded-2xl border border-slate-100 w-fit">
                 <button onClick={() => handleNavigate('home')} className="hover:text-blue-600 transition-colors cursor-pointer">
                   Home
                 </button>
@@ -207,8 +207,8 @@ export default function App() {
         ) : activeSection === 'pmjay' ? (
           <div className="bg-slate-50 min-h-[60vh] pb-8">
             {/* Breadcrumbs navigation */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-              <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6 bg-white px-4 py-2.5 rounded-2xl border border-slate-100 w-fit">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-1">
+              <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-2 bg-white px-4 py-2 rounded-2xl border border-slate-100 w-fit">
                 <button onClick={() => handleNavigate('home')} className="hover:text-blue-600 transition-colors cursor-pointer">
                   Home
                 </button>
@@ -223,8 +223,8 @@ export default function App() {
         ) : activeSection === 'gallery' ? (
           <div className="bg-slate-50 min-h-[60vh] pb-8">
             {/* Breadcrumbs navigation */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-              <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6 bg-white px-4 py-2.5 rounded-2xl border border-slate-100 w-fit">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-1">
+              <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-2 bg-white px-4 py-2 rounded-2xl border border-slate-100 w-fit">
                 <button onClick={() => handleNavigate('home')} className="hover:text-blue-600 transition-colors cursor-pointer">
                   Home
                 </button>

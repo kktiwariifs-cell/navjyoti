@@ -47,11 +47,11 @@ export default function ContactSection() {
   };
 
   return (
-    <section id="contact" className="py-20 bg-slate-50 border-t border-slate-100 font-sans">
+    <section id="contact" className="py-8 sm:py-10 md:py-12 bg-slate-50 border-t border-slate-100 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-8">
           <span className="text-xs uppercase tracking-widest text-blue-650 font-extrabold text-blue-600 block mb-2.5">
             Contact Us
           </span>

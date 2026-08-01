@@ -30,11 +30,11 @@ export default function AboutSection() {
   };
 
   return (
-    <section id="about" className="py-16 md:py-24 bg-white border-b border-slate-200">
+    <section id="about" className="py-8 sm:py-10 md:py-12 bg-white border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section title */}
-        <div className="text-center max-w-3xl mx-auto mb-10">
+        <div className="text-center max-w-3xl mx-auto mb-6">
           <span className="text-xs font-bold uppercase tracking-widest text-[#1e66f5] bg-blue-50 px-3.5 py-1.5 rounded-full inline-block mb-3">
             Collaborative Community Care & Leadership
           </span>
@@ -47,7 +47,7 @@ export default function AboutSection() {
         </div>
 
         {/* Tab triggers */}
-        <div className="flex justify-center mb-10">
+        <div className="flex justify-center mb-6">
           <div className="inline-flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex-wrap justify-center gap-1">
             <button
               onClick={() => setActiveTab('about')}
