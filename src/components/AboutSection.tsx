@@ -1,24 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Heart, Landmark, User, FileText, CheckCircle2, Award, ShieldCheck, Quote, X, Eye, Download, ExternalLink, ZoomIn, ZoomOut } from 'lucide-react';
+import { Heart, Landmark, User, CheckCircle2, ShieldCheck, Quote, Eye, ExternalLink, HeartHandshake, Users, Target, Globe, Building2, Sparkles, Activity, Compass } from 'lucide-react';
 import { getSiteSettings } from '../utils/database';
 
 export default function AboutSection() {
   const [settings, setSettings] = useState(() => getSiteSettings());
   const [activeTab, setActiveTab] = useState<'about' | 'founders'>('about');
-  const [selectedCred, setSelectedCred] = useState<any | null>(null);
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [zoomScale, setZoomScale] = useState(1);
-  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    if (zoomScale <= 1.0) {
-      setPanOffset({ x: 0, y: 0 });
-      setIsDragging(false);
-    }
-  }, [zoomScale]);
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -28,62 +15,6 @@ export default function AboutSection() {
     return () => window.removeEventListener('db_update', handleUpdate);
   }, []);
 
-  const closeCredModal = () => {
-    setSelectedCred(null);
-    setIsZoomed(false);
-    setZoomScale(1);
-    setPanOffset({ x: 0, y: 0 });
-    setIsDragging(false);
-  };
-
-  const handlePointerDown = (e: React.PointerEvent) => {
-    if (zoomScale > 1.0) {
-      setIsDragging(true);
-      setDragStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y });
-      e.currentTarget.setPointerCapture(e.pointerId);
-    }
-  };
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (isDragging && zoomScale > 1.0) {
-      const newX = e.clientX - dragStart.x;
-      const newY = e.clientY - dragStart.y;
-      
-      // Boundaries to prevent dragging completely out of view
-      const maxDragX = (zoomScale - 1) * 300;
-      const maxDragY = (zoomScale - 1) * 300;
-      setPanOffset({
-        x: Math.min(Math.max(newX, -maxDragX), maxDragX),
-        y: Math.min(Math.max(newY, -maxDragY), maxDragY)
-      });
-    }
-  };
-
-  const handlePointerUp = (e: React.PointerEvent) => {
-    setIsDragging(false);
-    try {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    } catch (err) {}
-  };
-
-  // Listen for Escape key to close Lightbox modal
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        closeCredModal();
-      }
-    };
-    if (selectedCred) {
-      window.addEventListener('keydown', handleKeyDown);
-    }
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [selectedCred]);
-
-  // Soft fallbacks
-  const hospitalPhoto = settings.aboutPhotoUrl || '';
-  
   const chairman = {
     name: settings.chairmanName || 'Dr. Prem Prakash Dubey',
     qualification: settings.chairmanQualification || 'MBBS, MS (Ophthalmology)',
@@ -98,55 +29,24 @@ export default function AboutSection() {
     bio: settings.directorBio || 'The hospital is equipped with modern medical infrastructure, advanced diagnostic facilities, and specialized departments that enable us to provide comprehensive healthcare services under one roof. From routine consultations to specialized treatments and emergency care, we strive to maintain excellence in every aspect of patient care.\n\nWe also believe in the importance of preventive healthcare and community awareness. Our goal is not only to treat illness but also to promote healthier lifestyles and improve the overall well-being of our community.\n\nWe take great pride in the commitment and dedication of our medical team. Together, we aim to make Navjyoti Multispeciality Hospital a trusted healthcare destination for families in Basti and surrounding areas. We sincerely thank our patients and the community for their trust and continued support.'
   };
 
-  const credentials = settings.credentials || [];
-
-  const defaultFallbackCredentials = [
-    {
-      id: 'fallback_1',
-      title: 'ISO 9001:2015 Quality Management Certified',
-      date: 'Valid till Nov 2028',
-      fileUrl: 'https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&q=80&w=600',
-    },
-    {
-      id: 'fallback_2',
-      title: 'NABH Entry-Level Hospital Accreditation',
-      date: 'Valid till Apr 2027',
-      fileUrl: 'https://images.unsplash.com/photo-1633158829585-23ba8f7c8caf?auto=format&fit=crop&q=80&w=600',
-    },
-    {
-      id: 'fallback_3',
-      title: 'PM-JAY Ayushman Bharat State Empanelment',
-      date: 'Active Approved Registry',
-      fileUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=600',
-    },
-    {
-      id: 'fallback_4',
-      title: 'UP Health Department Bio-Medical Waste Permit',
-      date: 'Approved State License',
-      fileUrl: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&q=80&w=600',
-    }
-  ];
-
-  const displayCredentials = credentials.length > 0 ? credentials : defaultFallbackCredentials;
-
   return (
-    <section id="about" className="py-16 md:py-24 bg-white border-b border-slate-205 border-slate-200">
+    <section id="about" className="py-16 md:py-24 bg-white border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section title */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
+        <div className="text-center max-w-3xl mx-auto mb-10">
           <span className="text-xs font-bold uppercase tracking-widest text-[#1e66f5] bg-blue-50 px-3.5 py-1.5 rounded-full inline-block mb-3">
-            Heritage & Medical Leadership
+            Collaborative Community Care & Leadership
           </span>
           <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-slate-900 tracking-tight">
-            Who We Are & What We Believe
+            Our Partners & Community Mission
           </h2>
           <p className="text-slate-500 mt-3 sm:text-base text-sm leading-relaxed">
-            Discover our healthcare standards, specialized facilities, and read the personal message from our administrative founders.
+            Discover our strategic healthcare partnerships, rural development initiatives, and leadership ethos dedicated to accessible care.
           </p>
         </div>
 
-        {/* Tab triggers for modern switching */}
+        {/* Tab triggers */}
         <div className="flex justify-center mb-10">
           <div className="inline-flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex-wrap justify-center gap-1">
             <button
@@ -157,8 +57,8 @@ export default function AboutSection() {
                   : 'text-slate-600 hover:text-blue-700'
               }`}
             >
-              <Landmark size={16} />
-              About Hospital
+              <HeartHandshake size={18} />
+              Our Partners & Community Mission
             </button>
             <button
               onClick={() => setActiveTab('founders')}
@@ -168,7 +68,7 @@ export default function AboutSection() {
                   : 'text-slate-600 hover:text-blue-700'
               }`}
             >
-              <User size={16} />
+              <User size={18} />
               Founders' Message
             </button>
           </div>
@@ -179,173 +79,315 @@ export default function AboutSection() {
           <AnimatePresence mode="wait">
             {activeTab === 'about' && (
               <motion.div
-                key="about"
+                key="partners"
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -15 }}
                 transition={{ duration: 0.35 }}
-                className="flex flex-col gap-10 text-left w-full"
+                className="flex flex-col gap-12 text-left w-full"
               >
-                {/* Upper Split Grid: Hospital Photo vs text content */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-                  {/* Left: Graphic/Stats (5 cols) */}
-                  <div className="lg:col-span-5 w-full">
-                    {hospitalPhoto ? (
-                      <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[4/3] lg:aspect-auto lg:h-[450px] border border-slate-200 group w-full">
-                        <img 
-                          src={hospitalPhoto} 
-                          alt="Navjyoti Multispeciality Hospital Campus" 
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          referrerPolicy="no-referrer"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent p-6 flex flex-col justify-end">
-                          <h4 className="font-display font-black text-white text-lg">Navjyoti Hospital Basti</h4>
-                          <p className="text-white/80 text-xs">Modern critical facilities & experienced surgical wings</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="relative p-8 rounded-3xl bg-gradient-to-br from-blue-600 to-blue-900 text-white overflow-hidden shadow-xl shadow-blue-200/30 text-left h-full min-h-[350px]">
-                        <div className="absolute top-0 right-0 p-4 opacity-5">
-                          <Landmark size={200} />
-                        </div>
-                        <h3 className="font-display font-bold text-2xl mb-4">Navjyoti Campus Basti</h3>
-                        <p className="text-blue-100 text-sm leading-relaxed mb-6 font-medium">
-                          A fully-equipped campus designed to address clinical emergencies, intensive dialysis care, and sutureless laparoscopic and ophthalmological surgeries.
-                        </p>
-                        <div className="space-y-3.5 text-sm font-semibold">
-                          <div className="flex items-center gap-2.5">
-                            <CheckCircle2 size={16} className="text-yellow-300" />
-                            <span>Empanelled with PM-JAY Cashless Scheme</span>
-                          </div>
-                          <div className="flex items-center gap-2.5">
-                            <CheckCircle2 size={16} className="text-yellow-300" />
-                            <span>24 / 7 Dedicated Ambulance & Trauma Room</span>
-                          </div>
-                          <div className="flex items-center gap-2.5">
-                            <CheckCircle2 size={16} className="text-yellow-300" />
-                            <span>In-house Diagnostic Laboratory</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                {/* 1. Header Banner Card */}
+                <div className="relative rounded-3xl bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white p-8 sm:p-10 shadow-xl overflow-hidden border border-blue-900/50">
+                  <div className="absolute top-0 right-0 -mr-16 -mt-16 opacity-10 pointer-events-none">
+                    <HeartHandshake size={320} />
                   </div>
-
-                  {/* Right: Main Information (7 cols) */}
-                  <div className="lg:col-span-7 text-left space-y-5">
-                    <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 uppercase tracking-tight">
-                      About Our Hospital
+                  <div className="relative z-10 max-w-4xl space-y-4">
+                    <div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 text-blue-300 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
+                      <Sparkles size={14} className="text-yellow-400" /> Strategic Healthcare Alliance
+                    </div>
+                    <h3 className="text-3xl sm:text-4xl font-display font-extrabold text-white tracking-tight">
+                      Our Partners
                     </h3>
-                    <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-semibold">
-                      Navjyoti Multispeciality Hospital is dedicated to providing high-quality, affordable, and compassionate healthcare services to the people of Basti and nearby regions. Our hospital aims to deliver reliable medical care through experienced doctors, skilled nursing staff, and modern medical facilities in a safe and patient-friendly environment.
+                    <p className="text-lg sm:text-xl font-semibold text-blue-200 italic">
+                      "Together for Better Healthcare, Better Vision, and Stronger Communities"
                     </p>
-                    <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-                      We offer a wide range of specialized healthcare services under one roof, including <em className="not-italic font-extrabold text-blue-900 bg-blue-50/75 px-1 rounded">General Surgery, Eye Care, Pediatrics, General Medicine, Orthopedics, Nephrology, Urology, Neurology, Cardiology, ENT (Ear, Nose & Throat), Dermatology</em>, and many more departments. Our focus is on accurate diagnosis, advanced treatment, and personalized care to ensure the best health outcomes for our patients.
-                    </p>
-                    <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-                      Equipped with modern medical technology and well-maintained infrastructure, Navjyoti Multispeciality Hospital continuously works to improve healthcare standards and patient satisfaction. We are committed to making quality healthcare accessible and trustworthy for the entire community.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Accreditations Section (Full Width to avoid blank space under the photo and on the right) */}
-                {displayCredentials.length > 0 && (
-                  <div className="pt-8 border-t border-slate-100 space-y-5 w-full">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
-                      <div>
-                        <span className="text-xs font-mono font-black uppercase text-[#1e66f5] tracking-widest flex items-center gap-1.5">
-                          <Award size={14} className="animate-pulse" /> Approved Accreditations & Certifications
-                        </span>
-                        <h4 className="font-display font-extrabold text-xl text-slate-900 mt-1 uppercase">
-                          Our Medical Registrations & Standards
-                        </h4>
-                      </div>
-                      <span className="text-[10px] text-slate-500 font-mono font-black uppercase tracking-wider bg-slate-50 border border-slate-200/65 px-3.5 py-2 rounded-full inline-block">
-                        Click on any certificate to view details
+                    <div className="space-y-3 text-slate-200 text-sm sm:text-base leading-relaxed pt-2">
+                      <p>
+                        At Navjyoti Multispeciality Hospital, we believe that quality healthcare should be accessible to every individual, regardless of their location or socio-economic background. To achieve this mission, we proudly collaborate with <strong className="text-white font-extrabold underline decoration-blue-400">Sightsavers India</strong> and <strong className="text-white font-extrabold underline decoration-blue-400">Gramin Development Foundation (GDF)</strong> to deliver impactful healthcare initiatives and community development programs.
+                      </p>
+                      <p className="text-slate-300">
+                        Through this strategic partnership, we are committed to strengthening healthcare delivery, promoting eye health, supporting inclusive healthcare, and improving the quality of life for underserved communities.
+                      </p>
+                    </div>
+                    
+                    {/* Focus pills */}
+                    <div className="pt-4 flex flex-wrap gap-2.5">
+                      <span className="bg-blue-600/30 border border-blue-400/30 text-blue-100 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                        <CheckCircle2 size={14} className="text-blue-300" /> Preventive Care
+                      </span>
+                      <span className="bg-blue-600/30 border border-blue-400/30 text-blue-100 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                        <CheckCircle2 size={14} className="text-blue-300" /> Early Diagnosis
+                      </span>
+                      <span className="bg-blue-600/30 border border-blue-400/30 text-blue-100 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                        <CheckCircle2 size={14} className="text-blue-300" /> Timely Treatment
+                      </span>
+                      <span className="bg-blue-600/30 border border-blue-400/30 text-blue-100 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                        <CheckCircle2 size={14} className="text-blue-300" /> Public Health Awareness
                       </span>
                     </div>
+                  </div>
+                </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
-                      {displayCredentials.map((cred: any) => {
-                        const hasImage = !!cred.fileUrl;
-                        return (
-                          <div 
-                            key={cred.id} 
-                            onClick={() => setSelectedCred(cred)}
-                            className="bg-white border border-slate-200/80 rounded-2xl p-3 flex flex-col justify-between hover:border-blue-300 hover:shadow-lg hover:shadow-blue-50/50 transition-all duration-300 cursor-pointer group shadow-sm hover:-translate-y-1 relative h-[380px] w-full"
-                          >
-                            <div className="h-64 bg-slate-50 border border-slate-100 rounded-xl overflow-hidden flex items-center justify-center relative shadow-inner w-full">
-                              {hasImage ? (
-                                <img 
-                                  src={cred.fileUrl} 
-                                  alt={cred.title} 
-                                  className="h-full w-full object-cover group-hover:scale-[1.03] transition-transform duration-300" 
-                                  style={{ imageRendering: 'auto' }}
-                                  referrerPolicy="no-referrer"
-                                />
-                              ) : (
-                                <div className="flex flex-col items-center gap-2.5 text-slate-300 px-8 py-16">
-                                  <FileText size={48} className="stroke-[1.25]" />
-                                  <span className="text-[10px] font-bold text-slate-400 font-mono uppercase tracking-wider">Digital Document</span>
-                                </div>
-                              )}
-                              <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                <span className="bg-white/95 text-slate-900 text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                                  <Eye size={12} className="text-blue-600" /> View Certificate
-                                </span>
-                              </div>
-                            </div>
-                            <div className="mt-3 text-left w-full">
-                              <span className="text-xs font-black text-slate-800 line-clamp-2 leading-snug group-hover:text-blue-600 transition-colors block h-10" title={cred.title}>
-                                {cred.title}
-                              </span>
-                              <div className="flex items-center justify-between gap-2 mt-2 pt-2 border-t border-slate-100 w-full">
-                                <span className="text-[9.5px] font-black uppercase tracking-wider text-[#1e66f5] font-mono flex items-center gap-1 shrink-0">
-                                  <ShieldCheck size={11} /> Registered
-                                </span>
-                                <span className="text-[9px] font-mono font-black text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full truncate max-w-[120px]" title="Validity Details">
-                                  {cred.date || 'Active / Verified'}
-                                </span>
-                              </div>
-                            </div>
+                {/* 2. Partner Spotlight Cards (Sightsavers & GDF) */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Sightsavers India Card */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 flex flex-col justify-between hover:shadow-xl hover:border-blue-300 transition-all duration-300 group">
+                    <div className="space-y-5">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="p-3 bg-blue-600 text-white rounded-2xl shadow-md group-hover:scale-110 transition-transform">
+                            <Eye size={28} />
                           </div>
-                        );
-                      })}
+                          <div>
+                            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-blue-600 block">
+                              Global Eye Care Partner
+                            </span>
+                            <h4 className="text-2xl font-display font-extrabold text-slate-900">
+                              Sightsavers India
+                            </h4>
+                          </div>
+                        </div>
+                        <span className="text-xs font-mono font-extrabold text-blue-700 bg-blue-100/80 px-2.5 py-1 rounded-full shrink-0">
+                          Est. 1966
+                        </span>
+                      </div>
+
+                      <p className="text-slate-600 text-sm leading-relaxed">
+                        <strong className="text-slate-800">Sightsavers India</strong> is a leading international development organization dedicated to eliminating avoidable blindness and promoting equal opportunities for persons with disabilities. Since 1966, the organization has been working across India in partnership with governments, healthcare institutions, and community organizations to improve eye health services and build inclusive communities.
+                      </p>
+
+                      <div className="pt-2">
+                        <h5 className="text-xs font-extrabold uppercase tracking-wider text-slate-800 mb-3 flex items-center gap-1.5">
+                          <Target size={14} className="text-blue-600" /> Program Focus Areas:
+                        </h5>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold text-slate-700">
+                          {[
+                            'Comprehensive Eye Care',
+                            'Cataract Elimination',
+                            'School Eye Health',
+                            'Inclusive Education',
+                            'Disability Inclusion',
+                            'Community-Based Rehabilitation',
+                            'Strengthening Public Health Systems'
+                          ].map((item, idx) => (
+                            <div key={idx} className="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200/80">
+                              <CheckCircle2 size={14} className="text-blue-600 shrink-0" />
+                              <span className="truncate">{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-6 mt-6 border-t border-slate-200/80 flex items-center justify-between">
+                      <span className="text-xs font-medium text-slate-500">Official Partner Website</span>
+                      <a
+                        href="https://www.sightsaversindia.org"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md hover:shadow-blue-200 cursor-pointer"
+                      >
+                        Visit Website <ExternalLink size={14} />
+                      </a>
                     </div>
                   </div>
-                )}
 
-                {/* Unified 3-column row for Pledge, Mission, and Vision at the same level */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-8 mt-4 border-t border-slate-100 text-left w-full">
-                  {/* Card 1: Our Universal Pledge */}
-                  <div className="p-5 bg-blue-50/40 border border-blue-100/50 rounded-2xl flex flex-col justify-between h-full">
-                    <div>
-                      <span className="block text-sm font-extrabold text-blue-900 mb-1.5 uppercase tracking-wider font-display">Our Universal Pledge</span>
-                      <p className="text-xs text-slate-600 leading-relaxed font-semibold">
-                        To make medical diagnostic procedures and premium specialist attention comfortable, transparently billed, and accessible to families in Basti and nearby areas.
+                  {/* Gramin Development Foundation Card */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 flex flex-col justify-between hover:shadow-xl hover:border-emerald-300 transition-all duration-300 group">
+                    <div className="space-y-5">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="p-3 bg-emerald-600 text-white rounded-2xl shadow-md group-hover:scale-110 transition-transform">
+                            <Building2 size={28} />
+                          </div>
+                          <div>
+                            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-700 block">
+                              Rural Empowerment Partner
+                            </span>
+                            <h4 className="text-2xl font-display font-extrabold text-slate-900">
+                              Gramin Development Foundation (GDF)
+                            </h4>
+                          </div>
+                        </div>
+                        <span className="text-xs font-mono font-extrabold text-emerald-800 bg-emerald-100/80 px-2.5 py-1 rounded-full shrink-0">
+                          NGO
+                        </span>
+                      </div>
+
+                      <p className="text-slate-600 text-sm leading-relaxed">
+                        <strong className="text-slate-800">Gramin Development Foundation (GDF)</strong> is a non-governmental organization committed to empowering rural communities through sustainable development initiatives. The organization works across multiple sectors, including healthcare, education, livelihood development, women empowerment, and community welfare.
                       </p>
+
+                      <p className="text-slate-600 text-sm leading-relaxed">
+                        In collaboration with Navjyoti Multispeciality Hospital, GDF supports community outreach programs aimed at improving public health awareness, facilitating access to healthcare services, and promoting preventive healthcare practices among underserved populations.
+                      </p>
+
+                      <div className="bg-emerald-50 border border-emerald-200/70 rounded-2xl p-4 text-xs text-emerald-950 font-semibold leading-relaxed">
+                        Together, we are working towards building healthier, stronger, and more self-reliant communities across rural Basti and surrounding districts.
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Card 2: Our Mission */}
-                  <div className="p-5 bg-blue-50/40 border border-blue-100/50 rounded-2xl flex flex-col justify-between h-full">
-                    <div>
-                      <span className="block text-sm font-extrabold text-blue-900 mb-1.5 uppercase tracking-wider font-display">Our Mission</span>
-                      <p className="text-xs text-slate-600 leading-relaxed font-semibold">
-                        To provide accessible, affordable, and quality healthcare with compassion, integrity, and a commitment to improving the health of our community.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Card 3: Our Vision */}
-                  <div className="p-5 bg-orange-50/30 border border-orange-100 rounded-2xl flex flex-col justify-between h-full">
-                    <div>
-                      <span className="block text-sm font-extrabold text-[#7c2d12] mb-1.5 uppercase tracking-wider font-display">Our Vision</span>
-                      <p className="text-xs text-slate-600 leading-relaxed font-semibold">
-                        To become a trusted and leading healthcare institution in the region by delivering excellence in medical care, innovation, and patient-centered services.
-                      </p>
+                    <div className="pt-6 mt-6 border-t border-slate-200/80 flex items-center justify-between">
+                      <span className="text-xs font-medium text-slate-500">Official Partner Website</span>
+                      <a
+                        href="https://gramindevelopment.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md hover:shadow-emerald-200 cursor-pointer"
+                      >
+                        Visit Website <ExternalLink size={14} />
+                      </a>
                     </div>
                   </div>
                 </div>
+
+                {/* 3. Our Mission Together */}
+                <div className="space-y-6 pt-4">
+                  <div className="text-center max-w-2xl mx-auto space-y-2">
+                    <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#1e66f5] bg-blue-50 px-3 py-1 rounded-full inline-block">
+                      Shared Objectives
+                    </span>
+                    <h3 className="text-2xl sm:text-3xl font-display font-extrabold text-slate-900">
+                      Our Mission Together
+                    </h3>
+                    <p className="text-slate-600 text-sm leading-relaxed">
+                      Our partnership is driven by a shared vision of ensuring that every individual has access to affordable, high-quality, and compassionate healthcare services.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[
+                      {
+                        title: 'Rural Healthcare Delivery',
+                        desc: 'Deliver quality healthcare services to rural and underserved communities.',
+                        icon: Globe,
+                        color: 'text-blue-600 bg-blue-50'
+                      },
+                      {
+                        title: 'Free Health & Eye Camps',
+                        desc: 'Organize free health screening and eye care camps.',
+                        icon: Eye,
+                        color: 'text-emerald-600 bg-emerald-50'
+                      },
+                      {
+                        title: 'Early Diagnosis & Care',
+                        desc: 'Promote early diagnosis and timely treatment of diseases.',
+                        icon: Activity,
+                        color: 'text-purple-600 bg-purple-50'
+                      },
+                      {
+                        title: 'Blindness Prevention',
+                        desc: 'Reduce preventable blindness through comprehensive eye care programs.',
+                        icon: Target,
+                        color: 'text-amber-600 bg-amber-50'
+                      },
+                      {
+                        title: 'Awareness Campaigns',
+                        desc: 'Conduct community awareness and preventive healthcare campaigns.',
+                        icon: Compass,
+                        color: 'text-rose-600 bg-rose-50'
+                      },
+                      {
+                        title: 'Disability Inclusion',
+                        desc: 'Support inclusive healthcare services for persons with disabilities.',
+                        icon: Users,
+                        color: 'text-indigo-600 bg-indigo-50'
+                      },
+                      {
+                        title: 'Maternal & Elderly Care',
+                        desc: 'Improve maternal, child, and elderly healthcare through outreach initiatives.',
+                        icon: Heart,
+                        color: 'text-pink-600 bg-pink-50'
+                      },
+                      {
+                        title: 'Health System Building',
+                        desc: 'Strengthen community health systems through education and capacity building.',
+                        icon: ShieldCheck,
+                        color: 'text-teal-600 bg-teal-50'
+                      }
+                    ].map((item, index) => {
+                      const IconComp = item.icon;
+                      return (
+                        <div key={index} className="bg-white border border-slate-200 rounded-2xl p-5 hover:border-blue-300 hover:shadow-md transition-all">
+                          <div className={`w-10 h-10 rounded-xl ${item.color} flex items-center justify-center mb-3.5`}>
+                            <IconComp size={20} />
+                          </div>
+                          <h4 className="font-display font-extrabold text-sm text-slate-900 mb-1.5">
+                            {item.title}
+                          </h4>
+                          <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                            {item.desc}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 4. Our Community Impact */}
+                <div className="bg-slate-50 border border-slate-200 rounded-3xl p-8 sm:p-10 space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <span className="text-xs font-mono font-bold uppercase tracking-widest text-emerald-700 bg-emerald-100/80 px-3 py-1 rounded-full inline-block mb-2">
+                        Real-World Outcomes
+                      </span>
+                      <h3 className="text-2xl sm:text-3xl font-display font-extrabold text-slate-900">
+                        Our Community Impact
+                      </h3>
+                    </div>
+                    <p className="text-xs sm:text-sm text-slate-600 max-w-md font-medium">
+                      Together, Navjyoti Multispeciality Hospital, Sightsavers India, and Gramin Development Foundation are making a meaningful difference across the region.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                    {[
+                      'Providing accessible healthcare services.',
+                      'Conducting free medical and eye care camps.',
+                      'Delivering life-changing eye surgeries and treatments.',
+                      'Promoting preventive healthcare awareness.',
+                      'Supporting persons with disabilities through inclusive healthcare.',
+                      'Reaching remote villages with quality medical services.',
+                      'Improving community health outcomes through collaboration.'
+                    ].map((impact, idx) => (
+                      <div key={idx} className="bg-white p-4 rounded-2xl border border-slate-200/80 flex items-start gap-3 shadow-sm">
+                        <div className="p-1.5 bg-emerald-100 text-emerald-700 rounded-lg shrink-0 mt-0.5">
+                          <CheckCircle2 size={16} />
+                        </div>
+                        <span className="text-xs sm:text-sm font-extrabold text-slate-800 leading-snug">
+                          {impact}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="pt-4 text-center border-t border-slate-200/80">
+                    <p className="text-xs sm:text-sm font-bold text-slate-700 italic">
+                      "Every initiative reflects our commitment to creating a healthier and more inclusive society."
+                    </p>
+                  </div>
+                </div>
+
+                {/* 5. Why This Partnership Matters */}
+                <div className="relative p-8 sm:p-10 rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-950 text-white shadow-xl overflow-hidden border border-blue-800">
+                  <div className="max-w-3xl space-y-4">
+                    <h3 className="text-2xl sm:text-3xl font-display font-extrabold text-white">
+                      Why This Partnership Matters
+                    </h3>
+                    <p className="text-blue-100 text-sm sm:text-base leading-relaxed">
+                      Healthcare extends beyond hospital walls. Through strong partnerships with respected organizations, we aim to bring quality medical services directly to the communities that need them the most.
+                    </p>
+                    <p className="text-slate-200 text-sm sm:text-base leading-relaxed">
+                      Our collaboration enables us to combine medical expertise, community outreach, and social development to create lasting health impact for thousands of families.
+                    </p>
+                    <div className="pt-2">
+                      <div className="inline-block bg-white/10 backdrop-blur-md border border-white/20 text-white px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-extrabold tracking-wide">
+                        Together, we are building a future where quality healthcare is available to everyone.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
               </motion.div>
             )}
 
@@ -464,240 +506,7 @@ export default function AboutSection() {
         </div>
 
       </div>
-
-      {/* Lightbox Modal for Accreditations */}
-      <AnimatePresence>
-        {selectedCred && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-[#04060b]/98 backdrop-blur-xl"
-            onClick={closeCredModal}
-          >
-            <motion.div
-              initial={{ scale: 0.95, y: 15 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 15 }}
-              transition={{ type: "spring", duration: 0.3 }}
-              className="relative w-full max-w-5xl bg-[#080d1a] border border-slate-800/80 rounded-3xl overflow-hidden shadow-2xl flex flex-col p-5 sm:p-6 gap-4 text-left max-h-[92vh] md:max-h-[680px]"
-              onClick={e => e.stopPropagation()}
-            >
-              {/* Close Button */}
-              <button
-                onClick={closeCredModal}
-                className="absolute top-4 right-4 p-2 bg-slate-800/80 hover:bg-slate-700 hover:scale-105 text-slate-300 hover:text-white rounded-xl transition-all cursor-pointer z-10 border border-slate-700/50"
-                title="Close viewer (Esc)"
-              >
-                <X size={20} />
-              </button>
-
-              {/* Header Details */}
-              <div className="space-y-1.5 w-full pr-10 text-left">
-                <span className="text-[10px] text-blue-400 font-mono font-black uppercase tracking-widest bg-blue-950/50 border border-blue-900/40 px-2.5 py-1 rounded-full inline-flex items-center gap-1">
-                  <Award size={12} /> Accredited Document
-                </span>
-                <h3 className="text-lg sm:text-xl font-display font-extrabold text-white leading-tight uppercase tracking-tight">
-                  {selectedCred.title}
-                </h3>
-              </div>
-
-              {/* Dynamic Content Grid */}
-              <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch flex-1 min-h-0 overflow-y-auto md:overflow-hidden py-1">
-                
-                {/* Image Container */}
-                <div className="md:col-span-7 w-full h-[320px] sm:h-[380px] md:h-full min-h-[280px] bg-slate-950/60 rounded-2xl border border-slate-800/60 flex items-center justify-center relative overflow-hidden">
-                  {selectedCred.fileUrl ? (
-                    <div className="w-full h-full overflow-hidden flex items-center justify-center p-4 relative select-none">
-                      <img
-                        src={selectedCred.fileUrl}
-                        alt={selectedCred.title}
-                        onPointerDown={handlePointerDown}
-                        onPointerMove={handlePointerMove}
-                        onPointerUp={handlePointerUp}
-                        onPointerCancel={handlePointerUp}
-                        onClick={(e) => {
-                          if (Math.abs(panOffset.x) > 5 || Math.abs(panOffset.y) > 5) {
-                            return;
-                          }
-                          if (zoomScale > 1.0) {
-                            setZoomScale(1.0);
-                          } else {
-                            setZoomScale(1.75);
-                          }
-                        }}
-                        style={{
-                          transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomScale})`,
-                          transformOrigin: 'center center',
-                          maxWidth: '100%',
-                          maxHeight: '100%',
-                          objectFit: 'contain',
-                        }}
-                        className={`rounded-xl shadow-md transition-transform duration-200 ease-out select-none touch-none ${
-                          zoomScale > 1.0 ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in'
-                        }`}
-                        referrerPolicy="no-referrer"
-                      />
-
-                      {/* Floating gradual zoom bar over the image */}
-                      <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1 bg-slate-900/95 backdrop-blur-md px-2 py-1.5 rounded-xl border border-slate-700/60 shadow-lg">
-                        <button
-                          type="button"
-                          onClick={() => setZoomScale(prev => Math.max(1.0, prev - 0.25))}
-                          disabled={zoomScale <= 1.0}
-                          className="p-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg transition-colors cursor-pointer border-none flex items-center justify-center"
-                          title="Zoom Out"
-                        >
-                          <ZoomOut size={13} />
-                        </button>
-                        <span className="text-[10px] font-mono font-black text-slate-200 min-w-[34px] text-center">
-                          {Math.round(zoomScale * 100)}%
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setZoomScale(prev => Math.min(3.0, prev + 0.25))}
-                          disabled={zoomScale >= 3.0}
-                          className="p-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg transition-colors cursor-pointer border-none flex items-center justify-center"
-                          title="Zoom In"
-                        >
-                          <ZoomIn size={13} />
-                        </button>
-                        {zoomScale > 1.0 && (
-                          <button
-                            type="button"
-                            onClick={() => setZoomScale(1.0)}
-                            className="ml-1 px-1.5 py-0.5 bg-blue-600 hover:bg-blue-500 text-white text-[9px] font-mono font-black rounded-md transition-colors cursor-pointer border-none uppercase"
-                            title="Reset Zoom"
-                          >
-                            Reset
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-16 text-slate-600 gap-3 min-w-[280px]">
-                      <FileText size={64} className="stroke-[1.2]" />
-                      <p className="text-sm font-semibold">Document view not available</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Table & Details Panel */}
-                <div className="md:col-span-5 flex flex-col justify-between text-left gap-4 h-full overflow-y-auto pr-1">
-                  <div className="border border-slate-800/85 rounded-2xl overflow-hidden bg-[#070b14]/50 w-full">
-                    <table className="w-full text-left text-xs border-collapse">
-                      <thead>
-                        <tr className="bg-[#070b14]/90 border-b border-slate-800/80 text-blue-400 font-mono text-[9px] uppercase tracking-widest">
-                          <th className="p-3 font-extrabold w-1/3">Property</th>
-                          <th className="p-3 font-extrabold w-2/3">Verification Details</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-800/60 font-medium text-slate-300">
-                        <tr className="hover:bg-slate-950/15 transition-colors">
-                          <td className="p-3 text-slate-400 font-mono text-[10px] uppercase tracking-wider">Document Name</td>
-                          <td className="p-3 text-white font-extrabold text-[12px] sm:text-[13px]">{selectedCred.title}</td>
-                        </tr>
-                        <tr className="hover:bg-slate-950/15 transition-colors">
-                          <td className="p-3 text-slate-400 font-mono text-[10px] uppercase tracking-wider">Verification Authority</td>
-                          <td className="p-3 text-slate-300">Govt. Medical Regulatory Registry</td>
-                        </tr>
-                        <tr className="hover:bg-slate-950/15 transition-colors">
-                          <td className="p-3 text-slate-400 font-mono text-[10px] uppercase tracking-wider">Issued / Validity</td>
-                          <td className="p-3 text-slate-200 font-mono text-[11px]">{selectedCred.date || 'Active / Verified'}</td>
-                        </tr>
-                        <tr className="hover:bg-slate-950/15 transition-colors">
-                          <td className="p-3 text-slate-400 font-mono text-[10px] uppercase tracking-wider">Status</td>
-                          <td className="p-3">
-                            <span className="inline-flex items-center gap-1 text-[10px] font-mono font-black text-emerald-400 uppercase bg-emerald-950/50 border border-emerald-900/40 px-2.5 py-0.5 rounded-full">
-                              <ShieldCheck size={11} className="text-emerald-400" /> Fully Certified
-                            </span>
-                          </td>
-                        </tr>
-                        <tr className="hover:bg-slate-950/15 transition-colors">
-                          <td className="p-3 text-slate-400 font-mono text-[10px] uppercase tracking-wider">Zoom Control</td>
-                          <td className="p-3">
-                            <div className="flex flex-wrap items-center gap-1.5">
-                              <button
-                                type="button"
-                                onClick={() => setZoomScale(prev => Math.max(1.0, prev - 0.25))}
-                                disabled={zoomScale <= 1.0}
-                                className="p-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 text-slate-200 rounded-lg transition-all border border-slate-700/60 cursor-pointer flex items-center justify-center"
-                                title="Zoom Out"
-                              >
-                                <ZoomOut size={12} />
-                              </button>
-                              <span className="text-[11px] font-mono font-bold text-blue-400 bg-slate-950 px-2 py-1 rounded-lg min-w-[42px] text-center border border-slate-800">
-                                {Math.round(zoomScale * 100)}%
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => setZoomScale(prev => Math.min(3.0, prev + 0.25))}
-                                disabled={zoomScale >= 3.0}
-                                className="p-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 text-slate-200 rounded-lg transition-all border border-slate-700/60 cursor-pointer flex items-center justify-center"
-                                title="Zoom In"
-                              >
-                                <ZoomIn size={12} />
-                              </button>
-                              {zoomScale > 1.0 && (
-                                <button
-                                  type="button"
-                                  onClick={() => setZoomScale(1.0)}
-                                  className="px-2 py-1 bg-blue-600/20 hover:bg-blue-600/35 text-blue-400 text-[10px] font-mono font-black rounded-lg transition-all border border-blue-500/20 cursor-pointer uppercase"
-                                  title="Reset Zoom"
-                                >
-                                  Reset
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                        <tr className="hover:bg-slate-950/15 transition-colors">
-                          <td className="p-3 text-slate-400 font-mono text-[10px] uppercase tracking-wider">Direct Access</td>
-                          <td className="p-3">
-                            {selectedCred.fileUrl ? (
-                              <a
-                                href={selectedCred.fileUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 hover:scale-[1.02] active:scale-[0.98] text-slate-200 hover:text-white rounded-lg transition-all font-mono font-black text-[10px] uppercase tracking-wider border border-slate-700/65"
-                                title="Open in high resolution in new browser tab"
-                              >
-                                <ExternalLink size={12} /> Full Screen
-                              </a>
-                            ) : (
-                              <span className="text-slate-500 font-mono text-[10px]">N/A</span>
-                            )}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
-                    This document is officially indexed in the hospital's central quality assurance ledger under registration ID <span className="font-mono text-slate-400">{selectedCred.id}</span>.
-                  </p>
-                </div>
-
-              </div>
-
-              {/* Actions Footer */}
-              <div className="flex items-center justify-between gap-3 w-full border-t border-slate-800/80 pt-4 mt-auto">
-                <span className="text-[11px] text-slate-500 font-medium flex items-center gap-1.5">
-                  <ShieldCheck size={13} className="text-emerald-500" /> Digitally Verified
-                </span>
-                <button
-                  type="button"
-                  onClick={closeCredModal}
-                  className="px-5 py-2 bg-slate-800 hover:bg-slate-700 hover:scale-[1.02] active:scale-[0.98] text-slate-300 hover:text-white rounded-xl transition-all font-mono font-extrabold text-xs uppercase tracking-wider border border-slate-700/40 cursor-pointer"
-                >
-                  Close Viewer
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 }
+
