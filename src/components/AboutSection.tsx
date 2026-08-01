@@ -163,17 +163,17 @@ export default function AboutSection() {
                 {/* IMAGE 1 CONTENT: ABOUT OUR HOSPITAL                       */}
                 {/* ========================================================= */}
                 <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm">
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
                     {/* Left: Hospital Photo */}
-                    <div className="lg:col-span-5 relative group">
-                      <div className="relative rounded-2xl overflow-hidden shadow-lg border-2 border-white aspect-[4/3] bg-slate-200">
+                    <div className="lg:col-span-5 relative group flex flex-col h-full min-h-[320px] lg:min-h-[380px]">
+                      <div className="relative rounded-2xl overflow-hidden shadow-lg border-2 border-white w-full h-full min-h-[300px] flex-1 bg-slate-200">
                         <img 
                           src={settings.aboutPhotoUrl || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=1200'} 
                           alt="Navjyoti Multispeciality Hospital Building Overview" 
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 absolute inset-0"
                           referrerPolicy="no-referrer"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent flex flex-col justify-end p-4 text-white">
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent flex flex-col justify-end p-4 text-white z-10">
                           <span className="text-xs font-mono font-bold uppercase text-blue-300 tracking-wider">
                             NABH Entry-Level Accredited
                           </span>
@@ -183,7 +183,7 @@ export default function AboutSection() {
                       </div>
                       
                       {/* Floating Badge */}
-                      <div className="absolute -bottom-4 -right-2 sm:-bottom-4 sm:-right-4 bg-blue-600 text-white p-3.5 rounded-2xl shadow-xl flex items-center gap-3 border-2 border-white">
+                      <div className="absolute -bottom-4 -right-2 sm:-bottom-4 sm:-right-4 bg-blue-600 text-white p-3.5 rounded-2xl shadow-xl flex items-center gap-3 border-2 border-white z-20">
                         <Award size={28} className="text-yellow-300 shrink-0" />
                         <div>
                           <div className="text-[10px] font-mono uppercase font-bold tracking-wider text-blue-100">Ayushman Approved</div>
