@@ -5,11 +5,12 @@ import {
   HeartHandshake, Users, Target, Globe, Building2, Sparkles, Activity, Compass, 
   ZoomIn, ZoomOut, RotateCcw, X, Award, FileCheck, Maximize2
 } from 'lucide-react';
+// @ts-ignore
+import campusImg from '../assets/images/navjyoti_campus_facade_1781922515870.jpg';
 import { getSiteSettings } from '../utils/database';
 
 export default function AboutSection() {
   const [settings, setSettings] = useState(() => getSiteSettings());
-  const [activeTab, setActiveTab] = useState<'about' | 'founders'>('about');
   
   // Lightbox Zoom modal state for Medical Registrations
   const [selectedCred, setSelectedCred] = useState<{
@@ -119,78 +120,40 @@ export default function AboutSection() {
           </p>
         </div>
 
-        {/* Tab triggers */}
-        <div className="flex justify-center mb-6">
-          <div className="inline-flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex-wrap justify-center gap-1">
-            <button
-              onClick={() => setActiveTab('about')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                activeTab === 'about'
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-200/50'
-                  : 'text-slate-600 hover:text-blue-700'
-              }`}
-            >
-              <Building2 size={18} />
-              About Hospital & Accreditations
-            </button>
-            <button
-              onClick={() => setActiveTab('founders')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                activeTab === 'founders'
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-200/50'
-                  : 'text-slate-600 hover:text-blue-700'
-              }`}
-            >
-              <User size={18} />
-              Founders' Message
-            </button>
-          </div>
-        </div>
-
-        {/* Dynamic content rendering with motion */}
-        <div className="relative">
-          <AnimatePresence mode="wait">
-            {activeTab === 'about' && (
-              <motion.div
-                key="about-main"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.35 }}
-                className="flex flex-col gap-10 sm:gap-12 text-left w-full"
-              >
-                {/* ========================================================= */}
-                {/* IMAGE 1 CONTENT: ABOUT OUR HOSPITAL                       */}
-                {/* ========================================================= */}
-                <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm">
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-                    {/* Left: Hospital Photo */}
-                    <div className="lg:col-span-5 relative group flex flex-col h-full min-h-[320px] lg:min-h-[380px]">
-                      <div className="relative rounded-2xl overflow-hidden shadow-lg border-2 border-white w-full h-full min-h-[300px] flex-1 bg-slate-200">
-                        <img 
-                          src={settings.aboutPhotoUrl || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=1200'} 
-                          alt="Navjyoti Multispeciality Hospital Building Overview" 
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 absolute inset-0"
-                          referrerPolicy="no-referrer"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent flex flex-col justify-end p-4 text-white z-10">
-                          <span className="text-xs font-mono font-bold uppercase text-blue-300 tracking-wider">
-                            NABH Entry-Level Accredited
-                          </span>
-                          <h4 className="text-lg font-bold">Navjyoti Hospital Campus</h4>
-                          <p className="text-xs text-slate-200">Basti, Uttar Pradesh</p>
-                        </div>
-                      </div>
-                      
-                      {/* Floating Badge */}
-                      <div className="absolute -bottom-4 -right-2 sm:-bottom-4 sm:-right-4 bg-blue-600 text-white p-3.5 rounded-2xl shadow-xl flex items-center gap-3 border-2 border-white z-20">
-                        <Award size={28} className="text-yellow-300 shrink-0" />
-                        <div>
-                          <div className="text-[10px] font-mono uppercase font-bold tracking-wider text-blue-100">Ayushman Approved</div>
-                          <div className="text-xs font-extrabold">100% Cashless Treatment</div>
-                        </div>
-                      </div>
-                    </div>
+        {/* Linear content rendering */}
+        <div className="flex flex-col gap-12 sm:gap-16 text-left w-full">
+          {/* ========================================================= */}
+          {/* IMAGE 1 CONTENT: ABOUT OUR HOSPITAL                       */}
+          {/* ========================================================= */}
+          <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+              {/* Left: Hospital Photo */}
+              <div className="lg:col-span-5 relative group flex flex-col h-full min-h-[360px] lg:min-h-[420px]">
+                <div className="relative rounded-2xl overflow-hidden shadow-lg border-2 border-white w-full h-full min-h-[340px] flex-1 bg-slate-200">
+                  <img 
+                    src={settings.aboutPhotoUrl || campusImg} 
+                    alt="Navjyoti Multispeciality Hospital Building Overview" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 absolute inset-0"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent flex flex-col justify-end p-5 text-white z-10">
+                    <span className="text-xs font-mono font-bold uppercase text-blue-300 tracking-wider">
+                      NABH Entry-Level Accredited
+                    </span>
+                    <h4 className="text-xl font-extrabold text-white leading-tight">Navjyoti Hospital Campus</h4>
+                    <p className="text-xs text-slate-200">Basti, Uttar Pradesh</p>
+                  </div>
+                </div>
+                
+                {/* Floating Badge */}
+                <div className="absolute -bottom-4 -right-2 sm:-bottom-4 sm:-right-4 bg-blue-600 text-white p-3.5 rounded-2xl shadow-xl flex items-center gap-3 border-2 border-white z-20">
+                  <Award size={28} className="text-yellow-300 shrink-0" />
+                  <div>
+                    <div className="text-[10px] font-mono uppercase font-bold tracking-wider text-blue-100">Ayushman Approved</div>
+                    <div className="text-xs font-extrabold">100% Cashless Treatment</div>
+                  </div>
+                </div>
+              </div>
 
                     {/* Right: Overview Text */}
                     <div className="lg:col-span-7 space-y-4">
@@ -594,123 +557,115 @@ export default function AboutSection() {
                   </div>
                 </div>
 
-              </motion.div>
-            )}
-
-            {/* FOUNDERS TAB CONTENT */}
-            {activeTab === 'founders' && (
-              <motion.div
-                key="founders"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.35 }}
-                className="max-w-4xl mx-auto bg-slate-50/55 rounded-3xl border border-slate-200 p-6 md:p-10 text-left shadow-sm space-y-8"
-              >
-                {/* Intro and combined message */}
-                <div className="space-y-6">
-                  <div className="flex items-center gap-3">
-                    <span className="text-[10px] font-mono font-black uppercase text-[#1e66f5] tracking-widest bg-blue-100/60 px-3 py-1.5 rounded-full inline-block">
-                      ADMINISTRATIVE LEADERSHIP STATEMENT
-                    </span>
-                  </div>
-                  
-                  {/* The actual letter content */}
-                  <div className="relative pl-6 border-l-2 border-blue-500 text-slate-700 text-sm sm:text-base leading-relaxed space-y-4 font-medium">
-                    <div className="absolute top-0 left-0 -mt-3 -ml-4 p-1 text-blue-500/15">
-                      <Quote size={50} className="fill-current" />
+                {/* ========================================================= */}
+                {/* FOUNDERS & ADMINISTRATIVE LEADERSHIP SECTION              */}
+                {/* ========================================================= */}
+                <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm space-y-8">
+                  {/* Intro and combined message */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold uppercase tracking-widest text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                        Administrative Leadership
+                      </span>
+                      <h4 className="text-xl sm:text-2xl font-display font-bold text-slate-900">
+                        Founders' Message & Clinical Vision
+                      </h4>
                     </div>
-                    {/* Render chairman bio and director bio as paragraphs of a unified message */}
-                    {chairman.bio.split('\n').map(p => p.trim()).filter(Boolean).map((para, i) => (
-                      <p key={`c-${i}`}>{para}</p>
-                    ))}
-                    {director.bio.split('\n').map(p => p.trim()).filter(Boolean).map((para, i) => (
-                      <p key={`d-${i}`}>{para}</p>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Bottom section displaying portraits of both doctors */}
-                <div className="pt-8 border-t border-slate-200 space-y-6">
-                  <span className="text-xs font-bold uppercase tracking-widest text-[#0d2a63] block text-center mb-4">
-                    Our Leadership Board
-                  </span>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 justify-items-center">
                     
-                    {/* Dr. Prem Prakash Dubey */}
-                    <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 p-4.5 bg-white rounded-2xl border border-slate-150 shadow-sm w-full max-w-sm">
-                      {chairman.photo ? (
-                        <div className="w-24 h-32 rounded-xl overflow-hidden border-2 border-white shadow-md shrink-0">
-                          <img 
-                            src={chairman.photo} 
-                            alt={chairman.name} 
-                            className="w-full h-full object-cover"
-                            referrerPolicy="no-referrer"
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-24 h-32 bg-gradient-to-tr from-blue-600 to-blue-900 text-white rounded-xl flex items-center justify-center shrink-0 shadow-md">
-                          <User size={36} className="opacity-80" />
-                        </div>
-                      )}
-                      <div className="space-y-1">
-                        <span className="text-[9px] font-mono font-black uppercase text-[#1e66f5] tracking-widest bg-blue-50 px-2 py-0.5 rounded-full inline-block mb-1">
-                          CHAIRMAN
-                        </span>
-                        <h4 className="font-display font-black text-sm text-[#0d2a63]">
-                          {chairman.name}
-                        </h4>
-                        <p className="text-[11px] text-blue-650 font-extrabold tracking-tight">
-                          {chairman.qualification}
-                        </p>
-                        <p className="text-[10px] text-slate-400 font-bold leading-none">Founder Chairman</p>
+                    {/* The actual letter content */}
+                    <div className="relative pl-6 border-l-2 border-blue-500 text-slate-700 text-sm sm:text-base leading-relaxed space-y-4 font-medium">
+                      <div className="absolute top-0 left-0 -mt-3 -ml-4 p-1 text-blue-500/15">
+                        <Quote size={50} className="fill-current" />
                       </div>
+                      {/* Render chairman bio and director bio as paragraphs of a unified message */}
+                      {chairman.bio.split('\n').map(p => p.trim()).filter(Boolean).map((para, i) => (
+                        <p key={`c-${i}`}>{para}</p>
+                      ))}
+                      {director.bio.split('\n').map(p => p.trim()).filter(Boolean).map((para, i) => (
+                        <p key={`d-${i}`}>{para}</p>
+                      ))}
                     </div>
-
-                    {/* Dr. Vidushi Dubey */}
-                    <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 p-4.5 bg-white rounded-2xl border border-slate-150 shadow-sm w-full max-w-sm">
-                      {director.photo ? (
-                        <div className="w-24 h-32 rounded-xl overflow-hidden border-2 border-white shadow-md shrink-0">
-                          <img 
-                            src={director.photo} 
-                            alt={director.name} 
-                            className="w-full h-full object-cover"
-                            referrerPolicy="no-referrer"
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-24 h-32 bg-gradient-to-tr from-blue-600 to-blue-900 text-white rounded-xl flex items-center justify-center shrink-0 shadow-md">
-                          <User size={36} className="opacity-80" />
-                        </div>
-                      )}
-                      <div className="space-y-1">
-                        <span className="text-[9px] font-mono font-black uppercase text-[#1e66f5] tracking-widest bg-blue-50 px-2 py-0.5 rounded-full inline-block mb-1">
-                          DIRECTOR
-                        </span>
-                        <h4 className="font-display font-black text-sm text-[#0d2a63]">
-                          {director.name}
-                        </h4>
-                        <p className="text-[11px] text-blue-650 font-extrabold tracking-tight">
-                          {director.qualification}
-                        </p>
-                        <p className="text-[10px] text-slate-400 font-bold leading-none">Managing Director</p>
-                      </div>
-                    </div>
-
                   </div>
 
-                  <div className="pt-4 text-center">
-                    <div className="inline-flex items-center gap-2 text-[11px] font-bold text-slate-400">
-                      <ShieldCheck size={15} className="text-blue-500" />
-                      <span>Joint Founder Board Approval & Core Ethos</span>
+                  {/* Bottom section displaying portraits of both doctors */}
+                  <div className="pt-8 border-t border-slate-200 space-y-6">
+                    <span className="text-xs font-bold uppercase tracking-widest text-[#0d2a63] block text-center mb-4">
+                      Our Leadership Board
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 justify-items-center">
+                      
+                      {/* Dr. Prem Prakash Dubey */}
+                      <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 p-4.5 bg-white rounded-2xl border border-slate-150 shadow-sm w-full max-w-sm">
+                        {chairman.photo ? (
+                          <div className="w-24 h-32 rounded-xl overflow-hidden border-2 border-white shadow-md shrink-0">
+                            <img 
+                              src={chairman.photo} 
+                              alt={chairman.name} 
+                              className="w-full h-full object-cover"
+                              referrerPolicy="no-referrer"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-24 h-32 bg-gradient-to-tr from-blue-600 to-blue-900 text-white rounded-xl flex items-center justify-center shrink-0 shadow-md">
+                            <User size={36} className="opacity-80" />
+                          </div>
+                        )}
+                        <div className="space-y-1">
+                          <span className="text-[9px] font-mono font-black uppercase text-[#1e66f5] tracking-widest bg-blue-50 px-2 py-0.5 rounded-full inline-block mb-1">
+                            CHAIRMAN
+                          </span>
+                          <h4 className="font-display font-black text-sm text-[#0d2a63]">
+                            {chairman.name}
+                          </h4>
+                          <p className="text-[11px] text-blue-650 font-extrabold tracking-tight">
+                            {chairman.qualification}
+                          </p>
+                          <p className="text-[10px] text-slate-400 font-bold leading-none">Founder Chairman</p>
+                        </div>
+                      </div>
+
+                      {/* Dr. Vidushi Dubey */}
+                      <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 p-4.5 bg-white rounded-2xl border border-slate-150 shadow-sm w-full max-w-sm">
+                        {director.photo ? (
+                          <div className="w-24 h-32 rounded-xl overflow-hidden border-2 border-white shadow-md shrink-0">
+                            <img 
+                              src={director.photo} 
+                              alt={director.name} 
+                              className="w-full h-full object-cover"
+                              referrerPolicy="no-referrer"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-24 h-32 bg-gradient-to-tr from-blue-600 to-blue-900 text-white rounded-xl flex items-center justify-center shrink-0 shadow-md">
+                            <User size={36} className="opacity-80" />
+                          </div>
+                        )}
+                        <div className="space-y-1">
+                          <span className="text-[9px] font-mono font-black uppercase text-[#1e66f5] tracking-widest bg-blue-50 px-2 py-0.5 rounded-full inline-block mb-1">
+                            DIRECTOR
+                          </span>
+                          <h4 className="font-display font-black text-sm text-[#0d2a63]">
+                            {director.name}
+                          </h4>
+                          <p className="text-[11px] text-blue-650 font-extrabold tracking-tight">
+                            {director.qualification}
+                          </p>
+                          <p className="text-[10px] text-slate-400 font-bold leading-none">Managing Director</p>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div className="pt-4 text-center">
+                      <div className="inline-flex items-center gap-2 text-[11px] font-bold text-slate-400">
+                        <ShieldCheck size={15} className="text-blue-500" />
+                        <span>Joint Founder Board Approval & Core Ethos</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
 
+        </div>
       </div>
 
       {/* ========================================================= */}
